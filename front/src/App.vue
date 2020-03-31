@@ -74,7 +74,7 @@
     import store from "./store";
     import axios from 'axios';
 
-    axios.get('http://localhost:9090/graphs/5e811a5c9bf9a107cab91861').then(resp => {
+    axios.get('http://localhost:9090/graphs/5e83c55bf35e75051b99db3a').then(resp => {
         if (resp.status === 200) {
             store.commit('setSystemGraph', resp.data.systemGraph);
             store.commit('setTaskGraph', resp.data.taskGraph);
