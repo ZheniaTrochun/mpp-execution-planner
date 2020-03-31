@@ -1,6 +1,6 @@
-package com.yevhenii.claster.planner.server.models
+package com.yevhenii.cluster.planner.server.models
 
-import com.yevhenii.claster.planner.server.models.Task.TaskId
+import Task.TaskId
 
 case class Task(id: TaskId, name: String)
 

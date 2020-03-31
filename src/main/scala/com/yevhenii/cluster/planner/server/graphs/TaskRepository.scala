@@ -1,8 +1,9 @@
-package com.yevhenii.claster.planner.server.graphs
+package com.yevhenii.cluster.planner.server.graphs
 
 import cats.effect.IO
-import com.yevhenii.claster.planner.server.models.{Graphs, Task, TaskInit}
-import com.yevhenii.claster.planner.server.models.Task.TaskId
+import com.yevhenii.cluster.planner.server.models.{Task, TaskInit}
+import com.yevhenii.cluster.planner.server.models.{Graphs, Task, TaskInit}
+import com.yevhenii.cluster.planner.server.models.Task.TaskId
 
 trait TaskRepository {
 

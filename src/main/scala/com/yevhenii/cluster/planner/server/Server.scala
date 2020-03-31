@@ -1,12 +1,13 @@
-package com.yevhenii.claster.planner.server
+package com.yevhenii.cluster.planner.server
 
 import cats.effect.{ExitCode, IO, IOApp}
-import com.yevhenii.claster.planner.server.graphs.{DummyTaskRepository, MongoTaskRepository, TaskRoutes}
+import com.yevhenii.cluster.planner.server.graphs.TaskRoutes
 import org.http4s.server.Router
 import org.http4s.implicits._
 import org.http4s.server.blaze._
 import cats.implicits._
 import com.typesafe.config.ConfigFactory
+import com.yevhenii.cluster.planner.server.graphs.{MongoTaskRepository, TaskRoutes}
 import org.http4s.server.middleware.{CORS, GZip, Logger}
 
 import scala.concurrent.ExecutionContext

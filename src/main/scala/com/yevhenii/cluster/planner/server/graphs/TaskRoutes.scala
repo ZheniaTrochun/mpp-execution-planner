@@ -1,7 +1,8 @@
-package com.yevhenii.claster.planner.server.graphs
+package com.yevhenii.cluster.planner.server.graphs
 
-import com.yevhenii.claster.planner.server.models._
+import com.yevhenii.cluster.planner.server.models._
 import cats.effect.IO
+import com.yevhenii.cluster.planner.server.models.{Graphs, TaskInit}
 import io.circe.Json
 import org.http4s.HttpRoutes
 import io.circe.generic.auto._

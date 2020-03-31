@@ -3,8 +3,10 @@ import Dependencies._
 ThisBuild / scalaVersion     := "2.12.10"
 ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "com.yevhenii"
-//ThisBuild / organizationName := "cluster.planner.server"
 ThisBuild / name := "cluster.planner.server"
+
+assemblyJarName in assembly := "cluster-planner-server.jar"
+mainClass in assembly := Some("com.yevhenii.cluster.planner.server.Server")
 
 lazy val root = (project in file("."))
   .settings(
