@@ -25,5 +25,5 @@ val stage = taskKey[Unit]("Stage task")
 val Stage = config("stage")
 
 stage := {
-  assembly
+  assembly.value
 }
