@@ -2,17 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e353fa64-76d8-4433-b5e5-d0aa6c03b9f2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Procfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/ClusterPlanner-build.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/ClusterPlanner-build.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.sbt" beforeDir="false" afterPath="$PROJECT_DIR$/build.sbt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.conf" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.conf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/Server.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/Server.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/DummyTaskRepository.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/DummyTaskRepository.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/MongoTaskRepository.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/MongoTaskRepository.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/TaskRepository.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/TaskRepository.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/TaskRoutes.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/TaskRoutes.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile.back" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -70,15 +60,6 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/build.sbt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="27" column="10" selection-start-line="27" selection-start-column="10" selection-end-line="27" selection-end-column="10" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/Server.scala">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="420">
@@ -86,6 +67,15 @@
               <folding>
                 <element signature="e#45#85#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Dockerfile.back">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="165">
+              <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
             </state>
           </provider>
         </entry>
@@ -455,12 +445,12 @@
       <workItem from="1585481257081" duration="12562000" />
       <workItem from="1585500894064" duration="25000" />
       <workItem from="1585509095696" duration="14115000" />
-      <workItem from="1585602166169" duration="8210000" />
+      <workItem from="1585602166169" duration="8582000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="36450000" />
+    <option name="totallyTimeSpent" value="36822000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1920" y="-89" width="1920" height="1080" extended-state="0" />
@@ -486,8 +476,8 @@
       <window_info anchor="bottom" id="Inspection" order="8" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="9" />
       <window_info anchor="bottom" id="Build" order="10" weight="0.32928064" />
-      <window_info anchor="bottom" id="sbt-shell-toolwindow" order="11" visible="true" weight="0.32928064" />
-      <window_info anchor="bottom" id="Terminal" order="12" weight="0.32928064" />
+      <window_info anchor="bottom" id="sbt-shell-toolwindow" order="11" weight="0.32928064" />
+      <window_info anchor="bottom" id="Terminal" order="12" visible="true" weight="0.32928064" />
       <window_info anchor="bottom" id="Docker" order="13" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="14" side_tool="true" />
       <window_info anchor="bottom" id="Database Changes" order="15" />
@@ -760,9 +750,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Dockerfile">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/build.sbt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="405">
@@ -839,6 +826,13 @@
           <folding>
             <element signature="e#45#85#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Dockerfile.back">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
         </state>
       </provider>
     </entry>
