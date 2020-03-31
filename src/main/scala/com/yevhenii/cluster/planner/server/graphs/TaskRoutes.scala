@@ -1,6 +1,5 @@
 package com.yevhenii.cluster.planner.server.graphs
 
-import com.yevhenii.cluster.planner.server.models._
 import cats.effect.IO
 import com.yevhenii.cluster.planner.server.models.{Graphs, TaskInit}
 import io.circe.Json

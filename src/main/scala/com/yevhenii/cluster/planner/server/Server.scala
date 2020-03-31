@@ -1,7 +1,6 @@
 package com.yevhenii.cluster.planner.server
 
 import cats.effect.{ExitCode, IO, IOApp}
-import com.yevhenii.cluster.planner.server.graphs.TaskRoutes
 import org.http4s.server.Router
 import org.http4s.implicits._
 import org.http4s.server.blaze._
@@ -27,7 +26,7 @@ object Server extends IOApp {
     val routesWithLog = Logger.httpApp(logHeaders = true, logBody = true)(httpRoutes)
 
     BlazeServerBuilder[IO]
-      .bindHttp(9090, "0.0.0.0")
+      .bindHttp(applicationConfig.getInt("server.port"), "0.0.0.0")
       .withHttpApp(GZip(CORS(routesWithLog)))
       .serve
       .compile

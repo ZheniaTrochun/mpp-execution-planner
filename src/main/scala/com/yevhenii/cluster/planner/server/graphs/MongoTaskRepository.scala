@@ -6,8 +6,6 @@ import com.typesafe.config.Config
 import MongoTaskRepository.{GraphsEntity, TaskEntity}
 import com.yevhenii.cluster.planner.server.models.Task.TaskId
 import com.yevhenii.cluster.planner.server.models._
-import com.yevhenii.cluster.planner.server.models
-import com.yevhenii.cluster.planner.server.models.{Data, GraphEntry, Graphs, Position, Task, TaskInit}
 import org.mongodb.scala._
 import org.mongodb.scala.bson.ObjectId
 import org.mongodb.scala.model.Filters._
@@ -142,11 +140,11 @@ class MongoTaskRepository(config: Config)(implicit ec: ExecutionContext, cs: Con
 
 object MongoTaskRepository {
   case class TaskEntity(_id: ObjectId, name: String) {
-    def toTask: Task = models.Task(_id.toString, name)
+    def toTask: Task = Task(_id.toString, name)
   }
 
   case class GraphsEntity(_id: ObjectId, taskGraph: List[GraphEntry], systemGraph: List[GraphEntry]) {
-    def toGraph: Graphs = models.Graphs(taskGraph, systemGraph)
+    def toGraph: Graphs = Graphs(taskGraph, systemGraph)
   }
 
   object GraphsEntity {

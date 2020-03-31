@@ -19,3 +19,11 @@ lazy val root = (project in file("."))
     ),
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
   )
+
+val stage = taskKey[Unit]("Stage task")
+
+val Stage = config("stage")
+
+stage := {
+  assembly
+}

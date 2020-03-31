@@ -1,4 +1,3 @@
-#FROM mozilla/sbt
 FROM openjdk:8
 
 RUN mkdir app

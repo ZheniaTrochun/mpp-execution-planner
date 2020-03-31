@@ -1,7 +1,6 @@
 package com.yevhenii.cluster.planner.server.graphs
 
 import cats.effect.IO
-import com.yevhenii.cluster.planner.server.models.{Task, TaskInit}
 import com.yevhenii.cluster.planner.server.models.{Graphs, Task, TaskInit}
 import com.yevhenii.cluster.planner.server.models.Task.TaskId
 
