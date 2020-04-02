@@ -41,8 +41,8 @@ object TaskRoutes extends Http4sDsl[IO] {
           }
         }
 
-      case _ @ DELETE -> Root / "graphs" / id =>
-        tasksRepo.deleteGraphs(id).flatMap {
+      case _ @ DELETE -> Root / "task" / id =>
+        tasksRepo.deleteTask(id).flatMap {
           case Left(msg) => NotFound(errorBody(msg))
           case Right(_) => Ok()
         }

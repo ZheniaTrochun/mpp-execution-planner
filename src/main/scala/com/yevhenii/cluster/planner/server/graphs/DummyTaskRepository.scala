@@ -31,13 +31,6 @@ class DummyTaskRepository extends TaskRepository {
     Option(graphs.get(id))
   }
 
-  override def deleteGraphs(id: TaskId): IO[Either[String, Unit]] =
-    IO(Option(graphs.remove(id)))
-      .map {
-        case Some(_) => Right(())
-        case None => Left(s"There is no graphs for [$id]")
-      }
-
   override def updateGraphs(id: TaskId, newGraphs: Graphs): IO[Either[String, Unit]] =
     IO(Option(graphs.get(id)))
       .map {
@@ -49,4 +42,15 @@ class DummyTaskRepository extends TaskRepository {
       }
 
   override def getTasks(): IO[List[Task]] = IO(tasks.values()).map(_.asScala.toList)
+
+  override def deleteTask(id: TaskId): IO[Either[String, Unit]] =
+    IO(Option(tasks.remove(id)))
+      .map {
+        case Some(_) => Right(())
+        case None => Left(s"There is no graphs for [$id]")
+      }
+      .flatMap {
+        case Right(_) => deleteTask(id)
+        case err => IO.pure(err)
+      }
 }

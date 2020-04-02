@@ -2,6 +2,16 @@
   <v-app id="inspire">
     <v-navigation-drawer v-model="drawer" app clipped>
       <v-list dense>
+        <router-link to="/">
+          <v-list-item link>
+              <v-list-item-action>
+                  <v-icon>mdi-home</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                  <v-list-item-title>Choose task</v-list-item-title>
+              </v-list-item-content>
+          </v-list-item>
+        </router-link>
         <router-link to="/graph/task">
           <v-list-item link>
             <v-list-item-action>
@@ -55,7 +65,7 @@
 
     <v-app-bar app clipped-left>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title>Application</v-toolbar-title>
+      <v-toolbar-title>Yevhenii Trochun IP-93mn</v-toolbar-title>
     </v-app-bar>
 
     <v-content>
@@ -71,16 +81,6 @@
 </template>
 
 <script>
-    import store from "./store";
-    import axios from 'axios';
-
-    axios.get('http://localhost:9090/graphs/5e83c55bf35e75051b99db3a').then(resp => {
-        if (resp.status === 200) {
-            store.commit('setSystemGraph', resp.data.systemGraph);
-            store.commit('setTaskGraph', resp.data.taskGraph);
-        }
-    });
-
     export default {
       props: {
         source: String

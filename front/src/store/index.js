@@ -5,7 +5,7 @@ import axios from "axios";
 Vue.use(Vuex);
 
 const persistState = state => {
-    axios.put("http://localhost:9090/graphs/5e83c55bf35e75051b99db3a", {
+    axios.put(`https://cluster-planner-server.herokuapp.com/graphs/${state.selectedTask.id}`, {
         id: "",
         taskGraph: state.taskGraph,
         systemGraph: state.systemGraph
@@ -19,7 +19,8 @@ const persistState = state => {
 export default new Vuex.Store({
   state: {
       taskGraph: [],
-      systemGraph: []
+      systemGraph: [],
+      selectedTask: {}
   },
   mutations: {
       setTaskGraph(state, data) {
@@ -31,6 +32,9 @@ export default new Vuex.Store({
           state.systemGraph = data;
 
           persistState(state)
+      },
+      setSelectedTask(state, data) {
+          state.selectedTask = data;
       }
   },
   actions: {},

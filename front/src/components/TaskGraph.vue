@@ -82,7 +82,9 @@
                 }
             });
 
-            axios.get('http://localhost:9090/graphs/5e83c55bf35e75051b99db3a', {
+            this.task = store.state.selectedTask;
+
+            axios.get(`https://cluster-planner-server.herokuapp.com/graphs/${this.task.id}`, {
                 headers: {
                     'Content-Type': 'application/json',
                 }

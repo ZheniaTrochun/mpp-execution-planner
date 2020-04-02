@@ -85,7 +85,7 @@ class MongoTaskRepository(config: Config)(implicit ec: ExecutionContext, cs: Con
     }
   }
 
-  override def deleteGraphs(id: TaskId): IO[Either[String, Unit]] = {
+  override def deleteTask(id: TaskId): IO[Either[String, Unit]] = {
     deleteGraphsOnly(id).flatMap {
       case Right(_) => deleteTaskOnly(id)
       case err => IO.pure(err)
