@@ -10,7 +10,7 @@
       remove selected
     </v-btn>
     <v-alert class="errorDialog" type="error" v-if="isIncorrect">
-      Graph is not valid!
+      Graph is not fully connected, please make graph fully connected!
     </v-alert>
   </div>
 </template>
@@ -20,7 +20,7 @@
     import store from "../store";
     import axios from "axios";
 
-    const GRAPH_COMMIT_KEY = "setSystemGraph";
+    const GRAPH_COMMIT_KEY = "persistSystemGraph";
 
     let graph;
 
@@ -80,18 +80,21 @@
 
         this.task = store.state.selectedTask;
 
-        axios.get(`https://cluster-planner-server.herokuapp.com/graphs/${this.task.id}`, {
-          headers: {
-              'Content-Type': 'application/json',
+          if (!this.task.id) {
+              this.$router.push('/');
           }
-        }).then(resp => {
-          if (resp.status === 200) {
-              resp.data.systemGraph.forEach(x => {
-                  graph.add(x);
-                  this.checkGraph();
-              });
-          }
-        });
+
+        axios.get(`https://cluster-planner-server.herokuapp.com/graphs/${this.task.id}`)
+            .then(resp => {
+                if (resp.status === 200) {
+                    resp.data.systemGraph.forEach(x => {
+                        graph.add(x);
+                        this.checkGraph();
+                    });
+
+                    store.commit('initState', resp.data);
+                }
+            });
 
         this.checkGraph();
 
@@ -177,7 +180,6 @@
                       const stack = new Set();
                       stack.add(nodes[0].id);
 
-                      // todo: simplify
                       const traverse = (node) => {
 
                           if (stack.size == nodes.length) {

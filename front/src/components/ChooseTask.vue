@@ -17,10 +17,28 @@
                 <v-card-actions>
                     <div class="mx-auto">
                         <v-btn color="v-btn--outlined deep-purple add-button" @click="createNewTask()">Create new</v-btn>
-                        <v-btn color="v-btn--outlined deep-purple add-button" @click="loadTaskFromFile()">Load from file</v-btn>
+                        <v-btn color="v-btn--outlined deep-purple add-button" @click="fileLoadDialog = true">Load from file</v-btn>
                     </div>
                 </v-card-actions>
             </v-card>
+
+            <v-dialog v-model="fileLoadDialog" max-width="650px">
+                <v-card>
+                    <v-card-title>
+                        <span class="headline">Choose file</span>
+                    </v-card-title>
+                    <v-card-text>
+                        <template>
+                            <v-file-input v-model="file" show-size label="File input"></v-file-input>
+                        </template>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="v-btn--outlined deep-purple" @click="fileLoadDialog = false">Cancel</v-btn>
+                        <v-btn color="v-btn--outlined deep-purple" @click="loadTaskFromFile()">Load</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
         </v-dialog>
     </v-row>
 </template>
@@ -34,20 +52,19 @@
         data() {
             return {
                 tasks: [],
-                dialog: true
+                dialog: true,
+                fileLoadDialog: false,
+                file: null
             }
         },
         mounted() {
 
-            axios.get('https://cluster-planner-server.herokuapp.com/task/list', {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            }).then(resp => {
-                if (resp.status === 200) {
-                    this.tasks = resp.data;
-                }
-            });
+            axios.get('https://cluster-planner-server.herokuapp.com/task/list')
+                .then(resp => {
+                    if (resp.status === 200) {
+                        this.tasks = resp.data;
+                    }
+                });
         },
         created() {
             this.$vuetify.theme.dark = true;
@@ -62,25 +79,53 @@
             createNewTask() {
                 const name = prompt("Enter name of new task");
 
+                this.postTaskName(name, task => this.selectTask(task));
+            },
+            postTaskName(name, cb) {
                 axios.post("https://cluster-planner-server.herokuapp.com/task", { name: name }, {
                     headers: {
                         'Content-Type': 'application/json',
                     }
                 }).then(resp => {
                     if (resp.status === 200 || resp.status === 201) {
-                        this.selectTask({name: name, id: resp.data.id});
+                        cb({name: name, id: resp.data.id});
                     }
                 });
             },
             loadTaskFromFile() {
+                console.log(this.file);
 
+                const reader = new FileReader();
+                reader.addEventListener('load', readEvent => this.onReadDataFromFile(readEvent));
+                reader.readAsText(this.file);
+            },
+            onReadDataFromFile(readEvent) {
+                const data = JSON.parse(readEvent.target.result);
+
+                const taskName = data.task.name;
+                const taskGraph = data.taskGraph;
+                const systemGraph = data.systemGraph;
+
+                // console.log(systemGraph);
+
+                this.postTaskName(taskName, task => {
+                    store.commit('setSelectedTask', task);
+                    store.commit('persistTaskGraph', taskGraph);
+                    store.commit('persistSystemGraph', systemGraph);
+
+                   setTimeout(() => this.$router.push('/graph/task'), 500);
+
+                   this.dialog = false;
+                   this.fileLoadDialog = false;
+                });
             },
             deleteSelected(task) {
-
-            },
-            deleteNode() {
-            },
-            afterCreated() {
+                axios.delete(`https://cluster-planner-server.herokuapp.com/task/${task.id}`)
+                    .then(resp => {
+                        if (resp.status === 200) {
+                            this.tasks = this.tasks.filter(t => t.id !== task.id);
+                        }
+                    });
             }
         }
     };

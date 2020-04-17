@@ -10,7 +10,7 @@
             remove selected
         </v-btn>
         <v-alert class="errorDialog" type="error" v-if="isIncorrect">
-            Graph is not valid!
+            Graph has at least one cycle, please remove all cycles!
         </v-alert>
     </div>
 </template>
@@ -20,7 +20,7 @@
     import store from "../store";
     import axios from 'axios';
 
-    const GRAPH_COMMIT_KEY = 'setTaskGraph';
+    const GRAPH_COMMIT_KEY = 'persistTaskGraph';
 
     let graph;
 
@@ -84,18 +84,21 @@
 
             this.task = store.state.selectedTask;
 
-            axios.get(`https://cluster-planner-server.herokuapp.com/graphs/${this.task.id}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            }).then(resp => {
-                if (resp.status === 200) {
-                    resp.data.taskGraph.forEach(x => {
-                        graph.add(x);
-                        this.checkGraph();
-                    });
-                }
-            });
+            if (!this.task.id) {
+                this.$router.push('/');
+            }
+
+            axios.get(`https://cluster-planner-server.herokuapp.com/graphs/${this.task.id}`)
+                .then(resp => {
+                    if (resp.status === 200) {
+                        resp.data.taskGraph.forEach(x => {
+                            graph.add(x);
+                            this.checkGraph();
+                        });
+
+                        store.commit('initState', resp.data);
+                    }
+                });
 
             // register deleting element on right click on it
             graph.on("cxttap", event => {

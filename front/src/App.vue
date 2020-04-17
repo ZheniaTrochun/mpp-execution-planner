@@ -60,12 +60,20 @@
             <v-list-item-title>Settings</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item link class="deep-purple" @click="saveEverythingToFile()">
+          <v-list-item-action>
+              <v-icon>mdi-cloud-download</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+              <v-list-item-title>Save to file</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
     <v-app-bar app clipped-left>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title>Yevhenii Trochun IP-93mn</v-toolbar-title>
+      <v-toolbar-title>PZKS-2 Labs</v-toolbar-title>
     </v-app-bar>
 
     <v-content>
@@ -75,21 +83,50 @@
     </v-content>
 
     <v-footer app>
-      <span>&copy; 2019</span>
+      <span>&copy; 2020, Yevhenii Trochun</span>
     </v-footer>
   </v-app>
 </template>
 
 <script>
+    import store from './store';
+
     export default {
-      props: {
-        source: String
-      },
-      data: () => ({
-        drawer: null
-      }),
-      created() {
-        this.$vuetify.theme.dark = true;
-      }
+        props: {
+            source: String
+        },
+        data: () => ({
+            drawer: null
+        }),
+        created() {
+            this.$vuetify.theme.dark = true;
+        },
+        methods: {
+            saveEverythingToFile() {
+
+                const task = store.state.selectedTask;
+
+                const data = {
+                    task: store.state.selectedTask,
+                    taskGraph: store.state.taskGraph,
+                    systemGraph: store.state.systemGraph
+                };
+
+                const fileName = `pzks2-task-${task.name}.json`;
+
+                var a = document.createElement("a");
+                document.body.appendChild(a);
+                a.style.display = "none";
+
+                let json = JSON.stringify(data, null, '\t');
+                let blob = new Blob([json], { type: "octet/stream" });
+                let url = window.URL.createObjectURL(blob);
+
+                a.href = url;
+                a.download = fileName;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
+        }
     };
 </script>

@@ -23,18 +23,22 @@ export default new Vuex.Store({
       selectedTask: {}
   },
   mutations: {
-      setTaskGraph(state, data) {
+      persistTaskGraph(state, data) {
           state.taskGraph = data;
 
-          persistState(state)
+          persistState(state);
       },
-      setSystemGraph(state, data) {
+      persistSystemGraph(state, data) {
           state.systemGraph = data;
 
           persistState(state)
       },
       setSelectedTask(state, data) {
           state.selectedTask = data;
+      },
+      initState(state, data) {
+          state.systemGraph = data.systemGraph;
+          state.taskGraph = data.taskGraph;
       }
   },
   actions: {},
