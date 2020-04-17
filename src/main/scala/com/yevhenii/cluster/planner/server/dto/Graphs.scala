@@ -1,4 +1,4 @@
-package com.yevhenii.cluster.planner.server.models
+package com.yevhenii.cluster.planner.server.dto
 
 case class Graphs(taskGraph: List[GraphEntry], systemGraph: List[GraphEntry])
 

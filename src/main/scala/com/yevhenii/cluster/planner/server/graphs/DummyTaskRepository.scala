@@ -1,8 +1,8 @@
 package com.yevhenii.cluster.planner.server.graphs
 
 import cats.effect.IO
-import com.yevhenii.cluster.planner.server.models.{Graphs, Task, TaskInit}
-import com.yevhenii.cluster.planner.server.models.Task.TaskId
+import com.yevhenii.cluster.planner.server.dto.{Graphs, Task, TaskInit}
+import com.yevhenii.cluster.planner.server.dto.Task.TaskId
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 

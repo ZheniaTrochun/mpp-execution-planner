@@ -4,8 +4,8 @@ import cats.effect.{ContextShift, IO}
 import com.mongodb.ConnectionString
 import com.typesafe.config.Config
 import MongoTaskRepository.{GraphsEntity, TaskEntity}
-import com.yevhenii.cluster.planner.server.models.Task.TaskId
-import com.yevhenii.cluster.planner.server.models._
+import com.yevhenii.cluster.planner.server.dto.Task.TaskId
+import com.yevhenii.cluster.planner.server.dto._
 import org.mongodb.scala._
 import org.mongodb.scala.bson.ObjectId
 import org.mongodb.scala.model.Filters._
