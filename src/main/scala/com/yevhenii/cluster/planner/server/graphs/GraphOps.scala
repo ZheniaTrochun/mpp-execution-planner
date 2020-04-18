@@ -46,17 +46,41 @@ object GraphOps extends LazyLogging {
     else loop(nodes.head, nodes.tail)
   }
 
-  // todo
   def checkGraphForCycles(entries: List[OrientedGraph]): Boolean = {
-    false
+    val edges = entries.collect { case e: OrientedEdge => e }
+
+    val nodesMap = entries.view
+      .collect { case n: Node => n }
+      .map(n => (n.id, n))
+      .toMap
+
+    def loop(curr: Node, route: Set[Node]): Boolean = {
+      val nextNodes = determineNextNodes(curr, edges, nodesMap)
+
+      if (nextNodes.exists(route.contains)) {
+        false
+      } else {
+        nextNodes
+          .map(next => loop(next, route + next))
+          .forall(identity)
+      }
+    }
+
+    nodesMap
+      .values
+      .map(n => loop(n, Set(n)))
+      .forall(identity)
   }
 
-  private def isConnected(first: Node, second: Node, edges: List[NonOrientedEdge]): Boolean = {
+  private def isConnected(first: Node, second: Node, edges: List[NonOrientedEdge]): Boolean =
     edges.exists(edge => (edge.source == first.id) && (edge.target == second.id)) ||
       edges.exists(edge => (edge.target == first.id) && (edge.source == second.id))
-  }
 
-  private def isConnectedOriented(first: Node, second: Node, edges: List[OrientedEdge]): Boolean = {
+  private def isConnectedOriented(first: Node, second: Node, edges: List[OrientedEdge]): Boolean =
     edges.exists(edge => (edge.source == first.id) && (edge.target == second.id))
-  }
+
+  private def determineNextNodes(node: Node, edges: List[OrientedEdge], nodes: Map[String, Node]): List[Node] =
+    edges.filter(_.source == node.id)
+      .map(_.target)
+      .flatMap(nodes.get)
 }
