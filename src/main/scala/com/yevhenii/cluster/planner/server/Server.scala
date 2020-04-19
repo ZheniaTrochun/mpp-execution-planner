@@ -6,7 +6,7 @@ import org.http4s.implicits._
 import org.http4s.server.blaze._
 import cats.implicits._
 import com.typesafe.config.ConfigFactory
-import com.yevhenii.cluster.planner.server.graphs.{MongoTaskRepository, TaskRoutes}
+import com.yevhenii.cluster.planner.server.graphs.{MongoTaskRepository, TaskRoutes, TaskServiceImpl}
 import org.http4s.server.middleware.{CORS, GZip, Logger}
 
 import scala.concurrent.ExecutionContext
@@ -17,9 +17,10 @@ object Server extends IOApp {
 
   val applicationConfig = ConfigFactory.load()
   val taskRepository = new MongoTaskRepository(applicationConfig)
+  val taskService = new TaskServiceImpl(taskRepository)
 
   val httpRoutes = Router[IO](
-    "/" -> TaskRoutes.routes(taskRepository)
+    "/" -> TaskRoutes.routes(taskService)
   ).orNotFound
 
   override def run(args: List[String]): IO[ExitCode] = {

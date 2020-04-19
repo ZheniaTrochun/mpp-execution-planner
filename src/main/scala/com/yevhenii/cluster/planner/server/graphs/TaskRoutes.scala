@@ -14,35 +14,35 @@ object TaskRoutes extends Http4sDsl[IO] {
     ("message", Json.fromString(message))
   )
 
-  def routes(tasksRepo: TaskRepository): HttpRoutes[IO] = {
+  def routes(taskService: TaskService): HttpRoutes[IO] = {
 
     HttpRoutes.of[IO] {
       case _ @ GET -> Root / "task" / "list" =>
-        tasksRepo.getTasks().flatMap(x => Ok(x))
+        taskService.getTasks().flatMap(x => Ok(x))
 
       case req @ POST -> Root / "task" =>
         req.decode[TaskInit] { taskInit =>
-          tasksRepo.initTask(taskInit).flatMap { id =>
+          taskService.initTask(taskInit).flatMap { id =>
             Created(Json.obj(("id", Json.fromString(id))))
           }
         }
 
       case _ @ GET -> Root / "graphs" / id =>
-        tasksRepo.getGraphs(id).flatMap {
+        taskService.getGraphs(id).flatMap {
           case Some(graphs) => Ok(graphs)
           case None => NotFound()
         }
 
       case req @ PUT -> Root / "graphs" / id =>
         req.decode[Graphs] { graphs =>
-          tasksRepo.updateGraphs(id, graphs).flatMap {
+          taskService.updateGraphs(id, graphs).flatMap {
             case Left(msg) => NotFound(errorBody(msg))
             case Right(_) => Ok()
           }
         }
 
       case _ @ DELETE -> Root / "task" / id =>
-        tasksRepo.deleteTask(id).flatMap {
+        taskService.deleteTask(id).flatMap {
           case Left(msg) => NotFound(errorBody(msg))
           case Right(_) => Ok()
         }

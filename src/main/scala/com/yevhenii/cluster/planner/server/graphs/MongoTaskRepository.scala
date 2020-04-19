@@ -3,9 +3,9 @@ package com.yevhenii.cluster.planner.server.graphs
 import cats.effect.{ContextShift, IO}
 import com.mongodb.ConnectionString
 import com.typesafe.config.Config
-import MongoTaskRepository.{GraphsEntity, TaskEntity}
 import com.yevhenii.cluster.planner.server.dto.Task.TaskId
 import com.yevhenii.cluster.planner.server.dto._
+import com.yevhenii.cluster.planner.server.entity.{GraphsEntity, TaskEntity}
 import org.mongodb.scala._
 import org.mongodb.scala.bson.ObjectId
 import org.mongodb.scala.model.Filters._
@@ -61,7 +61,7 @@ class MongoTaskRepository(config: Config)(implicit ec: ExecutionContext, cs: Con
 
   def createDefaultGraphs(id: ObjectId): IO[ObjectId] = IO.fromFuture {
     IO.apply {
-      graphsCollection.insertOne(GraphsEntity(id))
+      graphsCollection.insertOne(GraphsEntity(id, List(), List()))
         .toFuture()
         .map(_ => id)
     }
@@ -76,12 +76,11 @@ class MongoTaskRepository(config: Config)(implicit ec: ExecutionContext, cs: Con
     }
   }
 
-  override def getGraphs(id: TaskId): IO[Option[Graphs]] = IO.fromFuture {
+  override def getGraphs(id: TaskId): IO[Option[GraphsEntity]] = IO.fromFuture {
     IO.apply {
       graphsCollection.find(equal("_id", new ObjectId(id)))
         .first()
         .toFutureOption()
-        .map(_.map(_.toGraph))
     }
   }
 
@@ -114,44 +113,22 @@ class MongoTaskRepository(config: Config)(implicit ec: ExecutionContext, cs: Con
     }
   }
 
-  override def updateGraphs(id: TaskId, graphs: Graphs): IO[Either[String, Unit]] = IO.fromFuture {
+  override def updateGraphs(graphs: GraphsEntity): IO[Either[String, Unit]] = IO.fromFuture {
     IO.apply {
-      graphsCollection.replaceOne(equal("_id", new ObjectId(id)), GraphsEntity(id, graphs))
+      graphsCollection.replaceOne(equal("_id", graphs._id), graphs)
         .toFuture()
         .map { res =>
           if (res.getModifiedCount == 1) Right(())
-          else Left(s"There is no graphs for [$id]")
+          else Left(s"There is no graphs for [${graphs._id}]")
         }
     }
   }
 
-  override def getTasks(): IO[List[Task]] = IO.fromFuture {
+  override def getTasks(): IO[List[TaskEntity]] = IO.fromFuture {
     IO.apply {
       tasksCollection.find()
         .toFuture()
-        .map { resultList =>
-          resultList
-            .map(_.toTask)
-            .toList
-        }
+        .map(_.toList)
     }
-  }
-}
-
-object MongoTaskRepository {
-  case class TaskEntity(_id: ObjectId, name: String) {
-    def toTask: Task = Task(_id.toString, name)
-  }
-
-  case class GraphsEntity(_id: ObjectId, taskGraph: List[GraphEntry], systemGraph: List[GraphEntry]) {
-    def toGraph: Graphs = Graphs(taskGraph, systemGraph)
-  }
-
-  object GraphsEntity {
-    def apply(id: ObjectId): GraphsEntity =
-      new GraphsEntity(id, List(), List())
-
-    def apply(id: String, graphs: Graphs): GraphsEntity =
-      new GraphsEntity(new ObjectId(id), graphs.taskGraph, graphs.systemGraph)
   }
 }
