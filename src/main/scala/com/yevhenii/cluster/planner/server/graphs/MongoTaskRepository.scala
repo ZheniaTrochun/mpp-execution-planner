@@ -4,8 +4,8 @@ import cats.effect.{ContextShift, IO}
 import com.mongodb.ConnectionString
 import com.typesafe.config.Config
 import com.yevhenii.cluster.planner.server.dto.Task.TaskId
-import com.yevhenii.cluster.planner.server.dto._
-import com.yevhenii.cluster.planner.server.entity.{GraphsEntity, TaskEntity}
+import com.yevhenii.cluster.planner.server.dto.TaskInit
+import com.yevhenii.cluster.planner.server.entity.{DataEntity, GraphEntryEntity, GraphsEntity, PositionEntity, TaskEntity}
 import org.mongodb.scala._
 import org.mongodb.scala.bson.ObjectId
 import org.mongodb.scala.model.Filters._
@@ -20,9 +20,9 @@ class MongoTaskRepository(config: Config)(implicit ec: ExecutionContext, cs: Con
   val codecRegistry = fromRegistries(
     fromProviders(classOf[TaskEntity]),
     fromProviders(classOf[GraphsEntity]),
-    fromProviders(classOf[GraphEntry]),
-    fromProviders(classOf[Data]),
-    fromProviders(classOf[Position]),
+    fromProviders(classOf[GraphEntryEntity]),
+    fromProviders(classOf[DataEntity]),
+    fromProviders(classOf[PositionEntity]),
     DEFAULT_CODEC_REGISTRY
   )
 
