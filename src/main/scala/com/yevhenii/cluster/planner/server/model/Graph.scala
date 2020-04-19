@@ -41,8 +41,9 @@ object Graph {
         entry match {
           case Data(id, label, weight, None, None) =>
             createNode(id, label, weight) :: acc
-          case d @ Data(id, label, weight, Some(source), Some(target)) =>
+          case Data(id, label, weight, Some(source), Some(target)) =>
             createEdge(id, label, weight, source, target) :: acc
+          case _ => acc
         }
       }
   }
