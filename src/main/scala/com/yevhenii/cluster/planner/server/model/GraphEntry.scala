@@ -55,6 +55,8 @@ case class OrientedGraph(entries: List[OrientedGraphEntry]) {
   val nodes = entries.collect { case n: Node => n }
   val nodesMap = nodes.view.map(n => (n.id, n)).toMap
 
+  val isCorrect: Boolean = GraphOps.checkGraphForCycles(this)
+
   lazy val initialVertices = GraphOps.findInitialVertices(this)
   lazy val terminalVertices = GraphOps.findTerminalVertices(this)
 }
@@ -62,6 +64,8 @@ case class OrientedGraph(entries: List[OrientedGraphEntry]) {
 case class NonOrientedGraph(entries: List[NonOrientedGraphEntry]) {
   val edges = entries.collect { case e: NonOrientedEdge => e }
   val nodes = entries.collect { case n: Node => n }
+
+  val isCorrect: Boolean = GraphOps.checkGraphForConnectivity(this)
 }
 
 object OrientedGraphEntry {
