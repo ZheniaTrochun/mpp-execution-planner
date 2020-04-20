@@ -241,4 +241,151 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.checkGraphForCycles(graph) shouldBe false
     }
   }
+
+  "GraphOps.findInitialVertices" should {
+    "work correctly for empty graph" in {
+      GraphOps.findInitialVertices(List.empty) shouldBe empty
+    }
+
+    "find initial vertex in trivial case" in {
+      val singleNodeGraph = Node("1", "node1", "2") :: Nil
+      GraphOps.findInitialVertices(singleNodeGraph) shouldBe singleNodeGraph
+    }
+
+    "find all initial vertices in simple graph" in {
+      val graph =
+        Node("1", "1-2", "2") ::
+          OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
+          Node("2", "2-3", "3") ::
+          OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
+          Node("3", "3-4", "4") ::
+          Node("4", "4-5", "5") ::
+          OrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
+          Node("5", "5-6", "6") ::
+          OrientedEdge("5-6", "[5]", "5", "5", "6") :: // 5 --> 6
+          Node("6", "6-7", "7") ::
+          Nil
+
+      val expected = Node("1", "1-2", "2") :: Node("4", "4-5", "5") :: Nil
+
+      GraphOps.findInitialVertices(graph) shouldBe expected
+    }
+  }
+
+  "find all initial vertices in graph" in {
+    val graph =
+      Node("1", "1-2", "2") ::
+        OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
+        Node("2", "2-3", "3") ::
+        OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
+        Node("3", "3-4", "4") ::
+        Node("4", "4-5", "5") ::
+        OrientedEdge("4-3", "[7]", "7", "4", "3") :: // 4 --> 3
+        OrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
+        Node("5", "5-6", "6") ::
+        Node("6", "6-20", "20") ::
+        Nil
+
+    val expected = Node("1", "1-2", "2") :: Node("4", "4-5", "5") :: Node("6", "6-20", "20") :: Nil
+
+    GraphOps.findInitialVertices(graph) shouldBe expected
+  }
+
+  "GraphOps.findTerminalVertices" should {
+    "work correctly for empty graph" in {
+      GraphOps.findTerminalVertices(List.empty) shouldBe empty
+    }
+
+    "find terminal vertex in trivial case" in {
+      val singleNodeGraph = Node("1", "node1", "2") :: Nil
+      GraphOps.findTerminalVertices(singleNodeGraph) shouldBe singleNodeGraph
+    }
+
+    "find all terminal vertices in simple graph" in {
+      val graph =
+        Node("1", "1-2", "2") ::
+          OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
+          Node("2", "2-3", "3") ::
+          OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
+          Node("3", "3-4", "4") ::
+          Node("4", "4-5", "5") ::
+          OrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
+          Node("5", "5-6", "6") ::
+          OrientedEdge("5-6", "[5]", "5", "5", "6") :: // 5 --> 6
+          Node("6", "6-7", "7") ::
+          Nil
+
+      val expected = Node("3", "3-4", "4") :: Node("6", "6-7", "7") :: Nil
+
+      GraphOps.findTerminalVertices(graph) shouldBe expected
+    }
+
+    "find all terminal vertices in graph" in {
+      val graph =
+        Node("1", "1-2", "2") ::
+          OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
+          Node("2", "2-3", "3") ::
+          OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
+          Node("3", "3-4", "4") ::
+          Node("4", "4-5", "5") ::
+          OrientedEdge("4-3", "[7]", "7", "4", "3") :: // 4 --> 3
+          OrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
+          Node("5", "5-6", "6") ::
+          Node("6", "6-20", "20") ::
+          Nil
+
+      val expected = Node("3", "3-4", "4") :: Node("5", "5-6", "6") :: Node("6", "6-20", "20") :: Nil
+
+      GraphOps.findTerminalVertices(graph) shouldBe expected
+    }
+  }
+
+  "GraphOps.findPaths" should {
+    "work correctly for empty graph" in {
+      GraphOps.findTerminalVertices(List.empty) shouldBe empty
+    }
+
+    "find terminal vertex in trivial case" in {
+      val singleNodeGraph = Node("1", "node1", "2") :: Nil
+      GraphOps.findTerminalVertices(singleNodeGraph) shouldBe singleNodeGraph
+    }
+
+    "find all terminal vertices in simple graph" in {
+      val graph =
+        Node("1", "1-2", "2") ::
+          OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
+          Node("2", "2-3", "3") ::
+          OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
+          Node("3", "3-4", "4") ::
+          Node("4", "4-5", "5") ::
+          OrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
+          Node("5", "5-6", "6") ::
+          OrientedEdge("5-6", "[5]", "5", "5", "6") :: // 5 --> 6
+          Node("6", "6-7", "7") ::
+          Nil
+
+      val expected = Node("3", "3-4", "4") :: Node("6", "6-7", "7") :: Nil
+
+      GraphOps.findTerminalVertices(graph) shouldBe expected
+    }
+
+    "find all terminal vertices in graph" in {
+      val graph =
+        Node("1", "1-2", "2") ::
+          OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
+          Node("2", "2-3", "3") ::
+          OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
+          Node("3", "3-4", "4") ::
+          Node("4", "4-5", "5") ::
+          OrientedEdge("4-3", "[7]", "7", "4", "3") :: // 4 --> 3
+          OrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
+          Node("5", "5-6", "6") ::
+          Node("6", "6-20", "20") ::
+          Nil
+
+      val expected = Node("3", "3-4", "4") :: Node("5", "5-6", "6") :: Node("6", "6-20", "20") :: Nil
+
+      GraphOps.findTerminalVertices(graph) shouldBe expected
+    }
+  }
 }

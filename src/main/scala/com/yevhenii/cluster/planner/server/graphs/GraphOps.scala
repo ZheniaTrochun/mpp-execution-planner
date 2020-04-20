@@ -72,6 +72,28 @@ object GraphOps extends LazyLogging {
       .forall(identity)
   }
 
+  def findInitialVertices(taskGraph: List[OrientedGraph]): List[Node] = {
+    val edges = taskGraph.collect { case e: OrientedEdge => e }
+    val nodes = taskGraph.collect { case n: Node => n }
+
+    nodes.filterNot(node => edges.exists(e => e.target == node.id))
+  }
+
+  def findTerminalVertices(taskGraph: List[OrientedGraph]): List[Node] = {
+    val edges = taskGraph.collect { case e: OrientedEdge => e }
+    val nodes = taskGraph.collect { case n: Node => n }
+
+    nodes.filterNot(node => edges.exists(e => e.source == node.id))
+  }
+
+  // TODO
+//  def findPaths(taskGraph: List[OrientedGraph], from: Node, to: Node): Set[List[Node]] = {
+//    val edges = taskGraph.collect { case e: OrientedEdge => e }
+//    val nodes = taskGraph.collect { case n: Node => n }
+//
+//    Set()
+//  }
+
   private def isConnected(first: Node, second: Node, edges: List[NonOrientedEdge]): Boolean =
     edges.exists(edge => (edge.source == first.id) && (edge.target == second.id)) ||
       edges.exists(edge => (edge.target == first.id) && (edge.source == second.id))
