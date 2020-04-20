@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e353fa64-76d8-4433-b5e5-d0aa6c03b9f2" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/modeling/QueueCreator.scala" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/scala/com/yevhenii/cluster/punner/server/modeling/QueueCreatorSpec.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/GraphOps.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/GraphOps.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/model/GraphEntry.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/model/GraphEntry.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/scala/com/yevhenii/cluster/punner/server/graphs/GraphOpsSpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/com/yevhenii/cluster/punner/server/graphs/GraphOpsSpec.scala" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -60,27 +63,6 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/entity/TaskEntity.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="6" column="45" selection-start-line="6" selection-start-column="45" selection-end-line="6" selection-end-column="45" />
-              <folding>
-                <element signature="e#52#103#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/dto/Graphs.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="2" selection-start-line="2" selection-end-line="25" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/dto/Task.scala">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="60">
@@ -92,7 +74,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/MongoTaskRepository.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
+            <state relative-caret-position="45">
               <caret line="16" selection-start-line="16" selection-end-line="16" />
               <folding>
                 <element signature="e#52#89#0" expanded="true" />
@@ -101,11 +83,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/GraphOps.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="358">
-              <caret line="114" lean-forward="true" selection-start-line="114" selection-end-line="114" />
+            <state relative-caret-position="495">
+              <caret line="138" column="31" selection-start-line="138" selection-start-column="6" selection-end-line="138" selection-end-column="31" />
               <folding>
                 <element signature="e#52#96#0" expanded="true" />
               </folding>
@@ -116,19 +98,43 @@
       <file pinned="false" current-in-tab="false">
         <entry file="jar://$USER_HOME$/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.12.10/scala-library-2.12.10-sources.jar!/scala/collection/SeqLike.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="186">
+            <state relative-caret-position="8280">
               <caret line="565" column="6" selection-start-line="565" selection-start-column="6" selection-end-line="565" selection-end-column="6" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/test/scala/com/yevhenii/cluster/punner/server/graphs/GraphOpsSpec.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="449" column="30" lean-forward="true" selection-start-line="449" selection-start-column="30" selection-end-line="449" selection-end-column="30" />
+            <state relative-caret-position="372">
+              <caret line="734" column="40" selection-start-line="734" selection-start-column="40" selection-end-line="734" selection-end-column="40" />
               <folding>
                 <element signature="e#51#109#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/modeling/QueueCreator.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="459">
+              <caret line="46" selection-start-line="46" selection-end-line="46" />
+              <folding>
+                <element signature="e#54#112#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/scala/com/yevhenii/cluster/punner/server/modeling/QueueCreatorSpec.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1237">
+              <caret line="86" column="61" lean-forward="true" selection-start-line="86" selection-start-column="61" selection-end-line="86" selection-end-column="61" />
+              <folding>
+                <element signature="e#53#103#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -149,8 +155,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/model/GraphEntry.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="118">
-              <caret line="56" lean-forward="true" selection-start-line="56" selection-end-line="56" />
+            <state relative-caret-position="159">
+              <caret line="56" selection-start-line="56" selection-end-line="56" />
               <folding>
                 <element signature="e#51#133#0" expanded="true" />
               </folding>
@@ -245,9 +251,12 @@
         <option value="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/Server.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/MongoTaskRepository.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/model/Graph.scala" />
-        <option value="$PROJECT_DIR$/src/test/scala/com/yevhenii/cluster/punner/server/graphs/GraphOpsSpec.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/model/GraphEntry.scala" />
+        <option value="$PROJECT_DIR$/src/test/scala/com/yevhenii/cluster/punner/server/graphs/QueueCreatorSpec.scala" />
+        <option value="$PROJECT_DIR$/src/test/scala/com/yevhenii/cluster/punner/server/modeling/QueueCreatorSpec.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/GraphOps.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/modeling/QueueCreator.scala" />
+        <option value="$PROJECT_DIR$/src/test/scala/com/yevhenii/cluster/punner/server/graphs/GraphOpsSpec.scala" />
       </list>
     </option>
   </component>
@@ -261,8 +270,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -386,6 +393,15 @@
               <item name="ClusterPlanner" type="b2602c69:ProjectViewProjectNode" />
               <item name="cluster-planner-server" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="scala" type="462c0819:PsiDirectoryNode" />
+              <item name="server" type="462c0819:PsiDirectoryNode" />
+              <item name="modeling" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ClusterPlanner" type="b2602c69:ProjectViewProjectNode" />
+              <item name="cluster-planner-server" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="test" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -401,37 +417,29 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="test" type="462c0819:PsiDirectoryNode" />
               <item name="scala" type="462c0819:PsiDirectoryNode" />
+              <item name="server" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ClusterPlanner" type="b2602c69:ProjectViewProjectNode" />
+              <item name="cluster-planner-server" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="scala" type="462c0819:PsiDirectoryNode" />
+              <item name="server" type="462c0819:PsiDirectoryNode" />
               <item name="graphs" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ClusterPlanner" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-            </path>
-            <path>
-              <item name="ClusterPlanner" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="sbt: org.scala-lang:scala-library:2.12.10:jar" type="70bed36:NamedLibraryElementNode" />
-            </path>
-            <path>
-              <item name="ClusterPlanner" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="sbt: org.scala-lang:scala-library:2.12.10:jar" type="70bed36:NamedLibraryElementNode" />
-              <item name="scala-library.jar" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ClusterPlanner" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="sbt: org.scala-lang:scala-library:2.12.10:jar" type="70bed36:NamedLibraryElementNode" />
-              <item name="scala-library.jar" type="462c0819:PsiDirectoryNode" />
+              <item name="cluster-planner-server" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
               <item name="scala" type="462c0819:PsiDirectoryNode" />
+              <item name="server" type="462c0819:PsiDirectoryNode" />
+              <item name="modeling" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ClusterPlanner" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="sbt: org.scala-lang:scala-library:2.12.10:jar" type="70bed36:NamedLibraryElementNode" />
-              <item name="scala-library.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="scala" type="462c0819:PsiDirectoryNode" />
-              <item name="collection" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ClusterPlanner" type="b2602c69:ProjectViewProjectNode" />
@@ -463,6 +471,8 @@
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -651,7 +661,8 @@
       <workItem from="1587159607218" duration="8053000" />
       <workItem from="1587247559076" duration="2801000" />
       <workItem from="1587300452189" duration="4604000" />
-      <workItem from="1587374189521" duration="9019000" />
+      <workItem from="1587374189521" duration="9185000" />
+      <workItem from="1587394990603" duration="6253000" />
     </task>
     <servers />
   </component>
@@ -664,13 +675,13 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="86614000" />
+    <option name="totallyTimeSpent" value="93033000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1037196" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.11444921" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Image Layers" order="3" />
@@ -690,7 +701,7 @@
       <window_info anchor="bottom" id="TODO" order="9" />
       <window_info anchor="bottom" id="Build" order="10" weight="0.3283767" />
       <window_info anchor="bottom" id="sbt-shell-toolwindow" order="11" weight="0.3283767" />
-      <window_info anchor="bottom" id="Terminal" order="12" visible="true" weight="0.27509293" />
+      <window_info anchor="bottom" id="Terminal" order="12" visible="true" weight="0.22428748" />
       <window_info anchor="bottom" id="Docker" order="13" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="14" side_tool="true" />
       <window_info anchor="bottom" id="Database Changes" order="15" />
@@ -718,16 +729,6 @@
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/front/package.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="36" selection-start-line="1" selection-start-column="36" selection-end-line="1" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/front/package-lock.json">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="jar://$USER_HOME$/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/http4s/http4s-core_2.12/0.21.2/http4s-core_2.12-0.21.2-sources.jar!/org/http4s/Status.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="212">
@@ -1025,6 +1026,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/MongoTaskRepository.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="16" selection-start-line="16" selection-end-line="16" />
+          <folding>
+            <element signature="e#52#89#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.12.10/scala-library-2.12.10-sources.jar!/scala/collection/SeqLike.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="8280">
+          <caret line="565" column="6" selection-start-line="565" selection-start-column="6" selection-end-line="565" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/TaskRoutes.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
@@ -1045,37 +1063,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/MongoTaskRepository.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" selection-start-line="16" selection-end-line="16" />
-          <folding>
-            <element signature="e#52#89#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.12.10/scala-library-2.12.10-sources.jar!/scala/collection/SeqLike.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="186">
-          <caret line="565" column="6" selection-start-line="565" selection-start-column="6" selection-end-line="565" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/scala/com/yevhenii/cluster/punner/server/graphs/GraphOpsSpec.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="449" column="30" lean-forward="true" selection-start-line="449" selection-start-column="30" selection-end-line="449" selection-end-column="30" />
-          <folding>
-            <element signature="e#51#109#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/model/GraphEntry.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="118">
-          <caret line="56" lean-forward="true" selection-start-line="56" selection-end-line="56" />
+        <state relative-caret-position="159">
+          <caret line="56" selection-start-line="56" selection-end-line="56" />
           <folding>
             <element signature="e#51#133#0" expanded="true" />
           </folding>
@@ -1084,10 +1075,40 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/GraphOps.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="358">
-          <caret line="114" lean-forward="true" selection-start-line="114" selection-end-line="114" />
+        <state relative-caret-position="495">
+          <caret line="138" column="31" selection-start-line="138" selection-start-column="6" selection-end-line="138" selection-end-column="31" />
           <folding>
             <element signature="e#52#96#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/modeling/QueueCreator.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="46" selection-start-line="46" selection-end-line="46" />
+          <folding>
+            <element signature="e#54#112#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/scala/com/yevhenii/cluster/punner/server/modeling/QueueCreatorSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1237">
+          <caret line="86" column="61" lean-forward="true" selection-start-line="86" selection-start-column="61" selection-end-line="86" selection-end-column="61" />
+          <folding>
+            <element signature="e#53#103#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/scala/com/yevhenii/cluster/punner/server/graphs/GraphOpsSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="372">
+          <caret line="734" column="40" selection-start-line="734" selection-start-column="40" selection-end-line="734" selection-end-column="40" />
+          <folding>
+            <element signature="e#51#109#0" expanded="true" />
           </folding>
         </state>
       </provider>

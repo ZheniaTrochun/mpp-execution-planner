@@ -95,7 +95,22 @@ object GraphOps extends LazyLogging {
     }
   }
 
-  private def findCriticalPathUnsafe(taskGraph: OrientedGraph, from: Node): Option[List[Node]] = {
+  def findCriticalPathByNodesCount(taskGraph: OrientedGraph): List[Node] = {
+    if (taskGraph.nodes.isEmpty || !checkGraphForCycles(taskGraph)) {
+      Nil
+    } else {
+      taskGraph.initialVertices.view
+        .flatMap(node => findCriticalPathByNodesCountUnsafe(taskGraph, node))
+        .maxBy(path => path.length)
+    }
+  }
+
+  def findCriticalPathLength(taskGraph: OrientedGraph): Int =
+    findCriticalPath(taskGraph)
+      .map(node => node.weight)
+      .sum
+
+  def findCriticalPathUnsafe(taskGraph: OrientedGraph, from: Node): Option[List[Node]] = {
     if (taskGraph.nodes.isEmpty) {
       None
     } else {
@@ -108,10 +123,22 @@ object GraphOps extends LazyLogging {
     }
   }
 
-  def findCriticalPathLength(taskGraph: OrientedGraph): Int =
-    findCriticalPath(taskGraph)
-      .map(node => node.weight)
-      .sum
+  def findCriticalPathByNodesCountUnsafe(taskGraph: OrientedGraph, from: Node): Option[List[Node]] = {
+    if (taskGraph.nodes.isEmpty) {
+      None
+    } else {
+      val allPaths = taskGraph.terminalVertices.view
+        .flatMap(terminal => findPathUnsafe(taskGraph, from, terminal))
+        .flatten
+
+      if (allPaths.isEmpty) None
+      else Some(allPaths.maxBy(path => path.length))
+    }
+  }
+
+  def determineNodeConnectivity(taskGraph: OrientedGraph, node: Node): Int = {
+    taskGraph.edges.count(edge => edge.target == node.id || edge.source == node.id)
+  }
 
   private def isConnected(first: Node, second: Node, edges: List[NonOrientedEdge]): Boolean =
     edges.exists(edge => (edge.source == first.id) && (edge.target == second.id)) ||
