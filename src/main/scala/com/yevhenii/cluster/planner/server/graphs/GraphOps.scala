@@ -26,15 +26,14 @@ object GraphOps extends LazyLogging {
 //    else loop(nodes.head, Set.empty).size == nodes.size
 //  }
 
-  def checkGraphForConnectivity(entries: List[NonOrientedGraph]): Boolean = {
-    val edges = entries.collect { case e: NonOrientedEdge => e }
-    val nodes = entries.collect { case n: Node => n }.toSet
+  def checkGraphForConnectivity(graph: NonOrientedGraph): Boolean = {
+    val nodes = graph.nodes.toSet
 
     def loop(currNode: Node, unvisitedNodes: Set[Node]): Boolean = {
       if (unvisitedNodes.isEmpty) {
         true
       } else {
-        val nextNodes = unvisitedNodes.filter(n => isConnected(n, currNode, edges))
+        val nextNodes = unvisitedNodes.filter(n => isConnected(n, currNode, graph.edges))
 
         val nextUnvisited = unvisitedNodes -- nextNodes
 
@@ -46,16 +45,13 @@ object GraphOps extends LazyLogging {
     else loop(nodes.head, nodes.tail)
   }
 
-  def checkGraphForCycles(entries: List[OrientedGraph]): Boolean = {
-    val edges = entries.collect { case e: OrientedEdge => e }
-
-    val nodesMap = entries.view
-      .collect { case n: Node => n }
+  def checkGraphForCycles(graph: OrientedGraph): Boolean = {
+    val nodesMap = graph.nodes
       .map(n => (n.id, n))
       .toMap
 
     def loop(curr: Node, route: Set[Node]): Boolean = {
-      val nextNodes = determineNextNodes(curr, edges, nodesMap)
+      val nextNodes = determineNextNodes(curr, graph.edges, nodesMap)
 
       if (nextNodes.exists(route.contains)) {
         false
@@ -72,26 +68,49 @@ object GraphOps extends LazyLogging {
       .forall(identity)
   }
 
-  def findInitialVertices(taskGraph: List[OrientedGraph]): List[Node] = {
-    val edges = taskGraph.collect { case e: OrientedEdge => e }
-    val nodes = taskGraph.collect { case n: Node => n }
-
-    nodes.filterNot(node => edges.exists(e => e.target == node.id))
+  def findInitialVertices(taskGraph: OrientedGraph): List[Node] = {
+    taskGraph.nodes
+      .filterNot(node => taskGraph.edges.exists(e => e.target == node.id))
   }
 
-  def findTerminalVertices(taskGraph: List[OrientedGraph]): List[Node] = {
-    val edges = taskGraph.collect { case e: OrientedEdge => e }
-    val nodes = taskGraph.collect { case n: Node => n }
-
-    nodes.filterNot(node => edges.exists(e => e.source == node.id))
+  def findTerminalVertices(taskGraph: OrientedGraph): List[Node] = {
+    taskGraph.nodes
+      .filterNot(node => taskGraph.edges.exists(e => e.source == node.id))
   }
 
-  // TODO
-//  def findPaths(taskGraph: List[OrientedGraph], from: Node, to: Node): Set[List[Node]] = {
-//    val edges = taskGraph.collect { case e: OrientedEdge => e }
-//    val nodes = taskGraph.collect { case n: Node => n }
+  def findPaths(taskGraph: OrientedGraph, from: Node, target: Node): Option[Set[List[Node]]] = {
+    val nodeMap = taskGraph.nodes.view.map(n => (n.id, n)).toMap
+
+    def loop(path: List[Node], curr: Node): Option[Set[List[Node]]] = {
+      val currPath = path :+ curr
+
+      if (curr == target) {
+        Some(Set(currPath))
+      } else {
+        val nextVertices = determineNextNodes(curr, taskGraph.edges, nodeMap)
+
+        nextVertices.map(next => loop(currPath, next))
+          .fold(None) { (first, second) =>
+            (first, second) match {
+              case (Some(f), Some(s)) => Some(f ++ s)
+              case (None, None) => None
+              case (someFirst, None) => someFirst
+              case (None, someSecond) => someSecond
+            }
+          }
+      }
+    }
+
+    if (!checkGraphForCycles(taskGraph) || !taskGraph.nodes.contains(from) || !taskGraph.nodes.contains(target)) {
+      None
+    } else {
+      loop(Nil, from)
+    }
+  }
+
+// TODO
+//  def findCriticalPath(taskGraph: OrientedGraph): Option[List[Node]] = {
 //
-//    Set()
 //  }
 
   private def isConnected(first: Node, second: Node, edges: List[NonOrientedEdge]): Boolean =
