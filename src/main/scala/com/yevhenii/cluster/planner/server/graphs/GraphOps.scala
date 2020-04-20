@@ -79,7 +79,20 @@ object GraphOps extends LazyLogging {
   }
 
   def findPaths(taskGraph: OrientedGraph, from: Node, target: Node): Option[Set[List[Node]]] = {
-    val nodeMap = taskGraph.nodes.view.map(n => (n.id, n)).toMap
+    if (!checkGraphForCycles(taskGraph) || !taskGraph.nodes.contains(from) || !taskGraph.nodes.contains(target)) {
+      None
+    } else {
+      val nodeMap = taskGraph.nodes.view.map(n => (n.id, n)).toMap
+      findPathUnsafe(taskGraph.edges, nodeMap, from, target)
+    }
+  }
+
+  private def findPathUnsafe(
+    edges: List[OrientedEdge],
+    nodeMap: Map[String, Node],
+    from: Node,
+    target: Node
+  ): Option[Set[List[Node]]] = {
 
     def loop(path: List[Node], curr: Node): Option[Set[List[Node]]] = {
       val currPath = path :+ curr
@@ -87,7 +100,7 @@ object GraphOps extends LazyLogging {
       if (curr == target) {
         Some(Set(currPath))
       } else {
-        val nextVertices = determineNextNodes(curr, taskGraph.edges, nodeMap)
+        val nextVertices = determineNextNodes(curr, edges, nodeMap)
 
         nextVertices.map(next => loop(currPath, next))
           .fold(None) { (first, second) =>
@@ -101,17 +114,34 @@ object GraphOps extends LazyLogging {
       }
     }
 
-    if (!checkGraphForCycles(taskGraph) || !taskGraph.nodes.contains(from) || !taskGraph.nodes.contains(target)) {
-      None
+    loop(Nil, from)
+  }
+
+  def findCriticalPath(taskGraph: OrientedGraph): List[Node] = {
+    if (taskGraph.nodes.isEmpty || !checkGraphForCycles(taskGraph)) {
+      Nil
     } else {
-      loop(Nil, from)
+      val initialNodes = findInitialVertices(taskGraph)
+      val terminalNodes = findTerminalVertices(taskGraph)
+
+      val nodesMap = taskGraph.nodes.view.map(n => (n.id, n)).toMap
+
+      val allPaths: Seq[Set[List[Node]]] = for {
+        initial <- initialNodes
+        terminal <- terminalNodes
+        paths <- findPathUnsafe(taskGraph.edges, nodesMap, initial, terminal)
+      } yield paths
+
+      val flatPaths = allPaths.flatten
+
+      flatPaths.maxBy(path => path.map(node => node.weight).sum)
     }
   }
 
-// TODO
-  def findCriticalPath(taskGraph: OrientedGraph): Option[List[Node]] = {
-    None
-  }
+  def findCriticalPathLength(taskGraph: OrientedGraph): Int =
+    findCriticalPath(taskGraph)
+      .map(node => node.weight)
+      .sum
 
   private def isConnected(first: Node, second: Node, edges: List[NonOrientedEdge]): Boolean =
     edges.exists(edge => (edge.source == first.id) && (edge.target == second.id)) ||

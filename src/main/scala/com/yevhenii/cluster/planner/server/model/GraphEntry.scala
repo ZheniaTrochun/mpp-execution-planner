@@ -10,7 +10,7 @@ sealed trait NonOrientedGraphEntry extends GraphEntry
 case class Node(
   id: String,
   label: String,
-  weight: String
+  weight: Int
 ) extends OrientedGraphEntry with NonOrientedGraphEntry
 
 sealed trait Edge extends GraphEntry
@@ -33,14 +33,14 @@ case class NonOrientedEdge(
 
 object GraphEntry {
   type EdgeApply[E] = (String, String, String, String, String) => E
-  type NodeApply[T] = (String, String, String) => T
+  type NodeApply[T] = (String, String, Int) => T
 
   def from[T <: GraphEntry](entries: List[DtoGraphEntry])(createNode: NodeApply[T], createEdge: EdgeApply[T]): List[T] = {
     entries.map(_.data)
       .foldLeft(List.empty[T]) { (acc, entry) =>
         entry match {
           case Data(id, label, weight, None, None) =>
-            createNode(id, label, weight) :: acc
+            createNode(id, label, weight.toInt) :: acc
           case Data(id, label, weight, Some(source), Some(target)) =>
             createEdge(id, label, weight, source, target) :: acc
           case _ => acc

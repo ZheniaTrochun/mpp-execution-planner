@@ -12,17 +12,17 @@ class GraphOpsSpec extends WordSpec with Matchers {
     }
 
     "return `true` for graph with one node" in {
-      val graph = Node("1", "1", "1") :: Nil
+      val graph = Node("1", "1", 1) :: Nil
       GraphOps.checkGraphForConnectivity(NonOrientedGraph(graph)) shouldBe true
     }
 
     "return `true` for simple fully connected graph" in {
       val graph =
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
         NonOrientedEdge("1-2", "[1]", "1", "1", "2") ::
-        Node("2", "2-3", "3") ::
+        Node("2", "2-3", 3) ::
         NonOrientedEdge("2-3", "[2]", "2", "2", "3") ::
-        Node("3", "3-4", "4") ::
+        Node("3", "3-4", 4) ::
         NonOrientedEdge("3-1", "[3]", "3", "3", "1") ::
         Nil
 
@@ -31,17 +31,17 @@ class GraphOpsSpec extends WordSpec with Matchers {
 
     "return `true` for fully connected graph" in {
       val graph =
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
           NonOrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
-          Node("2", "2-3", "3") ::
+          Node("2", "2-3", 3) ::
           NonOrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
-          Node("3", "3-4", "4") ::
+          Node("3", "3-4", 4) ::
           NonOrientedEdge("3-4", "[3]", "3", "3", "4") :: // 3 --> 4
-          Node("4", "4-5", "5") ::
+          Node("4", "4-5", 5) ::
           NonOrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
-          Node("5", "5-6", "6") ::
+          Node("5", "5-6", 6) ::
           NonOrientedEdge("5-6", "[5]", "5", "5", "6") :: // 5 --> 6
-          Node("6", "6-7", "7") ::
+          Node("6", "6-7", 7) ::
           Nil
 
       GraphOps.checkGraphForConnectivity(NonOrientedGraph(graph)) shouldBe true
@@ -49,19 +49,19 @@ class GraphOpsSpec extends WordSpec with Matchers {
 
     "return `true` for fully connected graph 2" in {
       val graph =
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
         NonOrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
-        Node("2", "2-3", "3") ::
+        Node("2", "2-3", 3) ::
         NonOrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
-        Node("3", "3-4", "4") ::
+        Node("3", "3-4", 4) ::
         NonOrientedEdge("3-1", "[3]", "3", "3", "1") :: // 3 --> 1
         NonOrientedEdge("3-1", "[3]", "3", "3", "1") :: // duplicated edge
         NonOrientedEdge("3-4", "[3]", "3", "3", "4") :: // 3 --> 4
-        Node("4", "4-5", "5") ::
+        Node("4", "4-5", 5) ::
         NonOrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
-        Node("5", "5-6", "6") ::
+        Node("5", "5-6", 6) ::
         NonOrientedEdge("5-6", "[5]", "5", "5", "6") :: // 5 --> 6
-        Node("6", "6-7", "7") ::
+        Node("6", "6-7", 7) ::
         NonOrientedEdge("6-1", "[6]", "6", "6", "1") :: // 6 --> 1
         NonOrientedEdge("1-6", "[7]", "7", "1", "6") :: // 1 --> 6
         Nil
@@ -71,9 +71,9 @@ class GraphOpsSpec extends WordSpec with Matchers {
 
     "return `false` for simple not fully connected graph" in {
       val graph =
-        Node("1", "1-2", "2") ::
-          Node("2", "2-3", "3") ::
-          Node("3", "3-4", "4") ::
+        Node("1", "1-2", 2) ::
+          Node("2", "2-3", 3) ::
+          Node("3", "3-4", 4) ::
           Nil
 
       GraphOps.checkGraphForConnectivity(NonOrientedGraph(graph)) shouldBe false
@@ -81,16 +81,16 @@ class GraphOpsSpec extends WordSpec with Matchers {
 
     "return `false` for not fully connected graph" in {
       val graph =
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
           NonOrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
-          Node("2", "2-3", "3") ::
+          Node("2", "2-3", 3) ::
           NonOrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
-          Node("3", "3-4", "4") ::
-          Node("4", "4-5", "5") ::
+          Node("3", "3-4", 4) ::
+          Node("4", "4-5", 5) ::
           NonOrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
-          Node("5", "5-6", "6") ::
+          Node("5", "5-6", 6) ::
           NonOrientedEdge("5-6", "[5]", "5", "5", "6") :: // 5 --> 6
-          Node("6", "6-7", "7") ::
+          Node("6", "6-7", 7) ::
           Nil
 
       GraphOps.checkGraphForConnectivity(NonOrientedGraph(graph)) shouldBe false
@@ -98,18 +98,18 @@ class GraphOpsSpec extends WordSpec with Matchers {
 
     "return `false` for not fully connected graph 2" in {
       val graph =
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
           NonOrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
-          Node("2", "2-3", "3") ::
+          Node("2", "2-3", 3) ::
           NonOrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
-          Node("3", "3-4", "4") ::
+          Node("3", "3-4", 4) ::
           NonOrientedEdge("3-1", "[3]", "3", "3", "1") :: // 3 --> 1
           NonOrientedEdge("3-1", "[3]", "3", "3", "1") :: // duplicated edge
-          Node("4", "4-5", "5") ::
+          Node("4", "4-5", 5) ::
           NonOrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
-          Node("5", "5-6", "6") ::
+          Node("5", "5-6", 6) ::
           NonOrientedEdge("5-6", "[5]", "5", "5", "6") :: // 5 --> 6
-          Node("6", "6-7", "7") ::
+          Node("6", "6-7", 7) ::
           NonOrientedEdge("6-4", "[6]", "6", "6", "4") :: // 6 --> 4
           NonOrientedEdge("4-6", "[7]", "7", "4", "6") :: // 4 --> 6
           Nil
@@ -125,17 +125,17 @@ class GraphOpsSpec extends WordSpec with Matchers {
     }
 
     "return `true` for graph with one node" in {
-      val graph = Node("1", "1", "1") :: Nil
+      val graph = Node("1", "1", 1) :: Nil
       GraphOps.checkGraphForCycles(OrientedGraph(graph)) shouldBe true
     }
 
     "return `true` for simple acyclic graph" in {
       val graph =
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
           OrientedEdge("1-2", "[1]", "1", "1", "2") ::
-          Node("2", "2-3", "3") ::
+          Node("2", "2-3", 3) ::
           OrientedEdge("2-3", "[2]", "2", "2", "3") ::
-          Node("3", "3-4", "4") ::
+          Node("3", "3-4", 4) ::
           Nil
 
       GraphOps.checkGraphForCycles(OrientedGraph(graph)) shouldBe true
@@ -143,17 +143,17 @@ class GraphOpsSpec extends WordSpec with Matchers {
 
     "return `true` for acyclic graph" in {
       val graph =
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
           OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
-          Node("2", "2-3", "3") ::
+          Node("2", "2-3", 3) ::
           OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
-          Node("3", "3-4", "4") ::
+          Node("3", "3-4", 4) ::
           OrientedEdge("3-4", "[3]", "3", "3", "4") :: // 3 --> 4
-          Node("4", "4-5", "5") ::
+          Node("4", "4-5", 5) ::
           OrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
-          Node("5", "5-6", "6") ::
+          Node("5", "5-6", 6) ::
           OrientedEdge("5-6", "[5]", "5", "5", "6") :: // 5 --> 6
-          Node("6", "6-7", "7") ::
+          Node("6", "6-7", 7) ::
           Nil
 
       GraphOps.checkGraphForCycles(OrientedGraph(graph)) shouldBe true
@@ -161,23 +161,23 @@ class GraphOpsSpec extends WordSpec with Matchers {
 
     "return `true` for acyclic graph 2" in {
       val graph =
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
           OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
-          Node("2", "2-3", "3") ::
+          Node("2", "2-3", 3) ::
           OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
-          Node("3", "3-4", "4") ::
+          Node("3", "3-4", 4) ::
           OrientedEdge("1-3", "[3]", "3", "1", "3") :: // 1 --> 3
           OrientedEdge("1-3", "[3]", "3", "1", "3") :: // duplicated edge
           OrientedEdge("3-4", "[3]", "3", "3", "4") :: // 3 --> 4
-          Node("4", "4-5", "5") ::
+          Node("4", "4-5", 5) ::
           OrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
-          Node("5", "5-6", "6") ::
+          Node("5", "5-6", 6) ::
           OrientedEdge("5-6", "[5]", "5", "5", "6") :: // 5 --> 6
-          Node("6", "6-7", "7") ::
-          Node("7", "7-8", "8") ::
-          Node("8", "8-9", "9") ::
+          Node("6", "6-7", 7) ::
+          Node("7", "7-8", 8) ::
+          Node("8", "8-9", 9) ::
           OrientedEdge("8-8", "[10]", "10", "8", "9") :: // 8 --> 9
-          Node("9", "9-10", "10") ::
+          Node("9", "9-10", 10) ::
           Nil
 
       GraphOps.checkGraphForCycles(OrientedGraph(graph)) shouldBe true
@@ -185,7 +185,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
 
     "return `false` for simple cyclic graph" in {
       val graph =
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
           OrientedEdge("1-1", "[1]", "1", "1", "1") ::
           Nil
 
@@ -194,11 +194,11 @@ class GraphOpsSpec extends WordSpec with Matchers {
 
     "return `false` for simple cyclic graph 2" in {
       val graph =
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
           OrientedEdge("1-2", "[1]", "1", "1", "2") ::
-          Node("2", "2-3", "3") ::
+          Node("2", "2-3", 3) ::
           OrientedEdge("2-3", "[2]", "2", "2", "3") ::
-          Node("3", "3-4", "4") ::
+          Node("3", "3-4", 4) ::
           OrientedEdge("3-1", "[3]", "3", "3", "1") ::
           Nil
 
@@ -207,17 +207,17 @@ class GraphOpsSpec extends WordSpec with Matchers {
 
     "return `false` for cyclic graph" in {
       val graph =
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
           OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
-          Node("2", "2-3", "3") ::
+          Node("2", "2-3", 3) ::
           OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
           OrientedEdge("3-1", "[3]", "3", "3", "1") :: // 3 --> 1
-          Node("3", "3-4", "4") ::
-          Node("4", "4-5", "5") ::
+          Node("3", "3-4", 4) ::
+          Node("4", "4-5", 5) ::
           OrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
-          Node("5", "5-6", "6") ::
+          Node("5", "5-6", 6) ::
           OrientedEdge("5-6", "[5]", "5", "5", "6") :: // 5 --> 6
-          Node("6", "6-7", "7") ::
+          Node("6", "6-7", 7) ::
           Nil
 
       GraphOps.checkGraphForCycles(OrientedGraph(graph)) shouldBe false
@@ -225,16 +225,16 @@ class GraphOpsSpec extends WordSpec with Matchers {
 
     "return `false` for cyclic graph 2" in {
       val graph =
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
           OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
-          Node("2", "2-3", "3") ::
+          Node("2", "2-3", 3) ::
           OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
-          Node("3", "3-4", "4") ::
-          Node("4", "4-5", "5") ::
+          Node("3", "3-4", 4) ::
+          Node("4", "4-5", 5) ::
           OrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
-          Node("5", "5-6", "6") ::
+          Node("5", "5-6", 6) ::
           OrientedEdge("5-6", "[5]", "5", "5", "6") :: // 5 --> 6
-          Node("6", "6-7", "7") ::
+          Node("6", "6-7", 7) ::
           OrientedEdge("6-4", "[6]", "6", "6", "4") :: // 6 --> 4
           Nil
 
@@ -248,25 +248,25 @@ class GraphOpsSpec extends WordSpec with Matchers {
     }
 
     "find initial vertex in trivial case" in {
-      val singleNodeGraph = Node("1", "node1", "2") :: Nil
+      val singleNodeGraph = Node("1", "node1", 2) :: Nil
       GraphOps.findInitialVertices(OrientedGraph(singleNodeGraph)) shouldBe singleNodeGraph
     }
 
     "find all initial vertices in simple graph" in {
       val graph =
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
           OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
-          Node("2", "2-3", "3") ::
+          Node("2", "2-3", 3) ::
           OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
-          Node("3", "3-4", "4") ::
-          Node("4", "4-5", "5") ::
+          Node("3", "3-4", 4) ::
+          Node("4", "4-5", 5) ::
           OrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
-          Node("5", "5-6", "6") ::
+          Node("5", "5-6", 6) ::
           OrientedEdge("5-6", "[5]", "5", "5", "6") :: // 5 --> 6
-          Node("6", "6-7", "7") ::
+          Node("6", "6-7", 7) ::
           Nil
 
-      val expected = Node("1", "1-2", "2") :: Node("4", "4-5", "5") :: Nil
+      val expected = Node("1", "1-2", 2) :: Node("4", "4-5", 5) :: Nil
 
       GraphOps.findInitialVertices(OrientedGraph(graph)) shouldBe expected
     }
@@ -274,19 +274,19 @@ class GraphOpsSpec extends WordSpec with Matchers {
 
   "find all initial vertices in graph" in {
     val graph =
-      Node("1", "1-2", "2") ::
+      Node("1", "1-2", 2) ::
         OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
-        Node("2", "2-3", "3") ::
+        Node("2", "2-3", 3) ::
         OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
-        Node("3", "3-4", "4") ::
-        Node("4", "4-5", "5") ::
+        Node("3", "3-4", 4) ::
+        Node("4", "4-5", 5) ::
         OrientedEdge("4-3", "[7]", "7", "4", "3") :: // 4 --> 3
         OrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
-        Node("5", "5-6", "6") ::
-        Node("6", "6-20", "20") ::
+        Node("5", "5-6", 6) ::
+        Node("6", "6-20", 20) ::
         Nil
 
-    val expected = Node("1", "1-2", "2") :: Node("4", "4-5", "5") :: Node("6", "6-20", "20") :: Nil
+    val expected = Node("1", "1-2", 2) :: Node("4", "4-5", 5) :: Node("6", "6-20", 20) :: Nil
 
     GraphOps.findInitialVertices(OrientedGraph(graph)) shouldBe expected
   }
@@ -297,44 +297,44 @@ class GraphOpsSpec extends WordSpec with Matchers {
     }
 
     "find terminal vertex in trivial case" in {
-      val singleNodeGraph = Node("1", "node1", "2") :: Nil
+      val singleNodeGraph = Node("1", "node1", 2) :: Nil
       GraphOps.findTerminalVertices(OrientedGraph(singleNodeGraph)) shouldBe singleNodeGraph
     }
 
     "find all terminal vertices in simple graph" in {
       val graph =
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
           OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
-          Node("2", "2-3", "3") ::
+          Node("2", "2-3", 3) ::
           OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
-          Node("3", "3-4", "4") ::
-          Node("4", "4-5", "5") ::
+          Node("3", "3-4", 4) ::
+          Node("4", "4-5", 5) ::
           OrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
-          Node("5", "5-6", "6") ::
+          Node("5", "5-6", 6) ::
           OrientedEdge("5-6", "[5]", "5", "5", "6") :: // 5 --> 6
-          Node("6", "6-7", "7") ::
+          Node("6", "6-7", 7) ::
           Nil
 
-      val expected = Node("3", "3-4", "4") :: Node("6", "6-7", "7") :: Nil
+      val expected = Node("3", "3-4", 4) :: Node("6", "6-7", 7) :: Nil
 
       GraphOps.findTerminalVertices(OrientedGraph(graph)) shouldBe expected
     }
 
     "find all terminal vertices in graph" in {
       val graph =
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
           OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
-          Node("2", "2-3", "3") ::
+          Node("2", "2-3", 3) ::
           OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
-          Node("3", "3-4", "4") ::
-          Node("4", "4-5", "5") ::
+          Node("3", "3-4", 4) ::
+          Node("4", "4-5", 5) ::
           OrientedEdge("4-3", "[7]", "7", "4", "3") :: // 4 --> 3
           OrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
-          Node("5", "5-6", "6") ::
-          Node("6", "6-20", "20") ::
+          Node("5", "5-6", 6) ::
+          Node("6", "6-20", 20) ::
           Nil
 
-      val expected = Node("3", "3-4", "4") :: Node("5", "5-6", "6") :: Node("6", "6-20", "20") :: Nil
+      val expected = Node("3", "3-4", 4) :: Node("5", "5-6", 6) :: Node("6", "6-20", 20) :: Nil
 
       GraphOps.findTerminalVertices(OrientedGraph(graph)) shouldBe expected
     }
@@ -342,32 +342,32 @@ class GraphOpsSpec extends WordSpec with Matchers {
 
   "GraphOps.findPaths" should {
     "work correctly for empty graph" in {
-      GraphOps.findPaths(OrientedGraph(List.empty), Node("1", "1", "1"), Node("2", "2", "2")) shouldBe empty
+      GraphOps.findPaths(OrientedGraph(List.empty), Node("1", "1", 1), Node("2", "2", 2)) shouldBe empty
     }
 
     "work correctly if `from` is not in graph" in {
       val singleNodeGraph = OrientedGraph(
-        Node("1", "node1", "2") :: Nil
+        Node("1", "node1", 2) :: Nil
       )
 
-      GraphOps.findPaths(singleNodeGraph, Node("2", "2", "2"), singleNodeGraph.nodes(0)) shouldBe empty
+      GraphOps.findPaths(singleNodeGraph, Node("2", "2", 2), singleNodeGraph.nodes(0)) shouldBe empty
     }
 
     "work correctly if `target` is not in graph" in {
       val singleNodeGraph = OrientedGraph(
-        Node("1", "node1", "2") :: Nil
+        Node("1", "node1", 2) :: Nil
       )
 
-      GraphOps.findPaths(singleNodeGraph, singleNodeGraph.nodes(0), Node("2", "2", "2")) shouldBe empty
+      GraphOps.findPaths(singleNodeGraph, singleNodeGraph.nodes(0), Node("2", "2", 2)) shouldBe empty
     }
 
     "should not do anything if graph has cycles" in {
       val graph = OrientedGraph(
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
           OrientedEdge("1-2", "[1]", "1", "1", "2") ::
-          Node("2", "2-3", "3") ::
+          Node("2", "2-3", 3) ::
           OrientedEdge("2-3", "[2]", "2", "2", "3") ::
-          Node("3", "3-4", "4") ::
+          Node("3", "3-4", 4) ::
           OrientedEdge("3-1", "[3]", "3", "3", "1") ::
           Nil
       )
@@ -376,41 +376,41 @@ class GraphOpsSpec extends WordSpec with Matchers {
     }
 
     "find path through graph in trivial case" in {
-      val singleNodeGraph = OrientedGraph(Node("1", "node1", "2") :: Nil)
+      val singleNodeGraph = OrientedGraph(Node("1", "node1", 2) :: Nil)
       GraphOps.findPaths(singleNodeGraph, singleNodeGraph.nodes.head, singleNodeGraph.nodes.head) shouldBe Some(Set(singleNodeGraph.nodes))
     }
 
     "find paths through graph in simple graph" in {
       val graph = OrientedGraph(
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
           OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
-          Node("2", "2-3", "3") ::
+          Node("2", "2-3", 3) ::
           OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
-          Node("3", "3-4", "4") ::
+          Node("3", "3-4", 4) ::
           OrientedEdge("3-4", "[3]", "3", "3", "4") :: // 3 --> 4
-          Node("4", "4-5", "5") ::
+          Node("4", "4-5", 5) ::
           OrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
-          Node("5", "5-6", "6") ::
+          Node("5", "5-6", 6) ::
           OrientedEdge("5-6", "[5]", "5", "5", "6") :: // 5 --> 6
-          Node("6", "6-7", "7") ::
+          Node("6", "6-7", 7) ::
           Nil
       )
 
       val expected1 = Some(Set(
-        Node("1", "1-2", "2") ::
-          Node("2", "2-3", "3") ::
-          Node("3", "3-4", "4") ::
-          Node("4", "4-5", "5") ::
-          Node("5", "5-6", "6") ::
-          Node("6", "6-7", "7") ::
+        Node("1", "1-2", 2) ::
+          Node("2", "2-3", 3) ::
+          Node("3", "3-4", 4) ::
+          Node("4", "4-5", 5) ::
+          Node("5", "5-6", 6) ::
+          Node("6", "6-7", 7) ::
           Nil
       ))
 
       val expected2 = Some(Set(
-        Node("2", "2-3", "3") ::
-          Node("3", "3-4", "4") ::
-          Node("4", "4-5", "5") ::
-          Node("5", "5-6", "6") ::
+        Node("2", "2-3", 3) ::
+          Node("3", "3-4", 4) ::
+          Node("4", "4-5", 5) ::
+          Node("5", "5-6", 6) ::
           Nil
       ))
 
@@ -420,35 +420,35 @@ class GraphOpsSpec extends WordSpec with Matchers {
 
     "find paths through graph in graph" in {
       val graph = OrientedGraph(
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
           OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
           OrientedEdge("1-4", "[1]", "1", "1", "4") :: // 1 --> 4
           OrientedEdge("1-3", "[1]", "1", "1", "3") :: // 1 --> 3
-          Node("2", "2-3", "3") ::
+          Node("2", "2-3", 3) ::
           OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
           OrientedEdge("2-4", "[2]", "2", "2", "4") :: // 2 --> 4
-          Node("3", "3-4", "4") ::
+          Node("3", "3-4", 4) ::
           OrientedEdge("3-4", "[3]", "3", "3", "4") :: // 3 --> 4
-          Node("4", "4-5", "5") ::
+          Node("4", "4-5", 5) ::
           Nil
       )
 
       val expected1 = Some(Set(
-        Node("1", "1-2", "2") ::
-          Node("2", "2-3", "3") ::
-          Node("3", "3-4", "4") ::
-          Node("4", "4-5", "5") ::
+        Node("1", "1-2", 2) ::
+          Node("2", "2-3", 3) ::
+          Node("3", "3-4", 4) ::
+          Node("4", "4-5", 5) ::
           Nil,
-        Node("1", "1-2", "2") ::
-          Node("2", "2-3", "3") ::
-          Node("4", "4-5", "5") ::
+        Node("1", "1-2", 2) ::
+          Node("2", "2-3", 3) ::
+          Node("4", "4-5", 5) ::
           Nil,
-        Node("1", "1-2", "2") ::
-          Node("3", "3-4", "4") ::
-          Node("4", "4-5", "5") ::
+        Node("1", "1-2", 2) ::
+          Node("3", "3-4", 4) ::
+          Node("4", "4-5", 5) ::
           Nil,
-        Node("1", "1-2", "2") ::
-          Node("4", "4-5", "5") ::
+        Node("1", "1-2", 2) ::
+          Node("4", "4-5", 5) ::
           Nil
       ))
 
@@ -457,20 +457,121 @@ class GraphOpsSpec extends WordSpec with Matchers {
 
     "return `None` if there is no path between desired vertices" in {
       val graph = OrientedGraph(
-        Node("1", "1-2", "2") ::
+        Node("1", "1-2", 2) ::
           OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
-          Node("2", "2-3", "3") ::
+          Node("2", "2-3", 3) ::
           OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
-          Node("3", "3-4", "4") ::
-          Node("4", "4-5", "5") ::
+          Node("3", "3-4", 4) ::
+          Node("4", "4-5", 5) ::
           OrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
-          Node("5", "5-6", "6") ::
+          Node("5", "5-6", 6) ::
           OrientedEdge("5-6", "[5]", "5", "5", "6") :: // 5 --> 6
-          Node("6", "6-7", "7") ::
+          Node("6", "6-7", 7) ::
           Nil
       )
 
       GraphOps.findPaths(graph, graph.nodes.head, graph.nodes.last) shouldBe empty
+    }
+  }
+
+  "GraphOps.findCriticalPath" should {
+    "work correctly for empty graph" in {
+      GraphOps.findCriticalPath(OrientedGraph(List.empty)) shouldBe empty
+    }
+
+    "should not do anything if graph has cycles" in {
+      val graph = OrientedGraph(
+        Node("1", "1-2", 2) ::
+          OrientedEdge("1-2", "[1]", "1", "1", "2") ::
+          Node("2", "2-3", 3) ::
+          OrientedEdge("2-3", "[2]", "2", "2", "3") ::
+          Node("3", "3-4", 4) ::
+          OrientedEdge("3-1", "[3]", "3", "3", "1") ::
+          Nil
+      )
+
+      GraphOps.findCriticalPath(graph) shouldBe empty
+    }
+
+    "find critical path through graph in trivial case" in {
+      val singleNodeGraph = OrientedGraph(Node("1", "node1", 2) :: Nil)
+      GraphOps.findCriticalPath(singleNodeGraph) shouldBe singleNodeGraph.nodes
+    }
+
+    "find critical path through graph in simple graph" in {
+      val graph = OrientedGraph(
+        Node("1", "1-2", 2) ::
+          OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
+          Node("2", "2-3", 3) ::
+          OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
+          Node("3", "3-4", 4) ::
+          OrientedEdge("3-4", "[3]", "3", "3", "4") :: // 3 --> 4
+          Node("4", "4-5", 5) ::
+          OrientedEdge("4-5", "[4]", "4", "4", "5") :: // 4 --> 5
+          Node("5", "5-6", 6) ::
+          OrientedEdge("5-6", "[5]", "5", "5", "6") :: // 5 --> 6
+          Node("6", "6-7", 7) ::
+          Nil
+      )
+
+      val expected =
+        Node("1", "1-2", 2) ::
+          Node("2", "2-3", 3) ::
+          Node("3", "3-4", 4) ::
+          Node("4", "4-5", 5) ::
+          Node("5", "5-6", 6) ::
+          Node("6", "6-7", 7) ::
+          Nil
+
+      GraphOps.findCriticalPath(graph) shouldBe expected
+    }
+
+    "find critical path through graph" in {
+      val graph = OrientedGraph(
+        Node("1", "1-2", 2) ::
+          OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
+          OrientedEdge("1-4", "[1]", "1", "1", "4") :: // 1 --> 4
+          OrientedEdge("1-3", "[1]", "1", "1", "3") :: // 1 --> 3
+          Node("2", "2-3", 3) ::
+          OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
+          OrientedEdge("2-4", "[2]", "2", "2", "4") :: // 2 --> 4
+          Node("3", "3-4", 4) ::
+          OrientedEdge("3-4", "[3]", "3", "3", "4") :: // 3 --> 4
+          Node("4", "4-5", 5) ::
+          Nil
+      )
+
+      val expected =
+        Node("1", "1-2", 2) ::
+          Node("2", "2-3", 3) ::
+          Node("3", "3-4", 4) ::
+          Node("4", "4-5", 5) ::
+          Nil
+
+      GraphOps.findCriticalPath(graph) shouldBe expected
+    }
+
+    "find critical path through graph 2" in {
+      val graph = OrientedGraph(
+        Node("1", "1-2", 2) ::
+          OrientedEdge("1-2", "[1]", "1", "1", "2") :: // 1 --> 2
+          OrientedEdge("1-4", "[1]", "1", "1", "4") :: // 1 --> 4
+          OrientedEdge("1-3", "[1]", "1", "1", "3") :: // 1 --> 3
+          Node("2", "2-3", 3) ::
+          OrientedEdge("2-3", "[2]", "2", "2", "3") :: // 2 --> 3
+          OrientedEdge("2-4", "[2]", "2", "2", "4") :: // 2 --> 4
+          Node("3", "3-4", 4) ::
+          OrientedEdge("3-4", "[3]", "3", "3", "4") :: // 3 --> 4
+          Node("4", "4-5", 5) ::
+          Node("5", "5-20", 20) ::
+          Nil
+      )
+
+      val expected =
+        Node("5", "5-20", 20) ::
+          Nil
+
+      GraphOps.findCriticalPath(graph) shouldBe expected
     }
   }
 }
