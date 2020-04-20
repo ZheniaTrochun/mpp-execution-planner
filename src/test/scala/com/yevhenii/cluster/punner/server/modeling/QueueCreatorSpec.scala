@@ -87,4 +87,33 @@ class QueueCreatorSpec extends WordSpec with Matchers {
       actual should contain theSameElementsInOrderAs expected
     }
   }
+
+  "QueueCreator.createQueueBasedOnNodesConnectivity" should {
+    "work correctly for empty graph" in {
+      QueueCreator.createQueueBasedOnNodesConnectivity(OrientedGraph(Nil)) shouldBe empty
+    }
+
+    "work for trivial graph" in {
+      val graph = Node("1", "1-1", 1) :: Nil
+      QueueCreator.createQueueBasedOnNodesConnectivity(OrientedGraph(graph)) shouldBe List((graph.head, (0, 1)))
+    }
+
+    "create correct queue from example" in {
+      val expected =
+        Node("5", "5-2", 2)     -> (4, 2) ::
+          Node("8", "8-3", 3)   -> (4, 1) ::
+          Node("2", "2-4", 4)   -> (3, 3) ::
+          Node("7", "7-1", 1)   -> (3, 2) ::
+          Node("9", "9-5", 5)   -> (3, 1) ::
+          Node("1", "1-5", 5)   -> (2, 3) ::
+          Node("6", "6-6", 6)   -> (2, 2) ::
+          Node("3", "3-2", 2)   -> (1, 3) ::
+          Node("4", "4-20", 20) -> (0, 1) ::
+          Nil
+
+      val actual = QueueCreator.createQueueBasedOnNodesConnectivity(graph)
+
+      actual should contain theSameElementsInOrderAs expected
+    }
+  }
 }
