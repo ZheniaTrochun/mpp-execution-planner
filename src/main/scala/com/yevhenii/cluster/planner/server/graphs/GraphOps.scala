@@ -109,9 +109,9 @@ object GraphOps extends LazyLogging {
   }
 
 // TODO
-//  def findCriticalPath(taskGraph: OrientedGraph): Option[List[Node]] = {
-//
-//  }
+  def findCriticalPath(taskGraph: OrientedGraph): Option[List[Node]] = {
+    None
+  }
 
   private def isConnected(first: Node, second: Node, edges: List[NonOrientedEdge]): Boolean =
     edges.exists(edge => (edge.source == first.id) && (edge.target == second.id)) ||
