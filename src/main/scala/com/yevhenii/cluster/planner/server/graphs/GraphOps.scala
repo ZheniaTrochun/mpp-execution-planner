@@ -5,27 +5,6 @@ import com.yevhenii.cluster.planner.server.model._
 
 object GraphOps extends LazyLogging {
 
-  // todo: useful if we need to find all not connected nodes
-//  def checkGraphForConnectivity(entries: List[NonOrientedGraph]): Boolean = {
-//    val edges = entries.collect { case e: NonOrientedEdge => e }
-//    val nodes = entries.collect { case n: Node => n }.toSet
-//
-//    def loop(currNode: Node, visitedNodes: Set[Node]): Set[Node] = {
-//      val nextVisited = visitedNodes + currNode
-//
-//      if (nextVisited.size == nodes.size) {
-//        nextVisited
-//      } else {
-//        val nextNodes = nodes.diff(nextVisited).filter(n => isConnected(currNode, n, edges))
-//
-//        nextNodes.map(n => loop(n, nextVisited)).fold(nextVisited)(_ ++ _)
-//      }
-//    }
-//
-//    if (nodes.isEmpty) true
-//    else loop(nodes.head, Set.empty).size == nodes.size
-//  }
-
   def checkGraphForConnectivity(graph: NonOrientedGraph): Boolean = {
     val nodes = graph.nodes.toSet
 
@@ -46,12 +25,8 @@ object GraphOps extends LazyLogging {
   }
 
   def checkGraphForCycles(graph: OrientedGraph): Boolean = {
-    val nodesMap = graph.nodes
-      .map(n => (n.id, n))
-      .toMap
-
     def loop(curr: Node, route: Set[Node]): Boolean = {
-      val nextNodes = determineNextNodes(curr, graph.edges, nodesMap)
+      val nextNodes = determineNextNodes(graph, curr)
 
       if (nextNodes.exists(route.contains)) {
         false
@@ -62,8 +37,7 @@ object GraphOps extends LazyLogging {
       }
     }
 
-    nodesMap
-      .values
+    graph.nodes
       .map(n => loop(n, Set(n)))
       .forall(identity)
   }
@@ -82,17 +56,11 @@ object GraphOps extends LazyLogging {
     if (!checkGraphForCycles(taskGraph) || !taskGraph.nodes.contains(from) || !taskGraph.nodes.contains(target)) {
       None
     } else {
-      val nodeMap = taskGraph.nodes.view.map(n => (n.id, n)).toMap
-      findPathUnsafe(taskGraph.edges, nodeMap, from, target)
+      findPathUnsafe(taskGraph, from, target)
     }
   }
 
-  private def findPathUnsafe(
-    edges: List[OrientedEdge],
-    nodeMap: Map[String, Node],
-    from: Node,
-    target: Node
-  ): Option[Set[List[Node]]] = {
+  private def findPathUnsafe(graph: OrientedGraph, from: Node, target: Node): Option[Set[List[Node]]] = {
 
     def loop(path: List[Node], curr: Node): Option[Set[List[Node]]] = {
       val currPath = path :+ curr
@@ -100,7 +68,7 @@ object GraphOps extends LazyLogging {
       if (curr == target) {
         Some(Set(currPath))
       } else {
-        val nextVertices = determineNextNodes(curr, edges, nodeMap)
+        val nextVertices = determineNextNodes(graph, curr)
 
         nextVertices.map(next => loop(currPath, next))
           .fold(None) { (first, second) =>
@@ -121,20 +89,22 @@ object GraphOps extends LazyLogging {
     if (taskGraph.nodes.isEmpty || !checkGraphForCycles(taskGraph)) {
       Nil
     } else {
-      val initialNodes = findInitialVertices(taskGraph)
-      val terminalNodes = findTerminalVertices(taskGraph)
+      taskGraph.initialVertices
+        .flatMap(node => findCriticalPathUnsafe(taskGraph, node))
+        .maxBy(path => path.map(_.weight).sum)
+    }
+  }
 
-      val nodesMap = taskGraph.nodes.view.map(n => (n.id, n)).toMap
+  private def findCriticalPathUnsafe(taskGraph: OrientedGraph, from: Node): Option[List[Node]] = {
+    if (taskGraph.nodes.isEmpty) {
+      None
+    } else {
+      val allPaths = taskGraph.terminalVertices
+        .flatMap(terminal => findPathUnsafe(taskGraph, from, terminal))
+        .flatten
 
-      val allPaths: Seq[Set[List[Node]]] = for {
-        initial <- initialNodes
-        terminal <- terminalNodes
-        paths <- findPathUnsafe(taskGraph.edges, nodesMap, initial, terminal)
-      } yield paths
-
-      val flatPaths = allPaths.flatten
-
-      flatPaths.maxBy(path => path.map(node => node.weight).sum)
+      if (allPaths.isEmpty) None
+      else Some(allPaths.maxBy(path => path.map(node => node.weight).sum))
     }
   }
 
@@ -150,8 +120,8 @@ object GraphOps extends LazyLogging {
   private def isConnectedOriented(first: Node, second: Node, edges: List[OrientedEdge]): Boolean =
     edges.exists(edge => (edge.source == first.id) && (edge.target == second.id))
 
-  private def determineNextNodes(node: Node, edges: List[OrientedEdge], nodes: Map[String, Node]): List[Node] =
-    edges.filter(_.source == node.id)
+  private def determineNextNodes(graph: OrientedGraph, node: Node): List[Node] =
+    graph.edges.filter(_.source == node.id)
       .map(_.target)
-      .flatMap(nodes.get)
+      .flatMap(graph.nodesMap.get)
 }

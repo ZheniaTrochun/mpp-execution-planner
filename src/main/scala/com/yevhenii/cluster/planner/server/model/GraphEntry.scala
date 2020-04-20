@@ -1,6 +1,7 @@
 package com.yevhenii.cluster.planner.server.model
 
 import com.yevhenii.cluster.planner.server.dto.{Data, GraphEntry => DtoGraphEntry}
+import com.yevhenii.cluster.planner.server.graphs.GraphOps
 
 sealed trait GraphEntry
 
@@ -52,6 +53,10 @@ object GraphEntry {
 case class OrientedGraph(entries: List[OrientedGraphEntry]) {
   val edges = entries.collect { case e: OrientedEdge => e }
   val nodes = entries.collect { case n: Node => n }
+  val nodesMap = nodes.view.map(n => (n.id, n)).toMap
+
+  lazy val initialVertices = GraphOps.findInitialVertices(this)
+  lazy val terminalVertices = GraphOps.findTerminalVertices(this)
 }
 
 case class NonOrientedGraph(entries: List[NonOrientedGraphEntry]) {
