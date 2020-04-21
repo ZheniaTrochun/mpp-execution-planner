@@ -8,10 +8,10 @@ trait QueueService {
 
   type QueueWithPaths = List[(Data, List[Data])]
 
-  def createQueueByCriticalPath(id: TaskId): IO[Either[String, QueueWithPaths]]
-  def createQueueByNodesCountOnCriticalPath(id: TaskId): IO[Either[String, QueueWithPaths]]
+  def createQueueByCriticalPath(id: TaskId): IO[Option[QueueWithPaths]]
+  def createQueueByNodesCountOnCriticalPath(id: TaskId): IO[Option[QueueWithPaths]]
 
   type QueueWithConnAndLength = List[(Data, (Int, Int))]
 
-  def createQueueByNodesConnectivity(id: TaskId): IO[Either[String, QueueWithConnAndLength]]
+  def createQueueByNodesConnectivity(id: TaskId): IO[Option[QueueWithConnAndLength]]
 }

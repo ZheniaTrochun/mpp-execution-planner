@@ -1,5 +1,7 @@
 package com.yevhenii.cluster.planner.server.dto
 
+import com.yevhenii.cluster.planner.server.model.Node
+
 case class Graphs(taskGraph: List[GraphEntry], systemGraph: List[GraphEntry])
 
 case class Data(
@@ -9,6 +11,10 @@ case class Data(
   source: Option[String],
   target: Option[String]
 )
+
+object Data {
+  def from(node: Node): Data = Data(node.id, node.label, node.weight.toString, None, None)
+}
 
 case class Position(x: Int, y: Int)
 

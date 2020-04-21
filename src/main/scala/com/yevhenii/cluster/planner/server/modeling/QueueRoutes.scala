@@ -12,18 +12,29 @@ object QueueRoutes extends Http4sDsl[IO]  {
     ("message", Json.fromString(message))
   )
 
-//  def routes(queueService: QueueService): HttpRoutes[IO] = {
-//
-//    HttpRoutes.of[IO] {
-//      case _ @ GET -> Root / "queue" / "critical-path" / id =>
-//        queueService.createQueueByCriticalPath(id).flatMap(x => Ok(x))
-//
-//      case _ @ GET -> Root / "queue" / "node-count-on-critical-path" / id =>
-//        queueService.createQueueByNodesCountOnCriticalPath(id).flatMap(x => Ok(x))
-//
-//        // TODO
-//      case _ @ GET -> Root / "queue" / "node-count-on-critical-path" / id =>
-//        queueService.createQueueByNodesCountOnCriticalPath(id).flatMap(x => Ok(x))
-//    }
-//  }
+  def routes(queueService: QueueService): HttpRoutes[IO] = {
+
+    HttpRoutes.of[IO] {
+      case _ @ GET -> Root / "queue" / "critical-path" / id =>
+        queueService.createQueueByCriticalPath(id)
+          .flatMap {
+            case Some(res) => Ok(res)
+            case None => NotFound()
+          }
+
+      case _ @ GET -> Root / "queue" / "node-count-on-critical-path" / id =>
+        queueService.createQueueByNodesCountOnCriticalPath(id)
+          .flatMap {
+            case Some(res) => Ok(res)
+            case None => NotFound()
+          }
+
+      case _ @ GET -> Root / "queue" / "node-connectivity" / id =>
+        queueService.createQueueByNodesConnectivity(id)
+          .flatMap {
+            case Some(res) => Ok(res)
+            case None => NotFound()
+          }
+    }
+  }
 }
