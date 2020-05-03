@@ -3,6 +3,7 @@ package com.yevhenii.cluster.planner.server.graphs
 import cats.effect.IO
 import com.yevhenii.cluster.planner.server.dto.Task.TaskId
 import com.yevhenii.cluster.planner.server.dto.{Graphs, Task, TaskInit}
+import com.yevhenii.cluster.planner.server.model.GraphParameters
 
 trait TaskService {
 
@@ -12,6 +13,8 @@ trait TaskService {
 
   def getGraphs(id: TaskId): IO[Option[Graphs]]
   def updateGraphs(id: TaskId, graphs: Graphs): IO[Either[String, Unit]]
+
+  def generateTaskGraph(id: TaskId, parameters: GraphParameters): IO[Option[Graphs]]
 
   def init(): IO[Unit]
 }

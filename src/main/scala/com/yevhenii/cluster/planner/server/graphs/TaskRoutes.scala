@@ -2,6 +2,7 @@ package com.yevhenii.cluster.planner.server.graphs
 
 import cats.effect.IO
 import com.yevhenii.cluster.planner.server.dto.{Graphs, TaskInit}
+import com.yevhenii.cluster.planner.server.model.GraphParameters
 import io.circe.Json
 import org.http4s.HttpRoutes
 import io.circe.generic.auto._
@@ -38,6 +39,14 @@ object TaskRoutes extends Http4sDsl[IO] {
           taskService.updateGraphs(id, graphs).flatMap {
             case Left(msg) => NotFound(errorBody(msg))
             case Right(_) => Ok()
+          }
+        }
+
+      case req @ PUT -> Root / "graphs" / "random" / "task-graph" / id =>
+        req.decode[GraphParameters] { params =>
+          taskService.generateTaskGraph(id, params).flatMap {
+            case Some(graphs) => Ok(graphs)
+            case None => NotFound()
           }
         }
 

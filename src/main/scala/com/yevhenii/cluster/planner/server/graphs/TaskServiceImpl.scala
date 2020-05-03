@@ -1,9 +1,11 @@
 package com.yevhenii.cluster.planner.server.graphs
+
 import cats.effect.IO
 import com.typesafe.scalalogging.LazyLogging
 import com.yevhenii.cluster.planner.server.dto.Task.TaskId
-import com.yevhenii.cluster.planner.server.dto.{Graphs, Task, TaskInit}
+import com.yevhenii.cluster.planner.server.dto.{GraphEntry, Graphs, Task, TaskInit}
 import com.yevhenii.cluster.planner.server.entity.GraphsEntity
+import com.yevhenii.cluster.planner.server.model.GraphParameters
 
 class TaskServiceImpl(taskRepository: TaskRepository) extends TaskService with LazyLogging {
 
@@ -28,6 +30,28 @@ class TaskServiceImpl(taskRepository: TaskRepository) extends TaskService with L
   override def updateGraphs(id: TaskId, graphs: Graphs): IO[Either[String, Unit]] =
     IO(logger.info(s"Updating graphs for taskId [$id]"))
       .flatMap(_ => taskRepository.updateGraphs(GraphsEntity.from(id, graphs)))
+
+  override def generateTaskGraph(id: TaskId, parameters: GraphParameters): IO[Option[Graphs]] =
+    IO(logger.info(s"Generating taskGraph for taskId [$id] with parameters [$parameters]"))
+      .flatMap(_ => taskRepository.getGraphs(id))
+      .map(_.map { graphs =>
+        val newTaskGraph = GraphRandomizer.createRandomOrientedGraph(parameters)
+
+        graphs.toGraphs.copy(taskGraph = GraphEntry.from(newTaskGraph))
+      })
+      .flatMap {
+        case None =>
+          IO.pure(None)
+        case Some(graphs) =>
+          taskRepository.updateGraphs(GraphsEntity.from(id, graphs))
+            .map {
+              case Left(err) =>
+                logger.warn(err)
+                None
+              case Right(_) =>
+                Some(graphs)
+            }
+      }
 
   override def init(): IO[Unit] =
     IO(logger.info("Initializing default start data"))
