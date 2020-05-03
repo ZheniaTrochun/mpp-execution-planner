@@ -147,12 +147,15 @@ object GraphOps extends LazyLogging {
     val nodeWeights = nodes.map(_.weight).sum
     val edgeWeights = edges.map(_.weight).sum
 
+    correlationOfConnections(nodeWeights, edgeWeights)
+  }
+
+  def correlationOfConnections(nodeWeights: Int, edgeWeights: Int): Double = {
     val allWeights = nodeWeights + edgeWeights
 
     if (allWeights == 0) 0
     else nodeWeights.toDouble / allWeights
   }
-
 
   private def isConnected(first: Node, second: Node, edges: List[NonOrientedEdge]): Boolean =
     edges.exists(edge => (edge.source == first.id) && (edge.target == second.id)) ||

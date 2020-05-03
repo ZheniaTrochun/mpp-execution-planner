@@ -57,7 +57,33 @@ class GraphRandomizerSpec extends WordSpec with Matchers {
         .forall(correlation => correlation == defaultParams.connectivity) shouldBe true
     }
 
-    "just print created graph" in {
+    "create graph without edges if desired correlation is 1" in {
+      val params = defaultParams.copy(connectivity = 1)
+
+      val graphs = for (_ <- 1 to 10)
+        yield GraphRandomizer.createRandomOrientedGraph(params)
+
+      graphs.flatMap(_.edges) shouldBe empty
+    }
+
+    "create graph without edges if desired correlation is 0.1" in {
+      val params = defaultParams.copy(connectivity = 0.1)
+
+      val graphs = for (_ <- 1 to 10)
+        yield GraphRandomizer.createRandomOrientedGraph(params)
+
+      graphs
+        .map(GraphOps.correlationOfConnections)
+        .forall(correlation => correlation == params.connectivity) shouldBe true
+    }
+//
+//    "create graph without edges if desired correlation is 1 and number of nodes is huge" in {
+//      val graphs = GraphRandomizer.createRandomOrientedGraph(defaultParams.copy(connectivity = 1, numberOfNodes = 100))
+//
+//      graphs.edges shouldBe empty
+//    }
+
+    "just print created graph" ignore {
       val graphs = createDefaultGraphs()
 
       val sout = graphs.map(Show[OrientedGraph].show).mkString("\n\n")
