@@ -9,9 +9,38 @@
         <v-btn class="v-btn--outlined deep-purple remove-item-btn" v-on:click="deleteSelected">
             remove selected
         </v-btn>
+        <v-btn class="v-btn--outlined red darken-4 generate-graph-btn" v-on:click="openGenerateDialog">
+            random graph
+        </v-btn>
         <v-alert class="errorDialog" type="error" v-if="isIncorrect">
             Graph has at least one cycle, please remove all cycles!
         </v-alert>
+
+        <v-dialog v-model="generateDialog" max-width="650">
+            <v-card>
+                <v-card-title>
+                    <span class="headline">New graph parameters</span>
+                </v-card-title>
+                <v-card-text>
+                    <template>
+                        <v-text-field label="Number of nodes" v-model="numberOfNodes"></v-text-field>
+
+                        <v-text-field label="Max node weight" v-model="maxNodeWeight"></v-text-field>
+                        <v-text-field label="Min node weight" v-model="minNodeWeight"></v-text-field>
+
+                        <v-text-field label="Max edge weight" v-model="maxEdgeWeight"></v-text-field>
+                        <v-text-field label="Min edge weight" v-model="minEdgeWeight"></v-text-field>
+
+                        <v-text-field label="Correlation of node and edge weights" v-model="correlation"></v-text-field>
+                    </template>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="v-btn--outlined deep-purple" @click="generateDialog = false">Cancel</v-btn>
+                    <v-btn color="v-btn--outlined deep-purple" @click="generateTaskGraph()">Generate</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -31,7 +60,14 @@
         name: "TaskGraph",
         data() {
             return {
-                isCorrect: true
+                isCorrect: true,
+                generateDialog: false,
+                numberOfNodes: 10,
+                maxNodeWeight: 10,
+                minNodeWeight: 1,
+                maxEdgeWeight: 10,
+                minEdgeWeight: 1,
+                correlation: 0.5,
             };
         },
         mounted() {
@@ -248,6 +284,41 @@
                 } else {
                     return defaultResult;
                 }
+            },
+            openGenerateDialog() {
+                this.generateDialog = true;
+            },
+            generateTaskGraph() {
+                axios.put(
+                    `https://cluster-planner-server.herokuapp.com/graphs/random/task-graph/${this.task.id}`,
+                    {
+                        minimalNodeWeight: this.minNodeWeight,
+                        maximumNodeWeight: this.maxNodeWeight,
+                        numberOfNodes: this.numberOfNodes,
+                        correlation: this.correlation,
+                        minimalEdgeWeight: this.minEdgeWeight,
+                        maximumEdgeWeight: this.maxEdgeWeight
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    }
+                )
+                    .then(resp => {
+                        if (resp.status === 200) {
+                            graph.remove('');
+
+                            resp.data.taskGraph.forEach(x => {
+                                graph.add(x);
+                                this.checkGraph();
+                            });
+
+                            store.commit('initState', resp.data);
+
+                            this.generateDialog = false;
+                        }
+                    })
             }
         }
     };
@@ -281,6 +352,15 @@
     .remove-item-btn {
         position: absolute;
         top: 120px;
+        /*right: 20px;*/
+        right: -175px;
+        width: 160px;
+        z-index: 200;
+    }
+
+    .generate-graph-btn {
+        position: absolute;
+        top: 170px;
         /*right: 20px;*/
         right: -175px;
         width: 160px;

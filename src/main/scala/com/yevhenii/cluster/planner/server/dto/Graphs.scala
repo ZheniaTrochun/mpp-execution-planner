@@ -35,14 +35,14 @@ object GraphEntry {
   def from(orientedGraph: OrientedGraph): List[GraphEntry] = {
     val formattedNodes = orientedGraph.nodes.map(node => GraphEntry(
       Data(node.id, node.label, node.weight.toString, None, None),
-      Position((node.id.toInt / 4 + 1) * 200, (node.id.toInt % 4 + 1) * 200),
+      Position((node.id.toInt % 4 + 1) * 200, (node.id.toInt / 4 + 1) * 200),
       "nodes",
       removed = false,
       selected = false,
       selectable = true,
       locked = false,
       grabbable = true,
-      pannable = true,
+      pannable = false,
       ""
     ))
 
