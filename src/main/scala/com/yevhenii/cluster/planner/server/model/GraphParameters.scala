@@ -6,7 +6,7 @@ case class GraphParameters(
   minimalNodeWeight: Int = DefaultMinNodeWeight,
   maximumNodeWeight: Int = DefaultMaxNodeWeight,
   numberOfNodes: Int,
-  connectivity: Double,
+  correlation: Double,
   minimalEdgeWeight: Int = DefaultMinNodeWeight,
   maximumEdgeWeight: Int = DefaultMaxEdgeWeight
 )

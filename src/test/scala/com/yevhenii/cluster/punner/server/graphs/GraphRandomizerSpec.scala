@@ -10,7 +10,7 @@ class GraphRandomizerSpec extends WordSpec with Matchers {
 
   "GraphRandomizer.createRandomOrientedGraph" should {
 
-    val defaultParams = GraphParameters(numberOfNodes = 10, connectivity = 0.5)
+    val defaultParams = GraphParameters(numberOfNodes = 10, correlation = 0.5)
 
     def createDefaultGraphs(): Seq[OrientedGraph] =
       for (_ <- 1 to 10) yield GraphRandomizer.createRandomOrientedGraph(defaultParams)
@@ -54,11 +54,11 @@ class GraphRandomizerSpec extends WordSpec with Matchers {
 
       graphs
         .map(GraphOps.correlationOfConnections)
-        .forall(correlation => correlation == defaultParams.connectivity) shouldBe true
+        .forall(correlation => correlation == defaultParams.correlation) shouldBe true
     }
 
     "create graph without edges if desired correlation is 1" in {
-      val params = defaultParams.copy(connectivity = 1)
+      val params = defaultParams.copy(correlation = 1)
 
       val graphs = for (_ <- 1 to 10)
         yield GraphRandomizer.createRandomOrientedGraph(params)
@@ -67,21 +67,21 @@ class GraphRandomizerSpec extends WordSpec with Matchers {
     }
 
     "create graph without edges if desired correlation is 0.1" in {
-      val params = defaultParams.copy(connectivity = 0.1)
+      val params = defaultParams.copy(correlation = 0.1)
 
       val graphs = for (_ <- 1 to 10)
         yield GraphRandomizer.createRandomOrientedGraph(params)
 
       graphs
         .map(GraphOps.correlationOfConnections)
-        .forall(correlation => correlation == params.connectivity) shouldBe true
+        .forall(correlation => correlation == params.correlation) shouldBe true
     }
-//
-//    "create graph without edges if desired correlation is 1 and number of nodes is huge" in {
-//      val graphs = GraphRandomizer.createRandomOrientedGraph(defaultParams.copy(connectivity = 1, numberOfNodes = 100))
-//
-//      graphs.edges shouldBe empty
-//    }
+
+    "create graph without edges if desired correlation is 1 and number of nodes is huge" in {
+      val graphs = GraphRandomizer.createRandomOrientedGraph(defaultParams.copy(correlation = 1, numberOfNodes = 100))
+
+      graphs.edges shouldBe empty
+    }
 
     "just print created graph" ignore {
       val graphs = createDefaultGraphs()

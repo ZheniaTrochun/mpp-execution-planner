@@ -60,9 +60,8 @@ object GraphRandomizer extends LazyLogging {
     OrientedEdge(s"$source-$target", s"[$weight]", weight, source.toString, target.toString)
   }
 
-  // todo: make more readable
   private def fitEdges(nodes: List[Node], edges: List[OrientedEdge], parameters: GraphParameters, retry: Int = 0): OrientedGraph = {
-    val targetCorrelation = parameters.connectivity
+    val targetCorrelation = parameters.correlation
 
     val nodeWeights = nodes.map(_.weight).sum
     val edgeWeights = edges.map(_.weight).sum
@@ -70,11 +69,11 @@ object GraphRandomizer extends LazyLogging {
     val correlation = GraphOps.correlationOfConnections(nodeWeights, edgeWeights)
 
     if (retry > MaxNumberOfRetriesOfFittingEdges) {
-      logger.warn(s"Could not fit edges fine, exhausted number of retries, target correlation = $targetCorrelation, current corraltion = $correlation")
       val graph = OrientedGraph(nodes ::: edges)
+      logger.warn(s"Could not fit edges fine, exhausted number of retries, target correlation = $targetCorrelation, current correlation = $correlation")
       logger.info(s"\n${Show[OrientedGraph].show(graph)}\n")
-
       graph
+
     } else {
 
       if (math.abs(targetCorrelation - correlation) <= Epsilon) {
@@ -84,74 +83,127 @@ object GraphRandomizer extends LazyLogging {
         val shuffledEdges = Random.shuffle(edges)
 
         if (correlation < targetCorrelation) {
-          val correlationWithoutMaxEdge = GraphOps.correlationOfConnections(nodeWeights, edgeWeights - parameters.maximumEdgeWeight)
-
-          if (math.abs(targetCorrelation - correlationWithoutMaxEdge) < math.abs(targetCorrelation - correlation)) {
-
-            fitEdges(nodes, edges.tail, parameters, retry + 1)
-          } else {
-
-            val reducedEdgeWeight = shuffledEdges.head.weight - 1
-
-            val updatedEdges =
-              if (reducedEdgeWeight < parameters.minimalEdgeWeight) shuffledEdges.tail
-              else shuffledEdges.head.copy(weight = reducedEdgeWeight) :: shuffledEdges.tail
-
-            fitEdges(nodes, updatedEdges, parameters, retry + 1)
-          }
+          decreaseEdgeWeights(nodes, shuffledEdges, parameters, retry, nodeWeights, edgeWeights, correlation)
         } else {
-
-          val correlationWithNewEdge = GraphOps.correlationOfConnections(nodeWeights, edgeWeights + parameters.minimalEdgeWeight)
-
-          if (math.abs(targetCorrelation - correlationWithNewEdge) < math.abs(targetCorrelation - correlation)) {
-
-            val maxNumberOfEdges = (0 until parameters.numberOfNodes).sum
-
-            val newEdgeOpt = if (edges.size < maxNumberOfEdges) {
-              tryToCreateEdge(nodes, edges, randomIntBetweenInclusive(parameters.minimalEdgeWeight, parameters.maximumEdgeWeight))
-            } else {
-              None
-            }
-
-            newEdgeOpt match {
-              case Some(edge) =>
-                fitEdges(nodes, edge :: shuffledEdges, parameters, retry + 1)
-              case None =>
-                val graph = OrientedGraph(nodes ::: edges)
-
-                shuffledEdges.find(_.weight < parameters.maximumEdgeWeight) match {
-                  case Some(_) =>
-                    val updatedEdges = shuffledEdges.map(edge => edge.copy(weight = math.min(edge.weight + 1, parameters.maximumEdgeWeight)))
-                    fitEdges(nodes, updatedEdges, parameters, retry + 1)
-                  case None =>
-                    val shuffledNodes = rand.shuffle(nodes)
-                    val firstSuitableNode = shuffledNodes.find(_.weight > parameters.minimalNodeWeight)
-
-                    firstSuitableNode match {
-                      case Some(node) =>
-                        val restOfNodes = nodes.filterNot(_ == node)
-                        fitEdges(node.copy(weight = node.weight - 1) :: restOfNodes, shuffledEdges, parameters)
-                      case None =>
-                        graph
-                    }
-                }
-            }
-          } else {
-
-            val shouldBeIncremented = shuffledEdges.find(edge => edge.weight < parameters.maximumEdgeWeight)
-            shouldBeIncremented match {
-              case None =>
-                val graph = OrientedGraph(nodes ::: edges)
-                logger.warn(s"Cannot increment edge for graph:\n${Show[OrientedGraph].show(graph)}\n")
-                graph
-
-              case Some(edge) =>
-                val updatedEdges = edge.copy(weight = edge.weight + 1) :: shuffledEdges.filterNot(_ == edge)
-                fitEdges(nodes, updatedEdges, parameters, retry + 1)
-            }
-          }
+          increaseEdgeWeights(nodes, shuffledEdges, parameters, retry, nodeWeights, edgeWeights, correlation)
         }
       }
+    }
+  }
+
+  private def increaseEdgeWeights(
+    nodes: List[Node],
+    shuffledEdges: List[OrientedEdge],
+    parameters: GraphParameters,
+    retry: Int,
+    nodeWeights: Int,
+    edgeWeights: Int,
+    correlation: Double
+  ): OrientedGraph = {
+
+    val targetCorrelation = parameters.correlation
+
+    val correlationWithNewEdge = GraphOps.correlationOfConnections(nodeWeights, edgeWeights + parameters.minimalEdgeWeight)
+
+    if (math.abs(targetCorrelation - correlationWithNewEdge) < math.abs(targetCorrelation - correlation)) {
+
+      val maxNumberOfEdges = (0 until parameters.numberOfNodes).sum
+
+      val newEdgeOpt = if (shuffledEdges.size < maxNumberOfEdges) {
+        tryToCreateEdge(nodes, shuffledEdges, randomIntBetweenInclusive(parameters.minimalEdgeWeight, parameters.maximumEdgeWeight))
+      } else {
+        None
+      }
+
+      newEdgeOpt match {
+        case Some(edge) =>
+          fitEdges(nodes, edge :: shuffledEdges, parameters, retry + 1)
+        case None =>
+          increaseEdgesWithoutAddingNewEdge(nodes, shuffledEdges, parameters, retry)
+      }
+    } else {
+
+      incrementOneEdge(nodes, shuffledEdges, parameters, retry)
+    }
+  }
+
+  private def incrementOneEdge(nodes: List[Node], shuffledEdges: List[OrientedEdge], parameters: GraphParameters, retry: Int): OrientedGraph = {
+    val shouldBeIncremented = shuffledEdges.find(edge => edge.weight < parameters.maximumEdgeWeight)
+    shouldBeIncremented match {
+      case None =>
+        val graph = OrientedGraph(nodes ::: shuffledEdges)
+        logger.warn(s"Cannot increment edge for graph:\n${Show[OrientedGraph].show(graph)}\n")
+        graph
+
+      case Some(edge) =>
+        val updatedEdges = edge.copy(weight = edge.weight + 1) :: shuffledEdges.filterNot(_ == edge)
+        fitEdges(nodes, updatedEdges, parameters, retry + 1)
+    }
+  }
+
+  private def increaseEdgesWithoutAddingNewEdge(
+    nodes: List[Node],
+    shuffledEdges: List[OrientedEdge],
+    parameters: GraphParameters,
+    retry: Int
+  ): OrientedGraph = {
+
+    val graph = OrientedGraph(nodes ::: shuffledEdges)
+
+    shuffledEdges.find(_.weight < parameters.maximumEdgeWeight) match {
+      case Some(_) =>
+        val updatedEdges = shuffledEdges.map(edge => edge.copy(weight = math.min(edge.weight + 1, parameters.maximumEdgeWeight)))
+        fitEdges(nodes, updatedEdges, parameters, retry + 1)
+      case None =>
+        decreaseNodeWeight(nodes, shuffledEdges, parameters, graph, retry)
+    }
+  }
+
+  private def decreaseNodeWeight(
+    nodes: List[Node],
+    shuffledEdges: List[OrientedEdge],
+    parameters: GraphParameters,
+    graph: OrientedGraph,
+    retry: Int
+  ): OrientedGraph = {
+    val shuffledNodes = rand.shuffle(nodes)
+    val firstSuitableNode = shuffledNodes.find(_.weight > parameters.minimalNodeWeight)
+
+    firstSuitableNode match {
+      case Some(node) =>
+        val restOfNodes = nodes.filterNot(_ == node)
+        fitEdges(node.copy(weight = node.weight - 1) :: restOfNodes, shuffledEdges, parameters, retry + 1)
+      case None =>
+        graph
+    }
+  }
+
+  private def decreaseEdgeWeights(
+    nodes: List[Node],
+    shuffledEdges: List[OrientedEdge],
+    parameters: GraphParameters,
+    retry: Int,
+    nodeWeights: Int,
+    edgeWeights: Int,
+    correlation: Double
+  ): OrientedGraph = {
+
+    val targetCorrelation = parameters.correlation
+
+    val correlationWithoutMaxEdge = GraphOps.correlationOfConnections(nodeWeights, edgeWeights - parameters.maximumEdgeWeight)
+
+    if (math.abs(targetCorrelation - correlationWithoutMaxEdge) < math.abs(targetCorrelation - correlation)) {
+
+      fitEdges(nodes, shuffledEdges.tail, parameters, retry + 1)
+    } else {
+
+      val reducedEdgeWeight = shuffledEdges.head.weight - 1
+
+      val updatedEdges =
+        if (reducedEdgeWeight < parameters.minimalEdgeWeight) shuffledEdges.tail
+        else shuffledEdges.head.copy(weight = reducedEdgeWeight) :: shuffledEdges.tail
+
+      fitEdges(nodes, updatedEdges, parameters, retry + 1)
     }
   }
 
