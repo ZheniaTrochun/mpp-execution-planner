@@ -12,7 +12,7 @@ object GraphRandomizer extends LazyLogging {
   val rand = new Random()
   val MaxNumberOfTries = 20
   val MaxNumberOfRetriesOfFittingEdges = 1000
-  val Epsilon = 0.001
+  val Epsilon = 0.0001
 
   def createRandomOrientedGraph(parameters: GraphParameters): OrientedGraph = {
     val nodes = createRandomNodes(parameters)
@@ -118,16 +118,22 @@ object GraphRandomizer extends LazyLogging {
                 fitEdges(nodes, edge :: shuffledEdges, parameters, retry + 1)
               case None =>
                 val graph = OrientedGraph(nodes ::: edges)
-//                logger.warn(s"Cannot create edge for graph:\n${Show[OrientedGraph].show(graph)}\n")
 
                 shuffledEdges.find(_.weight < parameters.maximumEdgeWeight) match {
                   case Some(_) =>
                     val updatedEdges = shuffledEdges.map(edge => edge.copy(weight = math.min(edge.weight + 1, parameters.maximumEdgeWeight)))
                     fitEdges(nodes, updatedEdges, parameters, retry + 1)
                   case None =>
-                    val graph = OrientedGraph(nodes ::: edges)
-                    logger.warn(s"Cannot increment edge for graph:\n${Show[OrientedGraph].show(graph)}\n")
-                    graph
+                    val shuffledNodes = rand.shuffle(nodes)
+                    val firstSuitableNode = shuffledNodes.find(_.weight > parameters.minimalNodeWeight)
+
+                    firstSuitableNode match {
+                      case Some(node) =>
+                        val restOfNodes = nodes.filterNot(_ == node)
+                        fitEdges(node.copy(weight = node.weight - 1) :: restOfNodes, shuffledEdges, parameters)
+                      case None =>
+                        graph
+                    }
                 }
             }
           } else {
@@ -143,11 +149,6 @@ object GraphRandomizer extends LazyLogging {
                 val updatedEdges = edge.copy(weight = edge.weight + 1) :: shuffledEdges.filterNot(_ == edge)
                 fitEdges(nodes, updatedEdges, parameters, retry + 1)
             }
-
-            // todo: faster but evristic
-//            val updatedEdges = shuffledEdges.head.copy(weight = math.min(shuffledEdges.head.weight + 1, parameters.maximumEdgeWeight)) :: shuffledEdges.tail
-//
-//            fitEdges(nodes, updatedEdges, parameters, retry + 1)
           }
         }
       }
