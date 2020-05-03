@@ -19,7 +19,7 @@ sealed trait Edge extends GraphEntry
 case class OrientedEdge(
   id: String,
   label: String,
-  weight: String,
+  weight: Int,
   source: String,
   target: String
 ) extends OrientedGraphEntry with Edge
@@ -27,13 +27,13 @@ case class OrientedEdge(
 case class NonOrientedEdge(
   id: String,
   label: String,
-  weight: String,
+  weight: Int,
   source: String,
   target: String
 ) extends NonOrientedGraphEntry with Edge
 
 object GraphEntry {
-  type EdgeApply[E] = (String, String, String, String, String) => E
+  type EdgeApply[E] = (String, String, Int, String, String) => E
   type NodeApply[T] = (String, String, Int) => T
 
   def from[T <: GraphEntry](entries: List[DtoGraphEntry])(createNode: NodeApply[T], createEdge: EdgeApply[T]): List[T] = {
@@ -43,7 +43,7 @@ object GraphEntry {
           case Data(id, label, weight, None, None) =>
             createNode(id, label, weight.toInt) :: acc
           case Data(id, label, weight, Some(source), Some(target)) =>
-            createEdge(id, label, weight, source, target) :: acc
+            createEdge(id, label, weight.toInt, source, target) :: acc
           case _ => acc
         }
       }
@@ -64,6 +64,7 @@ case class OrientedGraph(entries: List[OrientedGraphEntry]) {
 case class NonOrientedGraph(entries: List[NonOrientedGraphEntry]) {
   val edges = entries.collect { case e: NonOrientedEdge => e }
   val nodes = entries.collect { case n: Node => n }
+  val nodesMap = nodes.view.map(n => (n.id, n)).toMap
 
   val isCorrect: Boolean = GraphOps.checkGraphForConnectivity(this)
 }

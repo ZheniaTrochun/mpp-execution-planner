@@ -139,6 +139,21 @@ object GraphOps extends LazyLogging {
     taskGraph.edges.count(edge => edge.target == node.id || edge.source == node.id)
   }
 
+  def correlationOfConnections(taskGraph: OrientedGraph): Double = {
+    correlationOfConnections(taskGraph.nodes, taskGraph.edges)
+  }
+
+  def correlationOfConnections(nodes: List[Node], edges: List[OrientedEdge]): Double = {
+    val nodeWeights = nodes.map(_.weight).sum
+    val edgeWeights = edges.map(_.weight).sum
+
+    val allWeights = nodeWeights + edgeWeights
+
+    if (allWeights == 0) 0
+    else nodeWeights.toDouble / allWeights
+  }
+
+
   private def isConnected(first: Node, second: Node, edges: List[NonOrientedEdge]): Boolean =
     edges.exists(edge => (edge.source == first.id) && (edge.target == second.id)) ||
       edges.exists(edge => (edge.target == first.id) && (edge.source == second.id))
@@ -161,6 +176,7 @@ object GraphOps extends LazyLogging {
       def criticalPathByNodesCount(node: Node): Option[List[Node]] = GraphOps.findCriticalPathByNodesCount(orientedGraph, node)
 
       def connectivityOfNode(node: Node): Int = GraphOps.determineNodeConnectivity(orientedGraph, node)
+      def correlationOfConnections: Double = GraphOps.correlationOfConnections(orientedGraph)
     }
   }
 }
