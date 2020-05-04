@@ -76,7 +76,7 @@ object GraphRandomizer extends LazyLogging {
     val correlation = GraphOps.correlationOfConnections(nodeWeights, edgeWeights)
 
     // todo: pretty ugly hack
-    if (retry == (MaxNumberOfRetriesOfFittingEdges * 0.7).toInt) {
+    if (retry == (MaxNumberOfRetriesOfFittingEdges * 0.7).toInt || retry == (MaxNumberOfRetriesOfFittingEdges * 0.8).toInt || retry == (MaxNumberOfRetriesOfFittingEdges * 0.9).toInt) {
 
       val graph = OrientedGraph(nodes ::: edges)
       decreaseNodeWeight(nodes, edges, parameters, graph, retry)
@@ -186,7 +186,7 @@ object GraphRandomizer extends LazyLogging {
 
     firstSuitableNode match {
       case Some(node) =>
-        val restOfNodes = nodes.filterNot(_ == node)
+        val restOfNodes = nodes.filterNot(_.id == node.id)
         Continuation(() => fitEdgesSafe(node.copy(weight = node.weight - 1) :: restOfNodes, shuffledEdges, parameters, retry + 1))
       case None =>
         Finish(graph)

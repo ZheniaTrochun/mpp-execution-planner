@@ -405,8 +405,8 @@
     .correlation-values {
         position: absolute;
         top: 30px;
-        right: 100px;
-        width: 200px;
+        right: 30px;
+        width: 300px;
         z-index: 2;
         color: black;
         font-size: large;
