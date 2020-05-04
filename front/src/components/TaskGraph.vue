@@ -65,9 +65,9 @@
                 numberOfNodes: 10,
                 maxNodeWeight: 10,
                 minNodeWeight: 1,
-                maxEdgeWeight: 10,
+                maxEdgeWeight: 5,
                 minEdgeWeight: 1,
-                correlation: 0.5,
+                correlation: 0.7,
             };
         },
         mounted() {
@@ -207,7 +207,7 @@
                 console.log("after created", cy);
             },
             markCycle(res) {
-                // todo: bug here
+                // todo: can be a bug here
                 if (res.alreadyVisited.length > 0) {
                     const duplicate = res.alreadyVisited[0];
                     let indexOfSame = 0;
@@ -238,7 +238,7 @@
                 }
             },
             checkGraph() {
-                // todo: bug here
+                // todo: can be a bug here
                 const defaultResult = {
                     alreadyVisited: [],
                     stack: [],
@@ -313,11 +313,10 @@
 
                             resp.data.taskGraph.forEach(x => {
                                 graph.add(x);
-                                this.checkGraph();
                             });
 
+                            this.checkGraph();
                             store.commit('initState', resp.data);
-
                             this.generateDialog = false;
                         }
                     })
