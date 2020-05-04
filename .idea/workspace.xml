@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e353fa64-76d8-4433-b5e5-d0aa6c03b9f2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/front/src/components/TaskGraph.vue" beforeDir="false" afterPath="$PROJECT_DIR$/front/src/components/TaskGraph.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/dto/Graphs.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/dto/Graphs.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/front/.gitignore" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -99,7 +98,7 @@
         <entry file="file://$PROJECT_DIR$/src/test/scala/com/yevhenii/cluster/punner/server/graphs/GraphRandomizerSpec.scala">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="68">
-              <caret line="30" column="40" lean-forward="true" selection-start-line="30" selection-start-column="40" selection-end-line="30" selection-end-column="40" />
+              <caret line="30" column="40" selection-start-line="30" selection-start-column="40" selection-end-line="30" selection-end-column="40" />
               <folding>
                 <element signature="e#51#67#0" expanded="true" />
               </folding>
@@ -119,7 +118,7 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/dto/Graphs.scala">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="121">
@@ -129,19 +128,28 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/dto/Task.scala">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/utils/Trampoline.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="4" selection-start-line="4" selection-end-line="7" />
+            <state relative-caret-position="345">
+              <caret line="23" column="3" selection-start-line="23" selection-start-column="3" selection-end-line="23" selection-end-column="3" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/utils/Trampoline.scala">
+        <entry file="file://$PROJECT_DIR$/front/src/components/TaskGraph.vue">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="24" selection-start-line="24" selection-end-line="41" selection-end-column="5" />
+            <state relative-caret-position="146">
+              <caret line="209" column="33" selection-start-line="209" selection-start-column="33" selection-end-line="209" selection-end-column="33" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/front/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="345">
+              <caret line="23" column="7" selection-start-line="23" selection-start-column="7" selection-end-line="23" selection-end-column="7" />
             </state>
           </provider>
         </entry>
@@ -150,16 +158,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/model/GraphParameters.scala">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="150">
-              <caret line="10" column="47" lean-forward="true" selection-start-line="5" selection-start-column="2" selection-end-line="10" selection-end-column="47" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/TaskServiceImpl.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="9" column="6" selection-start-line="9" selection-start-column="6" selection-end-line="9" selection-end-column="6" />
+              <caret line="10" column="47" selection-start-line="5" selection-start-column="2" selection-end-line="10" selection-end-column="47" />
             </state>
           </provider>
         </entry>
@@ -211,12 +210,11 @@
     </replaceStrings>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/front" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/scala/com/yevhenii/claster/planner/server/graphs/MongoTaskRepository.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/yevhenii/claster/planner/server/graphs/TaskRoutes.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/yevhenii/claster/planner/server/Server.scala" />
         <option value="$PROJECT_DIR$/src/main/resources/logback.xml" />
@@ -259,14 +257,15 @@
         <option value="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/TaskServiceImpl.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/TaskRoutes.scala" />
         <option value="$PROJECT_DIR$/front/src/store/index.js" />
-        <option value="$PROJECT_DIR$/front/src/components/TaskGraph.vue" />
         <option value="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/utils/Trampolin.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/utils/Trampoline.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/model/GraphEntry.scala" />
         <option value="$PROJECT_DIR$/src/test/scala/com/yevhenii/cluster/punner/server/graphs/GraphOpsSpec.scala" />
         <option value="$PROJECT_DIR$/src/test/scala/com/yevhenii/cluster/punner/server/modeling/QueueCreatorSpec.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/graphs/GraphRandomizer.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/dto/Graphs.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/utils/Trampoline.scala" />
+        <option value="$PROJECT_DIR$/front/src/components/TaskGraph.vue" />
+        <option value="$PROJECT_DIR$/front/.gitignore" />
       </list>
     </option>
   </component>
@@ -295,27 +294,6 @@
               <item name="ClusterPlanner" type="b2602c69:ProjectViewProjectNode" />
               <item name="cluster-planner-server" type="462c0819:PsiDirectoryNode" />
               <item name="front" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ClusterPlanner" type="b2602c69:ProjectViewProjectNode" />
-              <item name="cluster-planner-server" type="462c0819:PsiDirectoryNode" />
-              <item name="front" type="462c0819:PsiDirectoryNode" />
-              <item name="node_modules" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ClusterPlanner" type="b2602c69:ProjectViewProjectNode" />
-              <item name="cluster-planner-server" type="462c0819:PsiDirectoryNode" />
-              <item name="front" type="462c0819:PsiDirectoryNode" />
-              <item name="node_modules" type="462c0819:PsiDirectoryNode" />
-              <item name="vuex" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ClusterPlanner" type="b2602c69:ProjectViewProjectNode" />
-              <item name="cluster-planner-server" type="462c0819:PsiDirectoryNode" />
-              <item name="front" type="462c0819:PsiDirectoryNode" />
-              <item name="node_modules" type="462c0819:PsiDirectoryNode" />
-              <item name="vuex" type="462c0819:PsiDirectoryNode" />
-              <item name="types" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ClusterPlanner" type="b2602c69:ProjectViewProjectNode" />
@@ -721,7 +699,7 @@
       <workItem from="1587417002898" duration="4660000" />
       <workItem from="1587462103502" duration="17162000" />
       <workItem from="1588500473615" duration="16657000" />
-      <workItem from="1588537890103" duration="10589000" />
+      <workItem from="1588537890103" duration="10955000" />
     </task>
     <servers />
   </component>
@@ -734,7 +712,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="143784000" />
+    <option name="totallyTimeSpent" value="144150000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
@@ -788,13 +766,6 @@
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$USER_HOME$/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.12.10/scala-library-2.12.10-sources.jar!/scala/Product1.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="24" column="6" selection-start-line="24" selection-start-column="6" selection-end-line="24" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.12.10/scala-library-2.12.10-sources.jar!/scala/Product2.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="206">
@@ -1067,16 +1038,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/front/src/components/TaskGraph.vue">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="233">
-          <caret line="318" column="56" selection-start-line="318" selection-start-column="56" selection-end-line="318" selection-end-column="56" />
-          <folding>
-            <element signature="e#622#656#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/modeling/QueueServiceImpl.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="450">
@@ -1134,7 +1095,7 @@
     <entry file="file://$PROJECT_DIR$/src/test/scala/com/yevhenii/cluster/punner/server/graphs/GraphRandomizerSpec.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
-          <caret line="30" column="40" lean-forward="true" selection-start-line="30" selection-start-column="40" selection-end-line="30" selection-end-column="40" />
+          <caret line="30" column="40" selection-start-line="30" selection-start-column="40" selection-end-line="30" selection-end-column="40" />
           <folding>
             <element signature="e#51#67#0" expanded="true" />
           </folding>
@@ -1154,7 +1115,7 @@
     <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/model/GraphParameters.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
-          <caret line="10" column="47" lean-forward="true" selection-start-line="5" selection-start-column="2" selection-end-line="10" selection-end-column="47" />
+          <caret line="10" column="47" selection-start-line="5" selection-start-column="2" selection-end-line="10" selection-end-column="47" />
         </state>
       </provider>
     </entry>
@@ -1178,17 +1139,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/utils/Trampoline.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="24" selection-start-line="24" selection-end-line="41" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/dto/Graphs.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="121">
           <caret line="37" column="68" selection-start-line="37" selection-start-column="68" selection-end-line="37" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/yevhenii/cluster/planner/server/utils/Trampoline.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="23" column="3" selection-start-line="23" selection-start-column="3" selection-end-line="23" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/front/src/components/TaskGraph.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="146">
+          <caret line="209" column="33" selection-start-line="209" selection-start-column="33" selection-end-line="209" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/front/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="23" column="7" selection-start-line="23" selection-start-column="7" selection-end-line="23" selection-end-column="7" />
         </state>
       </provider>
     </entry>
