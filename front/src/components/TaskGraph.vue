@@ -17,7 +17,7 @@
             <br>
             Sum of edge weights: {{weightOfEdges}}
             <br>
-            correlation n: {{correlationOfWeights}}
+            correlation: {{correlationOfWeights}}
         </p>
 
         <v-alert class="errorDialog" type="error" v-if="isIncorrect">
