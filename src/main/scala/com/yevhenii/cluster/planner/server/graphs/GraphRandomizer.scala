@@ -4,6 +4,7 @@ import cats.Show
 import com.typesafe.scalalogging.LazyLogging
 import com.yevhenii.cluster.planner.server.model.{GraphParameters, Node, OrientedEdge, OrientedGraph}
 import com.yevhenii.cluster.planner.server.graphs.GraphShow._
+import com.yevhenii.cluster.planner.server.utils.{Continuation, Finish, Trampoline}
 
 import scala.util.Random
 
@@ -60,7 +61,13 @@ object GraphRandomizer extends LazyLogging {
     OrientedEdge(s"$source-$target", s"[$weight]", weight, source.toString, target.toString)
   }
 
-  private def fitEdges(nodes: List[Node], edges: List[OrientedEdge], parameters: GraphParameters, retry: Int = 0): OrientedGraph = {
+  private def fitEdges(nodes: List[Node], edges: List[OrientedEdge], parameters: GraphParameters): OrientedGraph = {
+
+    val resultTrampoline = fitEdgesSafe(nodes, edges, parameters, 0)
+    Trampoline.calculate(resultTrampoline)
+  }
+
+  private def fitEdgesSafe(nodes: List[Node], edges: List[OrientedEdge], parameters: GraphParameters, retry: Int): Trampoline[OrientedGraph] = {
     val targetCorrelation = parameters.correlation
 
     val nodeWeights = nodes.map(_.weight).sum
@@ -72,12 +79,12 @@ object GraphRandomizer extends LazyLogging {
       val graph = OrientedGraph(nodes ::: edges)
       logger.warn(s"Could not fit edges fine, exhausted number of retries, target correlation = $targetCorrelation, current correlation = $correlation")
       logger.info(s"\n${Show[OrientedGraph].show(graph)}\n")
-      graph
+      Finish(graph)
 
     } else {
 
       if (math.abs(targetCorrelation - correlation) <= Epsilon) {
-        OrientedGraph(nodes ::: edges)
+        Finish(OrientedGraph(nodes ::: edges))
       } else {
 
         val shuffledEdges = Random.shuffle(edges)
@@ -99,7 +106,7 @@ object GraphRandomizer extends LazyLogging {
     nodeWeights: Int,
     edgeWeights: Int,
     correlation: Double
-  ): OrientedGraph = {
+  ): Trampoline[OrientedGraph] = {
 
     val targetCorrelation = parameters.correlation
 
@@ -117,7 +124,7 @@ object GraphRandomizer extends LazyLogging {
 
       newEdgeOpt match {
         case Some(edge) =>
-          fitEdges(nodes, edge :: shuffledEdges, parameters, retry + 1)
+          Continuation(() => fitEdgesSafe(nodes, edge :: shuffledEdges, parameters, retry + 1))
         case None =>
           increaseEdgesWithoutAddingNewEdge(nodes, shuffledEdges, parameters, retry)
       }
@@ -127,17 +134,17 @@ object GraphRandomizer extends LazyLogging {
     }
   }
 
-  private def incrementOneEdge(nodes: List[Node], shuffledEdges: List[OrientedEdge], parameters: GraphParameters, retry: Int): OrientedGraph = {
+  private def incrementOneEdge(nodes: List[Node], shuffledEdges: List[OrientedEdge], parameters: GraphParameters, retry: Int): Trampoline[OrientedGraph] = {
     val shouldBeIncremented = shuffledEdges.find(edge => edge.weight < parameters.maximumEdgeWeight)
     shouldBeIncremented match {
       case None =>
         val graph = OrientedGraph(nodes ::: shuffledEdges)
         logger.warn(s"Cannot increment edge for graph:\n${Show[OrientedGraph].show(graph)}\n")
-        graph
+        Finish(graph)
 
       case Some(edge) =>
         val updatedEdges = edge.copy(weight = edge.weight + 1) :: shuffledEdges.filterNot(_ == edge)
-        fitEdges(nodes, updatedEdges, parameters, retry + 1)
+        Continuation(() => fitEdgesSafe(nodes, updatedEdges, parameters, retry + 1))
     }
   }
 
@@ -146,14 +153,14 @@ object GraphRandomizer extends LazyLogging {
     shuffledEdges: List[OrientedEdge],
     parameters: GraphParameters,
     retry: Int
-  ): OrientedGraph = {
+  ): Trampoline[OrientedGraph] = {
 
     val graph = OrientedGraph(nodes ::: shuffledEdges)
 
     shuffledEdges.find(_.weight < parameters.maximumEdgeWeight) match {
       case Some(_) =>
         val updatedEdges = shuffledEdges.map(edge => edge.copy(weight = math.min(edge.weight + 1, parameters.maximumEdgeWeight)))
-        fitEdges(nodes, updatedEdges, parameters, retry + 1)
+        Continuation(() => fitEdgesSafe(nodes, updatedEdges, parameters, retry + 1))
       case None =>
         decreaseNodeWeight(nodes, shuffledEdges, parameters, graph, retry)
     }
@@ -165,16 +172,16 @@ object GraphRandomizer extends LazyLogging {
     parameters: GraphParameters,
     graph: OrientedGraph,
     retry: Int
-  ): OrientedGraph = {
+  ): Trampoline[OrientedGraph] = {
     val shuffledNodes = rand.shuffle(nodes)
     val firstSuitableNode = shuffledNodes.find(_.weight > parameters.minimalNodeWeight)
 
     firstSuitableNode match {
       case Some(node) =>
         val restOfNodes = nodes.filterNot(_ == node)
-        fitEdges(node.copy(weight = node.weight - 1) :: restOfNodes, shuffledEdges, parameters, retry + 1)
+        Continuation(() => fitEdgesSafe(node.copy(weight = node.weight - 1) :: restOfNodes, shuffledEdges, parameters, retry + 1))
       case None =>
-        graph
+        Finish(graph)
     }
   }
 
@@ -186,7 +193,7 @@ object GraphRandomizer extends LazyLogging {
     nodeWeights: Int,
     edgeWeights: Int,
     correlation: Double
-  ): OrientedGraph = {
+  ): Trampoline[OrientedGraph] = {
 
     val targetCorrelation = parameters.correlation
 
@@ -194,7 +201,7 @@ object GraphRandomizer extends LazyLogging {
 
     if (math.abs(targetCorrelation - correlationWithoutMaxEdge) < math.abs(targetCorrelation - correlation)) {
 
-      fitEdges(nodes, shuffledEdges.tail, parameters, retry + 1)
+      Continuation(() => fitEdgesSafe(nodes, shuffledEdges.tail, parameters, retry + 1))
     } else {
 
       val reducedEdgeWeight = shuffledEdges.head.weight - 1
@@ -203,7 +210,7 @@ object GraphRandomizer extends LazyLogging {
         if (reducedEdgeWeight < parameters.minimalEdgeWeight) shuffledEdges.tail
         else shuffledEdges.head.copy(weight = reducedEdgeWeight) :: shuffledEdges.tail
 
-      fitEdges(nodes, updatedEdges, parameters, retry + 1)
+      Continuation(() => fitEdgesSafe(nodes, updatedEdges, parameters, retry + 1))
     }
   }
 
