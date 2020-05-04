@@ -43,7 +43,7 @@ object GraphRandomizer extends LazyLogging {
 
   private def tryToCreateEdge(nodes: List[Node], edges: List[OrientedEdge], weight: Int): Option[OrientedEdge] = {
     Stream.continually {
-      val source = rand.nextInt(nodes.size) + 1
+      val source = rand.nextInt(nodes.size - 1) + 1
       val target = rand.nextInt(nodes.size - source) + 1 + source
 
       createOrientedEdge(source, target, weight)
