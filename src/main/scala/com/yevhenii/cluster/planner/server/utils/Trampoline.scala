@@ -22,22 +22,4 @@ object Trampoline {
 
     loop(t)
   }
-
-//  def calculate[A](t: Trampoline[A]): A = {
-//    var result: A = _
-//    var isNotFinished = true
-//    var state: Trampoline[A] = t
-//
-//    while (isNotFinished) {
-//      state match {
-//        case Continuation(next) =>
-//          state = next()
-//        case Finish(value) =>
-//          result = value
-//          isNotFinished = false
-//      }
-//    }
-//
-//    result
-//  }
 }
