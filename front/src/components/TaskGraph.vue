@@ -207,6 +207,7 @@
                 console.log("after created", cy);
             },
             markCycle(res) {
+                // todo: bug here
                 if (res.alreadyVisited.length > 0) {
                     const duplicate = res.alreadyVisited[0];
                     let indexOfSame = 0;
@@ -237,6 +238,7 @@
                 }
             },
             checkGraph() {
+                // todo: bug here
                 const defaultResult = {
                     alreadyVisited: [],
                     stack: [],
