@@ -25,7 +25,7 @@ object GraphRandomizer extends LazyLogging {
   private def createRandomNodes(parameters: GraphParameters): List[Node] = {
     (1 to parameters.numberOfNodes)
       .map(i => (i, randomIntBetweenInclusive(parameters.minimalNodeWeight, parameters.maximumNodeWeight)))
-      .map { case (index, weight) => Node(s"$index", s"$index-$weight", weight) }
+      .map { case (index, weight) => Node(s"$index", weight) }
       .toList
   }
 
@@ -58,7 +58,7 @@ object GraphRandomizer extends LazyLogging {
   }
 
   private def createOrientedEdge(source: Int, target: Int, weight: Int): OrientedEdge = {
-    OrientedEdge(s"$source-$target", s"[$weight]", weight, source.toString, target.toString)
+    OrientedEdge(s"$source-$target", weight, source.toString, target.toString)
   }
 
   private def fitEdges(nodes: List[Node], edges: List[OrientedEdge], parameters: GraphParameters): OrientedGraph = {

@@ -10,40 +10,43 @@ sealed trait NonOrientedGraphEntry extends GraphEntry
 
 case class Node(
   id: String,
-  label: String,
   weight: Int
-) extends OrientedGraphEntry with NonOrientedGraphEntry
+) extends OrientedGraphEntry with NonOrientedGraphEntry {
+  def label: String = s"$id-$weight"
+}
 
 sealed trait Edge extends GraphEntry
 
 case class OrientedEdge(
   id: String,
-  label: String,
   weight: Int,
   source: String,
   target: String
-) extends OrientedGraphEntry with Edge
+) extends OrientedGraphEntry with Edge {
+  def label: String = s"[$weight]"
+}
 
 case class NonOrientedEdge(
   id: String,
-  label: String,
   weight: Int,
   source: String,
   target: String
-) extends NonOrientedGraphEntry with Edge
+) extends NonOrientedGraphEntry with Edge {
+  def label: String = s"[$weight]"
+}
 
 object GraphEntry {
-  type EdgeApply[E] = (String, String, Int, String, String) => E
-  type NodeApply[T] = (String, String, Int) => T
+  type EdgeApply[E] = (String, Int, String, String) => E
+  type NodeApply[T] = (String, Int) => T
 
   def from[T <: GraphEntry](entries: List[DtoGraphEntry])(createNode: NodeApply[T], createEdge: EdgeApply[T]): List[T] = {
     entries.map(_.data)
       .foldLeft(List.empty[T]) { (acc, entry) =>
         entry match {
-          case Data(id, label, weight, None, None) =>
-            createNode(id, label, weight.toInt) :: acc
-          case Data(id, label, weight, Some(source), Some(target)) =>
-            createEdge(id, label, weight.toInt, source, target) :: acc
+          case Data(id, _, weight, None, None) =>
+            createNode(id, weight.toInt) :: acc
+          case Data(id, _, weight, Some(source), Some(target)) =>
+            createEdge(id, weight.toInt, source, target) :: acc
           case _ => acc
         }
       }
