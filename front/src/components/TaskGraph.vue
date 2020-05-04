@@ -12,6 +12,14 @@
         <v-btn class="v-btn--outlined red darken-4 generate-graph-btn" v-on:click="openGenerateDialog">
             random graph
         </v-btn>
+        <p class="correlation-values">
+            Sum of node weights: {{weightOfNodes}}
+            <br>
+            Sum of edge weights: {{weightOfEdges}}
+            <br>
+            correlation n: {{correlationOfWeights}}
+        </p>
+
         <v-alert class="errorDialog" type="error" v-if="isIncorrect">
             Graph has at least one cycle, please remove all cycles!
         </v-alert>
@@ -68,6 +76,9 @@
                 maxEdgeWeight: 5,
                 minEdgeWeight: 1,
                 correlation: 0.7,
+                weightOfNodes: 0,
+                weightOfEdges: 0,
+                correlationOfWeights: 0
             };
         },
         mounted() {
@@ -130,6 +141,7 @@
                         resp.data.taskGraph.forEach(x => {
                             graph.add(x);
                             this.checkGraph();
+                            this.calculateCorrelation();
                         });
 
                         store.commit('initState', resp.data);
@@ -145,6 +157,7 @@
                     store.commit(GRAPH_COMMIT_KEY, graph.elements().jsons());
                 }
                 this.checkGraph();
+                this.calculateCorrelation();
             });
 
             // register persisting element on move
@@ -154,6 +167,7 @@
             });
 
             this.checkGraph();
+            this.calculateCorrelation();
         },
         created() {
             this.$vuetify.theme.dark = true;
@@ -175,6 +189,7 @@
                 });
                 store.commit(GRAPH_COMMIT_KEY, graph.elements().jsons());
                 this.checkGraph();
+                this.calculateCorrelation();
             },
             addLink() {
                 const source = prompt("Source: ");
@@ -187,11 +202,13 @@
                 });
                 store.commit(GRAPH_COMMIT_KEY, graph.elements().jsons());
                 this.checkGraph();
+                this.calculateCorrelation();
             },
             deleteSelected() {
                 graph.remove(':selected');
                 store.commit(GRAPH_COMMIT_KEY, graph.elements().jsons());
                 this.checkGraph();
+                this.calculateCorrelation();
             },
             deleteNode(id) {
                 console.log("node clicked", id);
@@ -316,10 +333,21 @@
                             });
 
                             this.checkGraph();
+                            this.calculateCorrelation();
                             store.commit('initState', resp.data);
                             this.generateDialog = false;
                         }
-                    })
+                    });
+            },
+            calculateCorrelation() {
+                if (graph) {
+                    this.weightOfNodes = graph.nodes().map(x => x.data()).map(node => parseInt(node.weight)).reduce((x, y) => x + y, 0);
+                    this.weightOfEdges = graph.edges().map(x => x.data()).map(edge => parseInt(edge.weight)).reduce((x, y) => x + y, 0);
+
+                    const sum = this.weightOfNodes + this.weightOfEdges;
+
+                    this.correlationOfWeights = sum === 0 ? 0 : (this.weightOfNodes / sum);
+                }
             }
         }
     };
@@ -372,5 +400,15 @@
         position: absolute;
         width: 100%;
         z-index: 2;
+    }
+
+    .correlation-values {
+        position: absolute;
+        top: 30px;
+        right: 100px;
+        width: 200px;
+        z-index: 2;
+        color: black;
+        font-size: large;
     }
 </style>

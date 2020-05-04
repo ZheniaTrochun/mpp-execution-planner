@@ -75,24 +75,32 @@ object GraphRandomizer extends LazyLogging {
 
     val correlation = GraphOps.correlationOfConnections(nodeWeights, edgeWeights)
 
-    if (retry > MaxNumberOfRetriesOfFittingEdges) {
-      val graph = OrientedGraph(nodes ::: edges)
-      logger.warn(s"Could not fit edges fine, exhausted number of retries, target correlation = $targetCorrelation, current correlation = $correlation")
-      logger.info(s"\n${Show[OrientedGraph].show(graph)}\n")
-      Finish(graph)
+    // todo: pretty ugly hack
+    if (retry == (MaxNumberOfRetriesOfFittingEdges * 0.7).toInt) {
 
+      val graph = OrientedGraph(nodes ::: edges)
+      decreaseNodeWeight(nodes, edges, parameters, graph, retry)
     } else {
 
-      if (math.abs(targetCorrelation - correlation) <= Epsilon) {
-        Finish(OrientedGraph(nodes ::: edges))
+      if (retry > MaxNumberOfRetriesOfFittingEdges) {
+        val graph = OrientedGraph(nodes ::: edges)
+        logger.warn(s"Could not fit edges fine, exhausted number of retries, target correlation = $targetCorrelation, current correlation = $correlation")
+        logger.info(s"\n${Show[OrientedGraph].show(graph)}\n")
+        Finish(graph)
+
       } else {
 
-        val shuffledEdges = Random.shuffle(edges)
-
-        if (correlation < targetCorrelation) {
-          decreaseEdgeWeights(nodes, shuffledEdges, parameters, retry, nodeWeights, edgeWeights, correlation)
+        if (math.abs(targetCorrelation - correlation) <= Epsilon) {
+          Finish(OrientedGraph(nodes ::: edges))
         } else {
-          increaseEdgeWeights(nodes, shuffledEdges, parameters, retry, nodeWeights, edgeWeights, correlation)
+
+          val shuffledEdges = Random.shuffle(edges)
+
+          if (correlation < targetCorrelation) {
+            decreaseEdgeWeights(nodes, shuffledEdges, parameters, retry, nodeWeights, edgeWeights, correlation)
+          } else {
+            increaseEdgeWeights(nodes, shuffledEdges, parameters, retry, nodeWeights, edgeWeights, correlation)
+          }
         }
       }
     }
