@@ -71,11 +71,11 @@
                 isCorrect: true,
                 generateDialog: false,
                 numberOfNodes: 10,
-                maxNodeWeight: 10,
+                maxNodeWeight: 7,
                 minNodeWeight: 1,
                 maxEdgeWeight: 5,
                 minEdgeWeight: 1,
-                correlation: 0.7,
+                correlation: 0.6,
                 weightOfNodes: 0,
                 weightOfEdges: 0,
                 correlationOfWeights: 0

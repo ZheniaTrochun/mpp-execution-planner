@@ -75,24 +75,34 @@ object GraphRandomizer extends LazyLogging {
 
     val correlation = GraphOps.correlationOfConnections(nodeWeights, edgeWeights)
 
-    // todo: pretty ugly hack
-    if (retry == (MaxNumberOfRetriesOfFittingEdges * 0.7).toInt || retry == (MaxNumberOfRetriesOfFittingEdges * 0.8).toInt || retry == (MaxNumberOfRetriesOfFittingEdges * 0.9).toInt) {
-
-      val graph = OrientedGraph(nodes ::: edges)
-      decreaseNodeWeight(nodes, edges, parameters, graph, retry)
+    if (math.abs(targetCorrelation - correlation) <= Epsilon) {
+      Finish(OrientedGraph(nodes ::: edges))
     } else {
 
-      if (retry > MaxNumberOfRetriesOfFittingEdges) {
-        val graph = OrientedGraph(nodes ::: edges)
-        logger.warn(s"Could not fit edges fine, exhausted number of retries, target correlation = $targetCorrelation, current correlation = $correlation")
-        logger.info(s"\n${Show[OrientedGraph].show(graph)}\n")
-        Finish(graph)
+    // todo: pretty ugly hack
+      if (
+        retry == (MaxNumberOfRetriesOfFittingEdges * 0.5).toInt ||
+          retry == (MaxNumberOfRetriesOfFittingEdges * 0.6).toInt ||
+          retry == (MaxNumberOfRetriesOfFittingEdges * 0.7).toInt ||
+          retry == (MaxNumberOfRetriesOfFittingEdges * 0.8).toInt ||
+          retry == (MaxNumberOfRetriesOfFittingEdges * 0.9).toInt
+      ) {
 
+        val graph = OrientedGraph(nodes ::: edges)
+        decreaseNodeWeight(nodes, edges, parameters, graph, retry)
       } else {
 
-        if (math.abs(targetCorrelation - correlation) <= Epsilon) {
-          Finish(OrientedGraph(nodes ::: edges))
+        if (retry > MaxNumberOfRetriesOfFittingEdges) {
+          val graph = OrientedGraph(nodes ::: edges)
+          logger.warn(s"Could not fit edges fine, exhausted number of retries, target correlation = $targetCorrelation, current correlation = $correlation")
+          logger.info(s"\n${Show[OrientedGraph].show(graph)}\n")
+          Finish(graph)
+
         } else {
+
+//          if (math.abs(targetCorrelation - correlation) <= Epsilon) {
+//            Finish(OrientedGraph(nodes ::: edges))
+//          } else {
 
           val shuffledEdges = Random.shuffle(edges)
 
