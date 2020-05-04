@@ -30,7 +30,7 @@ object GraphRandomizer extends LazyLogging {
   }
 
   private def createRandomEdges(nodes: List[Node], parameters: GraphParameters): List[OrientedEdge] = {
-    val numberOfEdges = randomIntBetweenInclusive((nodes.size * 0.8).toInt, nodes.size * 2)
+    val numberOfEdges = randomIntBetweenInclusive((nodes.size * 0.7).toInt, (nodes.size * 1.7).toInt)
 
     (1 to numberOfEdges)
       .map(_ => randomIntBetweenInclusive(parameters.minimalEdgeWeight, parameters.maximumEdgeWeight))
