@@ -12,7 +12,7 @@ case class Node(
   id: String,
   weight: Int
 ) extends OrientedGraphEntry with NonOrientedGraphEntry {
-  def label: String = s"$id-$weight"
+  def label: String = s"$id - [$weight]"
 }
 
 sealed trait Edge extends GraphEntry
