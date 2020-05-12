@@ -1,7 +1,7 @@
 package com.yevhenii.cluster.planner.server.modeling
 
 import com.yevhenii.cluster.planner.server.graphs.GraphOps.Implicits._
-import com.yevhenii.cluster.planner.server.model.{Node, OrientedGraph}
+import com.yevhenii.cluster.planner.server.model.{Node, NonOrientedGraph, OrientedGraph}
 
 object QueueCreator {
 
@@ -49,6 +49,19 @@ object QueueCreator {
           (node, (connectivity, criticalPath.map(_.length).getOrElse(0)))
         }
         .sortBy(_._2)(Ordering.Tuple2(Ordering.Int.reverse, Ordering.Int.reverse))
+    }
+  }
+
+  def createQueueBasedOnNodesConnectivity(systemGraph: NonOrientedGraph): List[(Node, Int)] = {
+    if (systemGraph.nodes.isEmpty || !systemGraph.isCorrect) {
+      List.empty
+    } else {
+      systemGraph.nodes
+        .map { node =>
+          val connectivity = systemGraph.connectivityOfNode(node)
+          (node, connectivity)
+        }
+        .sortBy(_._2)(Ordering.Int.reverse)
     }
   }
 }

@@ -135,7 +135,7 @@ object GraphOps extends LazyLogging {
     }
   }
 
-  def determineNodeConnectivity(taskGraph: OrientedGraph, node: Node): Int = {
+  def determineNodeConnectivity[E <: GraphEntry](taskGraph: Graph[E], node: Node): Int = {
     taskGraph.edges.count(edge => edge.target == node.id || edge.source == node.id)
   }
 
@@ -157,7 +157,30 @@ object GraphOps extends LazyLogging {
     else nodeWeights.toDouble / allWeights
   }
 
-  private def isConnected(first: Node, second: Node, edges: List[NonOrientedEdge]): Boolean =
+  def findShortestPath(from: String, to: String, sendingAmount: Int, nonOrientedGraph: NonOrientedGraph): List[NonOrientedEdge] = {
+    val edges = nonOrientedGraph.edges
+    def loop(currNode: String, path: List[NonOrientedEdge]): List[List[NonOrientedEdge]] = {
+      if (currNode == to) {
+        List(path)
+      } else {
+        val next = edges.filter(edge => edge.source == currNode || edge.target == currNode)
+
+        next.filterNot(path.contains)
+          .flatMap { edge =>
+            val nextNode = if (edge.source == currNode) edge.target else edge.source
+            loop(nextNode, edge :: path)
+          }
+          .filterNot(_.isEmpty)
+      }
+    }
+
+    loop(from, List.empty)
+      .filterNot(_.isEmpty)
+      .sortBy(_.map(e => math.ceil(sendingAmount / e.weight).toInt).sum)(Ordering.Int)
+      .head
+  }
+
+  private def isConnected[E <: NonOrientedGraphEntry with Edge](first: Node, second: Node, edges: List[E]): Boolean =
     edges.exists(edge => (edge.source == first.id) && (edge.target == second.id)) ||
       edges.exists(edge => (edge.target == first.id) && (edge.source == second.id))
 
@@ -170,7 +193,7 @@ object GraphOps extends LazyLogging {
       .flatMap(graph.nodesMap.get)
 
   object Implicits {
-    implicit class GraphOpsImplicits(orientedGraph: OrientedGraph) {
+    implicit class OrientedGraphOpsImplicits(orientedGraph: OrientedGraph) {
       def findPaths(from: Node, to: Node): Option[Set[List[Node]]] = GraphOps.findPaths(orientedGraph, from, to)
       def criticalPath: List[Node] = GraphOps.findCriticalPath(orientedGraph)
       def criticalPath(node: Node): Option[List[Node]] = GraphOps.findCriticalPath(orientedGraph, node)
@@ -180,6 +203,12 @@ object GraphOps extends LazyLogging {
 
       def connectivityOfNode(node: Node): Int = GraphOps.determineNodeConnectivity(orientedGraph, node)
       def correlationOfConnections: Double = GraphOps.correlationOfConnections(orientedGraph)
+    }
+
+    implicit class NonOrientedGraphOpsImplicits(nonOrientedGraph: NonOrientedGraph) {
+      def connectivityOfNode(node: Node): Int = GraphOps.determineNodeConnectivity(nonOrientedGraph, node)
+      def findShortestPath(from: String, to: String, sendingAmount: Int): List[NonOrientedEdge] =
+        GraphOps.findShortestPath(from, to, sendingAmount, nonOrientedGraph)
     }
   }
 }

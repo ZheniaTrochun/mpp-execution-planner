@@ -15,7 +15,23 @@ case class Node(
   def label: String = s"$id - [$weight]"
 }
 
-sealed trait Edge extends GraphEntry
+sealed trait Edge extends GraphEntry {
+  val id: String
+  val weight: Int
+  val source: String
+  val target: String
+
+  def label: String
+}
+
+sealed trait Graph[E <: GraphEntry] {
+  val entries: List[E]
+  val nodes: List[Node]
+  val edges: List[E with Edge]
+  val nodesMap: Map[String, Node]
+
+  val isCorrect: Boolean
+}
 
 case class OrientedEdge(
   id: String,
@@ -53,10 +69,10 @@ object GraphEntry {
   }
 }
 
-case class OrientedGraph(entries: List[OrientedGraphEntry]) {
-  val edges = entries.collect { case e: OrientedEdge => e }
-  val nodes = entries.collect { case n: Node => n }
-  val nodesMap = nodes.view.map(n => (n.id, n)).toMap
+case class OrientedGraph(entries: List[OrientedGraphEntry]) extends Graph[OrientedGraphEntry] {
+  val edges: List[OrientedEdge] = entries.collect { case e: OrientedEdge => e }
+  val nodes: List[Node] = entries.collect { case n: Node => n }
+  val nodesMap: Map[String, Node] = nodes.view.map(n => (n.id, n)).toMap
 
   val isCorrect: Boolean = GraphOps.checkGraphForCycles(this)
 
@@ -64,10 +80,10 @@ case class OrientedGraph(entries: List[OrientedGraphEntry]) {
   lazy val terminalVertices = GraphOps.findTerminalVertices(this)
 }
 
-case class NonOrientedGraph(entries: List[NonOrientedGraphEntry]) {
-  val edges = entries.collect { case e: NonOrientedEdge => e }
-  val nodes = entries.collect { case n: Node => n }
-  val nodesMap = nodes.view.map(n => (n.id, n)).toMap
+case class NonOrientedGraph(entries: List[NonOrientedGraphEntry]) extends Graph[NonOrientedGraphEntry] {
+  val edges: List[NonOrientedEdge] = entries.collect { case e: NonOrientedEdge => e }
+  val nodes: List[Node] = entries.collect { case n: Node => n }
+  val nodesMap: Map[String, Node] = nodes.view.map(n => (n.id, n)).toMap
 
   val isCorrect: Boolean = GraphOps.checkGraphForConnectivity(this)
 }
