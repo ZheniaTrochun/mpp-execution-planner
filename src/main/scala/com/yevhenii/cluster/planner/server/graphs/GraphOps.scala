@@ -180,6 +180,30 @@ object GraphOps extends LazyLogging {
       .head
   }
 
+  def findShortestPathInNodes(from: String, to: String, sendingAmount: Int, nonOrientedGraph: NonOrientedGraph): List[String] = {
+    val edges = nonOrientedGraph.edges
+    def loop(currNode: String, path: List[NonOrientedEdge], nodes: List[String]): List[(List[NonOrientedEdge], List[String])] = {
+      if (currNode == to) {
+        List((path, nodes))
+      } else {
+        val next = edges.filter(edge => edge.source == currNode || edge.target == currNode)
+
+        next.filterNot(path.contains)
+          .flatMap { edge =>
+            val nextNode = if (edge.source == currNode) edge.target else edge.source
+            loop(nextNode, edge :: path, nextNode :: nodes)
+          }
+          .filterNot(_._1.isEmpty)
+      }
+    }
+
+    loop(from, List.empty, List(from))
+      .filterNot(_._1.isEmpty)
+      .sortBy(_._1.map(e => math.ceil(sendingAmount / e.weight).toInt).sum)(Ordering.Int)
+      .head
+      ._2
+  }
+
   private def isConnected[E <: NonOrientedGraphEntry with Edge](first: Node, second: Node, edges: List[E]): Boolean =
     edges.exists(edge => (edge.source == first.id) && (edge.target == second.id)) ||
       edges.exists(edge => (edge.target == first.id) && (edge.source == second.id))
@@ -209,6 +233,8 @@ object GraphOps extends LazyLogging {
       def connectivityOfNode(node: Node): Int = GraphOps.determineNodeConnectivity(nonOrientedGraph, node)
       def findShortestPath(from: String, to: String, sendingAmount: Int): List[NonOrientedEdge] =
         GraphOps.findShortestPath(from, to, sendingAmount, nonOrientedGraph)
+      def findShortestPathInNodes(from: String, to: String, sendingAmount: Int): List[String] =
+        GraphOps.findShortestPathInNodes(from, to, sendingAmount, nonOrientedGraph)
     }
   }
 }

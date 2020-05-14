@@ -2,7 +2,7 @@ package com.yevhenii.cluster.punner.server.modeling
 
 import cats.Show
 import com.yevhenii.cluster.planner.server.model._
-import com.yevhenii.cluster.planner.server.modeling.{ComputingGhantDiagram, ExecutionPlanner, NodeLog, QueueCreator, Waiting, Work, Working}
+import com.yevhenii.cluster.planner.server.modeling.{ComputingGhantDiagram, ExecutionPlanner, NodeLog, QueueCreator, TransferGhantDiagram, Waiting, Work, Working}
 import org.scalatest.{Matchers, WordSpec}
 
 class ExecutionPlannerSpec extends WordSpec with Matchers {
@@ -49,14 +49,16 @@ class ExecutionPlannerSpec extends WordSpec with Matchers {
   "ExecutionPlanner.planExecutionByConnectivity" should {
     "work correctly for empty graph of task" in {
       val expected = new ComputingGhantDiagram(systemGraph.nodes)
+      val expectedTransfer = new TransferGhantDiagram(systemGraph)
 
-      ExecutionPlanner.planExecutionByConnectivity(systemGraph, OrientedGraph(List.empty), queueCreator) shouldBe expected
+      ExecutionPlanner.planExecutionByConnectivity(systemGraph, OrientedGraph(List.empty), queueCreator) shouldBe (expected, expectedTransfer)
     }
 
     "work correctly for empty system graph" in {
       val expected = new ComputingGhantDiagram(List.empty)
+      val expectedTransfer = new TransferGhantDiagram(systemGraph)
 
-      ExecutionPlanner.planExecutionByConnectivity(NonOrientedGraph(List.empty), taskGraph, queueCreator) shouldBe expected
+      ExecutionPlanner.planExecutionByConnectivity(NonOrientedGraph(List.empty), taskGraph, queueCreator) shouldBe (expected, expectedTransfer)
     }
 
     "work for trivial graph of task" in {
@@ -65,7 +67,9 @@ class ExecutionPlannerSpec extends WordSpec with Matchers {
       val expectedResult = new ComputingGhantDiagram(systemGraph.nodes)
       expectedResult.schedule("2", graph.head, 0)
 
-      ExecutionPlanner.planExecutionByConnectivity(systemGraph, OrientedGraph(graph), queueCreator) shouldBe expectedResult
+      val expectedTransfer = new TransferGhantDiagram(systemGraph)
+
+      ExecutionPlanner.planExecutionByConnectivity(systemGraph, OrientedGraph(graph), queueCreator) shouldBe (expectedResult, expectedTransfer)
     }
 
     "work for trivial graph of system" in {
@@ -83,18 +87,21 @@ class ExecutionPlannerSpec extends WordSpec with Matchers {
       expectedResult.schedule("1", taskGraph.nodes(6), 44)
       expectedResult.schedule("1", taskGraph.nodes(7), 45)
 
+      val expectedTransfer = new TransferGhantDiagram(systemGraph)
+
       println(Show[ComputingGhantDiagram].show(expectedResult))
 
-      ExecutionPlanner.planExecutionByConnectivity(NonOrientedGraph(graph), taskGraph, queueCreator) shouldBe expectedResult
+      ExecutionPlanner.planExecutionByConnectivity(NonOrientedGraph(graph), taskGraph, queueCreator) shouldBe (expectedResult, expectedTransfer)
     }
 
     "create correct queue from example" in {
       // todo form expected result
       val expected = new ComputingGhantDiagram(systemGraph.nodes)
+      val expectedTransfer = new TransferGhantDiagram(systemGraph)
 
       val actual = ExecutionPlanner.planExecutionByConnectivity(systemGraph, taskGraph, queueCreator)
 
-      actual shouldBe expected
+      actual shouldBe (expected, expectedTransfer)
     }
   }
 }

@@ -124,7 +124,7 @@ object ExecutionPlanner extends LazyLogging {
     systemGraph: NonOrientedGraph,
     taskGraph: OrientedGraph,
     queueCreator: OrientedGraph => List[Node]
-  ): ComputingGhantDiagram = {
+  ): (ComputingGhantDiagram, TransferGhantDiagram) = {
 
     val queueOfNodes = orderOfComputingNodes(systemGraph)
     val queueOfTasks = queueCreator(taskGraph)
@@ -141,7 +141,9 @@ object ExecutionPlanner extends LazyLogging {
     logger.info(log)
     logger.info("")
 
-    loopOfPlanning(1, List.empty, scheduled, queueOfTasks, queueOfNodes, taskGraph, diagram)
+    val transferGhantDiagram = new TransferGhantDiagram(systemGraph)
+
+    loopOfPlanning(1, List.empty, scheduled, queueOfTasks, queueOfNodes, taskGraph, diagram, transferGhantDiagram)
   }
 
   @tailrec private def loopOfPlanning(
@@ -151,11 +153,12 @@ object ExecutionPlanner extends LazyLogging {
     taskQueue: List[Node],
     nodesQueue: List[Node],
     taskGraph: OrientedGraph,
-    diagram: ComputingGhantDiagram
-  ): ComputingGhantDiagram = {
+    diagram: ComputingGhantDiagram,
+    transferDiagram: TransferGhantDiagram
+  ): (ComputingGhantDiagram, TransferGhantDiagram) = {
 
     if (finishedTasks.size == taskQueue.size || tact == MaxIterationNumber) {
-      diagram
+      (diagram, transferDiagram)
     } else {
 
       val recentlyFinished = diagram.findRecentlyFinished(tact)
@@ -163,16 +166,33 @@ object ExecutionPlanner extends LazyLogging {
       val readyNodes = findTasksReadyToBeComputed(taskGraph, taskQueue, scheduledTasks ::: newComputed)
       val freeProcessors = diagram.freeProcessorIds(tact)
 
-      val newScheduled = readyNodes.zip(freeProcessors).map { case (node, processorId) =>
-        diagram.schedule(processorId, node, tact)
-        node
-      }
+      val newScheduled = readyNodes.zip(freeProcessors)
+        .map { case (node, processorId) =>
+
+          val parentData = taskGraph.edges.filter(_.target == node.id)
+          val whenEverythingIsTransferred = parentData
+            .flatMap { edge =>
+              val whereWasComputed = diagram.whereWasComputed(edge.source)
+              whereWasComputed.map(n => edge -> n)
+            }
+            .foldLeft(tact) { (startAt, whereWasComputedPair) =>
+              val (edge, whereWasComputed) = whereWasComputedPair
+              transferDiagram.transferTo(whereWasComputed, processorId, edge, startAt)
+            }
+
+          diagram.schedule(processorId, node, whenEverythingIsTransferred)
+          node
+        }
 
       val log = Show[ComputingGhantDiagram].show(diagram)
       logger.info(log)
       logger.info("")
+      val transferLog = Show[TransferGhantDiagram].show(transferDiagram)
+      logger.info(s"\n$transferLog")
+      logger.info("")
+      logger.info("")
 
-      loopOfPlanning(tact + 1, newComputed, newScheduled ::: scheduledTasks, taskQueue, nodesQueue, taskGraph, diagram)
+      loopOfPlanning(tact + 1, newComputed, newScheduled ::: scheduledTasks, taskQueue, nodesQueue, taskGraph, diagram, transferDiagram)
     }
   }
 

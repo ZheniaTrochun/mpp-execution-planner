@@ -42,6 +42,12 @@ class ComputingGhantDiagram(processingNodes: List[Node]) {
     queueOfTasks.size <= start
   }
 
+  def whereWasComputed(id: String): Option[String] = {
+    processors.find { case (node, log) =>
+      log.find(workOpt => workOpt.exists(_.node.id == id)).fold(false)(_ => true)
+    }.map(_._1)
+  }
+
   def freeProcessorIds(start: Int): List[String] = {
     processors.keys.filter(isFree(_, start)).toList
   }
