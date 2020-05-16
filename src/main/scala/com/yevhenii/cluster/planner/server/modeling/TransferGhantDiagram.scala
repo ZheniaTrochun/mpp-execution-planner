@@ -32,11 +32,11 @@ class TransferGhantDiagram(systemGraph: NonOrientedGraph) {
     edgeOpt.map { edge =>
       val minStartTime = math.max(math.max(processors(from).size, processors(to).size), atLeastStartingFrom)
 
-      for (_ <- processors(from).size to minStartTime) {
+      for (_ <- processors(from).size until minStartTime) {
         processors(from).append(None)
       }
 
-      for (_ <- processors(to).size to minStartTime) {
+      for (_ <- processors(to).size until minStartTime) {
         processors(to).append(None)
       }
 

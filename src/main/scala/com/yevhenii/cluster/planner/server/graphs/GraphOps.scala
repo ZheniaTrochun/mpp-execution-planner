@@ -184,7 +184,7 @@ object GraphOps extends LazyLogging {
     val edges = nonOrientedGraph.edges
     def loop(currNode: String, path: List[NonOrientedEdge], nodes: List[String]): List[(List[NonOrientedEdge], List[String])] = {
       if (currNode == to) {
-        List((path, nodes))
+        List((path, nodes.reverse))
       } else {
         val next = edges.filter(edge => edge.source == currNode || edge.target == currNode)
 
