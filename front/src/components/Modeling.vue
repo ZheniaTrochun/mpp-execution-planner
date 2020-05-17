@@ -131,24 +131,7 @@
 
             <v-tab-item>
                 <v-card flat tile>
-                    <v-simple-table>
-                        <template v-slot:default>
-                            <thead>
-                            <tr>
-                                <th class="text-left">Node</th>
-                                <th class="text-left">Critical path to end of task</th>
-                                <th class="text-left">Critical path length</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr v-for="item in criticalPathQueue" :key="item.node.id">
-                                <td>{{ item.node.id }}</td>
-                                <td>{{ item.path }}</td>
-                                <td>{{ item.value }}</td>
-                            </tr>
-                            </tbody>
-                        </template>
-                    </v-simple-table>
+                    <canvas id="ghant-diagram-connectivity"></canvas>
                 </v-card>
             </v-tab-item>
 
@@ -552,8 +535,60 @@
                             console.log(resp.data);
 
                             this.ghantDiagram = resp.data.entries;
+
+                            this.drawGhantDiagram(resp.data.entries, "ghant-diagram-connectivity");
                         }
                     });
+            },
+            drawGhantDiagram(elements, canvasId) {
+                const canvas = document.getElementById(canvasId);
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                ctx.font="20px Arial";
+
+                canvas.height = screen.height * 0.6;// 1000;
+                // canvas.width = 1000;
+                // canvas.width = screen.width - 100;
+                canvas.width = document.getElementById("immutable-task-graph-holder").offsetWidth;
+
+                // ctx.scale(1, 1);
+                const numberOfProcessors = systemGraph.nodes().size();
+
+                console.log(numberOfProcessors);
+
+                ctx.beginPath();
+
+                for (let i = 0; i < numberOfProcessors; i++) {
+                    ctx.fillText(`${i + 1}`, 50, i * 50 + 75);
+                    ctx.moveTo(85, i * 50 + 75);
+                    ctx.lineTo(canvas.width - 100, i * 50 + 75);
+                }
+
+                ctx.moveTo(85, 50);
+                ctx.lineTo(85, numberOfProcessors * 50 + 50);
+
+                elements
+                    .filter(x => x.type === 'computing')
+                    .forEach(computation => {
+                        const id = computation.node;
+                        const task = computation.task;
+                        const start = computation.start;
+                        const duration = computation.duration;
+
+                        const y = Number(id) * 50 + 75;
+                        const startX = start * 10 + 85;
+                        const endX = (start + duration) * 10 + 85;
+
+                        ctx.moveTo(startX, y - 10);
+                        ctx.lineTo(startX, y);
+
+                        ctx.moveTo(endX, y - 10);
+                        ctx.lineTo(endX, y);
+
+                        ctx.fillText(task, (endX - startX) / 2 + startX, y - 10);
+                    });
+
+                ctx.stroke();
             }
         }
     };
@@ -571,6 +606,13 @@
         width: 100%;
         background-color: white;
         height: 60vh;
+    }
+
+    #ghant-diagram-connectivity {
+        /*width: 1000px;*/
+        /*width: 100%;*/
+        /*height: 1000px;*/
+        background-color: white;
     }
 
     .full-width {

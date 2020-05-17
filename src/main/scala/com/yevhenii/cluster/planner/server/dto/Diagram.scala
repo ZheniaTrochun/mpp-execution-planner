@@ -8,13 +8,9 @@ sealed trait DiagramEntry {
   val `type`: String
 }
 
-case class DiagramComputingEntry(node: String, task: String, start: Int, duration: Int) extends DiagramEntry {
-  val `type`: String = "computing"
-}
+case class DiagramComputingEntry(node: String, task: String, start: Int, duration: Int, `type`: String = "computing") extends DiagramEntry
 
-case class DiagramTransferringEntry(node: String, edge: String, target: String, start: Int, duration: Int) extends DiagramEntry {
-  val `type`: String = "transfer"
-}
+case class DiagramTransferringEntry(node: String, edge: String, target: String, start: Int, duration: Int, `type`: String = "transfer") extends DiagramEntry
 
 object Diagram {
   def from(diagram: GhantDiagram): Diagram = {
