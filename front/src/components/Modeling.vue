@@ -568,24 +568,28 @@
                 ctx.lineTo(85, numberOfProcessors * 50 + 50);
 
                 elements
-                    .filter(x => x.type === 'computing')
                     .forEach(computation => {
-                        const id = computation.node;
-                        const task = computation.task;
-                        const start = computation.start;
-                        const duration = computation.duration;
+                        // console.log(Object.getOwnPropertyNames(computation));
+                        // console.log(computation.DiagramComputingEntry);
 
-                        const y = Number(id) * 50 + 75;
-                        const startX = start * 10 + 85;
-                        const endX = (start + duration) * 10 + 85;
+                        if (computation.DiagramComputingEntry) {
+                            const id = computation.DiagramComputingEntry.node;
+                            const task = computation.DiagramComputingEntry.task;
+                            const start = computation.DiagramComputingEntry.start;
+                            const duration = computation.DiagramComputingEntry.duration;
 
-                        ctx.moveTo(startX, y - 10);
-                        ctx.lineTo(startX, y);
+                            const y = Number(id) * 50 + 75;
+                            const startX = start * 10 + 85;
+                            const endX = (start + duration) * 10 + 85;
 
-                        ctx.moveTo(endX, y - 10);
-                        ctx.lineTo(endX, y);
+                            ctx.moveTo(startX, y - 10);
+                            ctx.lineTo(startX, y);
 
-                        ctx.fillText(task, (endX - startX) / 2 + startX, y - 10);
+                            ctx.moveTo(endX, y - 10);
+                            ctx.lineTo(endX, y);
+
+                            ctx.fillText(task, (endX - startX) / 2 + startX, y - 10);
+                        }
                     });
 
                 ctx.stroke();

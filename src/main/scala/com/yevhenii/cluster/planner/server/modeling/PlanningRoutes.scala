@@ -1,6 +1,8 @@
 package com.yevhenii.cluster.planner.server.modeling
 
+import cats.Show
 import cats.effect.IO
+import com.typesafe.scalalogging.LazyLogging
 import com.yevhenii.cluster.planner.server.dto.Diagram
 import com.yevhenii.cluster.planner.server.model.{Node, OrientedGraph}
 import io.circe.Json
@@ -9,7 +11,7 @@ import io.circe.generic.auto._
 import org.http4s.circe.CirceEntityCodec._
 import org.http4s.dsl.Http4sDsl
 
-object PlanningRoutes extends Http4sDsl[IO] {
+object PlanningRoutes extends Http4sDsl[IO] with LazyLogging {
 
   private def errorBody(message: String): Json = Json.obj(
     ("message", Json.fromString(message))
@@ -20,7 +22,10 @@ object PlanningRoutes extends Http4sDsl[IO] {
     def buildDiagramByConnectivityAndCreateResponse(id: String, queueCreator: OrientedGraph => List[Node]): IO[Response[IO]] = {
       planningService.buildGhantDiagramByConnectivity(id, queueCreator)
         .flatMap {
-          case Some(res) => Ok(Diagram.from(res))
+          case Some(res) =>
+            val x = Diagram.from(res)
+            logger.info(Show[Diagram].show(x))
+            Ok(x)
           case None => NotFound()
         }
     }
