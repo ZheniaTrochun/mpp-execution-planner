@@ -31,11 +31,11 @@ class QueueCreatorSpec extends WordSpec with Matchers {
   )
 
   "QueueCreator.createQueueBasedOnCriticalPath" should {
-    "work correctly for empty graph" in {
+    "work correctly for empty taskGraph" in {
       QueueCreator.createQueueBasedOnCriticalPath(OrientedGraph(Nil)) shouldBe empty
     }
 
-    "work for trivial graph" in {
+    "work for trivial taskGraph" in {
       val graph = Node("1", 1) :: Nil
       QueueCreator.createQueueBasedOnCriticalPath(OrientedGraph(graph)) shouldBe List((graph.head, graph))
     }
@@ -60,11 +60,11 @@ class QueueCreatorSpec extends WordSpec with Matchers {
   }
 
   "QueueCreator.createQueueBasedOnNodesCountOnCriticalPath" should {
-    "work correctly for empty graph" in {
+    "work correctly for empty taskGraph" in {
       QueueCreator.createQueueBasedOnNodesCountOnCriticalPath(OrientedGraph(Nil)) shouldBe empty
     }
 
-    "work for trivial graph" in {
+    "work for trivial taskGraph" in {
       val graph = Node("1", 1) :: Nil
       QueueCreator.createQueueBasedOnNodesCountOnCriticalPath(OrientedGraph(graph)) shouldBe List((graph.head, graph))
     }
@@ -89,11 +89,11 @@ class QueueCreatorSpec extends WordSpec with Matchers {
   }
 
   "QueueCreator.createQueueBasedOnNodesConnectivity" should {
-    "work correctly for empty graph" in {
+    "work correctly for empty taskGraph" in {
       QueueCreator.createQueueBasedOnNodesConnectivity(OrientedGraph(Nil)) shouldBe empty
     }
 
-    "work for trivial graph" in {
+    "work for trivial taskGraph" in {
       val graph = Node("1", 1) :: Nil
       QueueCreator.createQueueBasedOnNodesConnectivity(OrientedGraph(graph)) shouldBe List((graph.head, (0, 1)))
     }

@@ -7,16 +7,16 @@ import org.scalatest.{Matchers, WordSpec}
 class GraphOpsSpec extends WordSpec with Matchers {
   "GraphOps.checkGraphForConnectivity" should {
 
-    "return `true` for empty graph" in {
+    "return `true` for empty taskGraph" in {
       GraphOps.checkGraphForConnectivity(NonOrientedGraph(List.empty)) shouldBe true
     }
 
-    "return `true` for graph with one node" in {
+    "return `true` for taskGraph with one node" in {
       val graph = Node("1", 1) :: Nil
       GraphOps.checkGraphForConnectivity(NonOrientedGraph(graph)) shouldBe true
     }
 
-    "return `true` for simple fully connected graph" in {
+    "return `true` for simple fully connected taskGraph" in {
       val graph =
         Node("1", 2) ::
         NonOrientedEdge("1-2", 1, "1", "2") ::
@@ -29,7 +29,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.checkGraphForConnectivity(NonOrientedGraph(graph)) shouldBe true
     }
 
-    "return `true` for fully connected graph" in {
+    "return `true` for fully connected taskGraph" in {
       val graph =
         Node("1", 2) ::
           NonOrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -47,7 +47,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.checkGraphForConnectivity(NonOrientedGraph(graph)) shouldBe true
     }
 
-    "return `true` for fully connected graph 2" in {
+    "return `true` for fully connected taskGraph 2" in {
       val graph =
         Node("1", 2) ::
         NonOrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -69,7 +69,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.checkGraphForConnectivity(NonOrientedGraph(graph)) shouldBe true
     }
 
-    "return `false` for simple not fully connected graph" in {
+    "return `false` for simple not fully connected taskGraph" in {
       val graph =
         Node("1", 2) ::
           Node("2", 3) ::
@@ -79,7 +79,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.checkGraphForConnectivity(NonOrientedGraph(graph)) shouldBe false
     }
 
-    "return `false` for not fully connected graph" in {
+    "return `false` for not fully connected taskGraph" in {
       val graph =
         Node("1", 2) ::
           NonOrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -96,7 +96,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.checkGraphForConnectivity(NonOrientedGraph(graph)) shouldBe false
     }
 
-    "return `false` for not fully connected graph 2" in {
+    "return `false` for not fully connected taskGraph 2" in {
       val graph =
         Node("1", 2) ::
           NonOrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -120,16 +120,16 @@ class GraphOpsSpec extends WordSpec with Matchers {
 
   "GraphOps.checkGraphForCycles" should {
 
-    "return `true` for empty graph" in {
+    "return `true` for empty taskGraph" in {
       GraphOps.checkGraphForCycles(OrientedGraph(List.empty)) shouldBe true
     }
 
-    "return `true` for graph with one node" in {
+    "return `true` for taskGraph with one node" in {
       val graph = Node("1", 1) :: Nil
       GraphOps.checkGraphForCycles(OrientedGraph(graph)) shouldBe true
     }
 
-    "return `true` for simple acyclic graph" in {
+    "return `true` for simple acyclic taskGraph" in {
       val graph =
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") ::
@@ -141,7 +141,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.checkGraphForCycles(OrientedGraph(graph)) shouldBe true
     }
 
-    "return `true` for acyclic graph" in {
+    "return `true` for acyclic taskGraph" in {
       val graph =
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -159,7 +159,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.checkGraphForCycles(OrientedGraph(graph)) shouldBe true
     }
 
-    "return `true` for acyclic graph 2" in {
+    "return `true` for acyclic taskGraph 2" in {
       val graph =
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -183,7 +183,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.checkGraphForCycles(OrientedGraph(graph)) shouldBe true
     }
 
-    "return `false` for simple cyclic graph" in {
+    "return `false` for simple cyclic taskGraph" in {
       val graph =
         Node("1", 2) ::
           OrientedEdge("1-1", 1, "1", "1") ::
@@ -192,7 +192,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.checkGraphForCycles(OrientedGraph(graph)) shouldBe false
     }
 
-    "return `false` for simple cyclic graph 2" in {
+    "return `false` for simple cyclic taskGraph 2" in {
       val graph =
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") ::
@@ -205,7 +205,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.checkGraphForCycles(OrientedGraph(graph)) shouldBe false
     }
 
-    "return `false` for cyclic graph" in {
+    "return `false` for cyclic taskGraph" in {
       val graph =
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -223,7 +223,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.checkGraphForCycles(OrientedGraph(graph)) shouldBe false
     }
 
-    "return `false` for cyclic graph 2" in {
+    "return `false` for cyclic taskGraph 2" in {
       val graph =
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -243,7 +243,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
   }
 
   "GraphOps.findInitialVertices" should {
-    "work correctly for empty graph" in {
+    "work correctly for empty taskGraph" in {
       GraphOps.findInitialVertices(OrientedGraph(List.empty)) shouldBe empty
     }
 
@@ -252,7 +252,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.findInitialVertices(OrientedGraph(singleNodeGraph)) shouldBe singleNodeGraph
     }
 
-    "find all initial vertices in simple graph" in {
+    "find all initial vertices in simple taskGraph" in {
       val graph =
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -272,7 +272,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
     }
   }
 
-  "find all initial vertices in graph" in {
+  "find all initial vertices in taskGraph" in {
     val graph =
       Node("1", 2) ::
         OrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -292,7 +292,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
   }
 
   "GraphOps.findTerminalVertices" should {
-    "work correctly for empty graph" in {
+    "work correctly for empty taskGraph" in {
       GraphOps.findTerminalVertices(OrientedGraph(List.empty)) shouldBe empty
     }
 
@@ -301,7 +301,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.findTerminalVertices(OrientedGraph(singleNodeGraph)) shouldBe singleNodeGraph
     }
 
-    "find all terminal vertices in simple graph" in {
+    "find all terminal vertices in simple taskGraph" in {
       val graph =
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -320,7 +320,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.findTerminalVertices(OrientedGraph(graph)) shouldBe expected
     }
 
-    "find all terminal vertices in graph" in {
+    "find all terminal vertices in taskGraph" in {
       val graph =
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -341,11 +341,11 @@ class GraphOpsSpec extends WordSpec with Matchers {
   }
 
   "GraphOps.findPaths" should {
-    "work correctly for empty graph" in {
+    "work correctly for empty taskGraph" in {
       GraphOps.findPaths(OrientedGraph(List.empty), Node("1", 1), Node("2", 2)) shouldBe empty
     }
 
-    "work correctly if `from` is not in graph" in {
+    "work correctly if `from` is not in taskGraph" in {
       val singleNodeGraph = OrientedGraph(
         Node("1", 2) :: Nil
       )
@@ -353,7 +353,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.findPaths(singleNodeGraph, Node("2", 2), singleNodeGraph.nodes(0)) shouldBe empty
     }
 
-    "work correctly if `target` is not in graph" in {
+    "work correctly if `target` is not in taskGraph" in {
       val singleNodeGraph = OrientedGraph(
         Node("1", 2) :: Nil
       )
@@ -361,7 +361,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.findPaths(singleNodeGraph, singleNodeGraph.nodes(0), Node("2", 2)) shouldBe empty
     }
 
-    "should not do anything if graph has cycles" in {
+    "should not do anything if taskGraph has cycles" in {
       val graph = OrientedGraph(
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") ::
@@ -375,12 +375,12 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.findPaths(graph, graph.nodes(0), graph.nodes(1)) shouldBe empty
     }
 
-    "find path through graph in trivial case" in {
+    "find path through taskGraph in trivial case" in {
       val singleNodeGraph = OrientedGraph(Node("1", 2) :: Nil)
       GraphOps.findPaths(singleNodeGraph, singleNodeGraph.nodes.head, singleNodeGraph.nodes.head) shouldBe Some(Set(singleNodeGraph.nodes))
     }
 
-    "find paths through graph in simple graph" in {
+    "find paths through taskGraph in simple taskGraph" in {
       val graph = OrientedGraph(
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -418,7 +418,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.findPaths(graph, graph.nodes.tail.head, graph.nodes.init.last) shouldBe expected2
     }
 
-    "find paths through graph in graph" in {
+    "find paths through taskGraph in taskGraph" in {
       val graph = OrientedGraph(
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -475,11 +475,11 @@ class GraphOpsSpec extends WordSpec with Matchers {
   }
 
   "GraphOps.findCriticalPath" should {
-    "work correctly for empty graph" in {
+    "work correctly for empty taskGraph" in {
       GraphOps.findCriticalPath(OrientedGraph(List.empty)) shouldBe empty
     }
 
-    "should not do anything if graph has cycles" in {
+    "should not do anything if taskGraph has cycles" in {
       val graph = OrientedGraph(
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") ::
@@ -493,12 +493,12 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.findCriticalPath(graph) shouldBe empty
     }
 
-    "find critical path through graph in trivial case" in {
+    "find critical path through taskGraph in trivial case" in {
       val singleNodeGraph = OrientedGraph(Node("1", 2) :: Nil)
       GraphOps.findCriticalPath(singleNodeGraph) shouldBe singleNodeGraph.nodes
     }
 
-    "find critical path through graph in simple graph" in {
+    "find critical path through taskGraph in simple taskGraph" in {
       val graph = OrientedGraph(
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -526,7 +526,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.findCriticalPath(graph) shouldBe expected
     }
 
-    "find critical path through graph" in {
+    "find critical path through taskGraph" in {
       val graph = OrientedGraph(
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -551,7 +551,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.findCriticalPath(graph) shouldBe expected
     }
 
-    "find critical path through graph 2" in {
+    "find critical path through taskGraph 2" in {
       val graph = OrientedGraph(
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -576,11 +576,11 @@ class GraphOpsSpec extends WordSpec with Matchers {
   }
 
   "GraphOps.findCriticalPathByNodesCount" should {
-    "work correctly for empty graph" in {
+    "work correctly for empty taskGraph" in {
       GraphOps.findCriticalPathByNodesCount(OrientedGraph(List.empty)) shouldBe empty
     }
 
-    "should not do anything if graph has cycles" in {
+    "should not do anything if taskGraph has cycles" in {
       val graph = OrientedGraph(
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") ::
@@ -594,12 +594,12 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.findCriticalPathByNodesCount(graph) shouldBe empty
     }
 
-    "find critical path through graph in trivial case" in {
+    "find critical path through taskGraph in trivial case" in {
       val singleNodeGraph = OrientedGraph(Node("1", 2) :: Nil)
       GraphOps.findCriticalPathByNodesCount(singleNodeGraph) shouldBe singleNodeGraph.nodes
     }
 
-    "find critical path through graph in simple graph" in {
+    "find critical path through taskGraph in simple taskGraph" in {
       val graph = OrientedGraph(
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -627,7 +627,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.findCriticalPathByNodesCount(graph) shouldBe expected
     }
 
-    "find critical path through graph" in {
+    "find critical path through taskGraph" in {
       val graph = OrientedGraph(
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -652,7 +652,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.findCriticalPathByNodesCount(graph) shouldBe expected
     }
 
-    "find critical path through graph 2" in {
+    "find critical path through taskGraph 2" in {
       val graph = OrientedGraph(
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -678,7 +678,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.findCriticalPathByNodesCount(graph) shouldBe expected
     }
 
-    "find critical path through graph from example" in {
+    "find critical path through taskGraph from example" in {
       val graph = OrientedGraph(
         Node("1", 5) ::
           Node("2", 4) ::
@@ -716,7 +716,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
   }
 
   "GraphOps.determineNodeConnectivity" should {
-    "work correctly for empty graph" in {
+    "work correctly for empty taskGraph" in {
       GraphOps.determineNodeConnectivity(OrientedGraph(List.empty), Node("1", 0)) shouldBe 0
     }
 
@@ -725,7 +725,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.determineNodeConnectivity(singleNodeGraph, singleNodeGraph.nodes.head) shouldBe 0
     }
 
-    "find node connectivity in simple graph" in {
+    "find node connectivity in simple taskGraph" in {
       val graph = OrientedGraph(
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2
@@ -744,7 +744,7 @@ class GraphOpsSpec extends WordSpec with Matchers {
       GraphOps.determineNodeConnectivity(graph, Node("3", 4)) shouldBe 2
     }
 
-    "find node connectivity in graph" in {
+    "find node connectivity in taskGraph" in {
       val graph = OrientedGraph(
         Node("1", 2) ::
           OrientedEdge("1-2", 1, "1", "2") :: // 1 --> 2

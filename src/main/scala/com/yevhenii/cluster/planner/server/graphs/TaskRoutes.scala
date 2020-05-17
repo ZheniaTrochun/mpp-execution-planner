@@ -42,7 +42,7 @@ object TaskRoutes extends Http4sDsl[IO] {
           }
         }
 
-      case req @ PUT -> Root / "graphs" / "random" / "task-graph" / id =>
+      case req @ PUT -> Root / "graphs" / "random" / "task-taskGraph" / id =>
         req.decode[GraphParameters] { params =>
           taskService.generateTaskGraph(id, params).flatMap {
             case Some(graphs) => Ok(graphs)

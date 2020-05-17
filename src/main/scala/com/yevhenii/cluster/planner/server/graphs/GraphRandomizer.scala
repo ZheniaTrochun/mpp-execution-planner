@@ -157,7 +157,7 @@ object GraphRandomizer extends LazyLogging {
     shouldBeIncremented match {
       case None =>
         val graph = OrientedGraph(nodes ::: shuffledEdges)
-        logger.warn(s"Cannot increment edge for graph:\n${Show[OrientedGraph].show(graph)}\n")
+        logger.warn(s"Cannot increment edge for taskGraph:\n${Show[OrientedGraph].show(graph)}\n")
         Finish(graph)
 
       case Some(edge) =>

@@ -23,11 +23,11 @@ object GraphShow {
       edge => (graph.nodesMap(edge.source), graph.nodesMap(edge.target))
     )
 
-//  implicit val orientedGraph: Show[OrientedGraph] = (graph: OrientedGraph) => {
-//    graph.edges
+//  implicit val orientedGraph: Show[OrientedGraph] = (taskGraph: OrientedGraph) => {
+//    taskGraph.edges
 //      .map { edge =>
-//        val sourceNode = graph.nodesMap(edge.source)
-//        val targetNode = graph.nodesMap(edge.target)
+//        val sourceNode = taskGraph.nodesMap(edge.source)
+//        val targetNode = taskGraph.nodesMap(edge.target)
 //
 //        s"${Show[Node].show(sourceNode)} ${Show[OrientedEdge].show(edge)} ${Show[Node].show(targetNode)}"
 //      }

@@ -2,14 +2,19 @@ package com.yevhenii.cluster.planner.server.dto
 
 import com.yevhenii.cluster.planner.server.modeling.GhantDiagram
 
-import scala.collection.mutable
-
 case class Diagram(entries: List[DiagramEntry])
 
-sealed trait DiagramEntry
+sealed trait DiagramEntry {
+  val `type`: String
+}
 
-case class DiagramComputingEntry(node: String, task: String, start: Int, duration: Int) extends DiagramEntry
-case class DiagramTransferringEntry(node: String, edge: String, target: String, start: Int, duration: Int) extends DiagramEntry
+case class DiagramComputingEntry(node: String, task: String, start: Int, duration: Int) extends DiagramEntry {
+  val `type`: String = "computing"
+}
+
+case class DiagramTransferringEntry(node: String, edge: String, target: String, start: Int, duration: Int) extends DiagramEntry {
+  val `type`: String = "transfer"
+}
 
 object Diagram {
   def from(diagram: GhantDiagram): Diagram = {
