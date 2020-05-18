@@ -46,7 +46,7 @@ object Diagram {
           .filterNot(_._1.isEmpty)
           .map { case (entryOpt, tact) => (entryOpt.get, tact) }
           .filterNot { case (entry, _) => entry.target == nodeId }
-          .groupBy { case (transferEntry, _) => (transferEntry.data.id, transferEntry.data.target) }
+          .groupBy { case (transferEntry, _) => (transferEntry.data.id, transferEntry.target) }
           .map { case ((id, target), entries) =>
             val duration = entries.size
             val start = entries.map(_._2).min
