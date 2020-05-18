@@ -53,7 +53,7 @@ object Diagram {
             val existingOpt = acc.get(key)
             val updated = existingOpt match {
               case Some(existing) => existing.copy(duration = existing.duration + 1)
-              case None => DiagramTransferringEntry(nodeId, transferEntry.data.label, transferEntry.target, tact, 1)
+              case None => DiagramTransferringEntry(nodeId, transferEntry.data.id, transferEntry.target, tact, 1)
             }
             acc + (key -> updated)
           }
