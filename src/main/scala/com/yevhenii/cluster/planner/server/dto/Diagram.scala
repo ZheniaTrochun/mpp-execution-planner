@@ -30,19 +30,13 @@ object Diagram {
       .flatMap { case (nodeId, computations) =>
         computations.zipWithIndex
           .filterNot(_._1.isEmpty)
-          .foldLeft(Map.empty[String, DiagramComputingEntry]) { (acc, entry) =>
-            val (computationEntry, tact) = entry
-
-            computationEntry.fold(acc) { computation =>
-              val existingOpt = acc.get(computation.node.id)
-              val updated = existingOpt match {
-                case Some(existing) => existing.copy(duration = existing.duration + 1)
-                case None => DiagramComputingEntry(nodeId, computation.node.id, tact, 1)
-              }
-              acc + (updated.node -> updated)
-            }
+          .map { case (computingOpt, id) => (computingOpt.get, id) }
+          .groupBy { case (computationEntry, _) => computationEntry.node.id }
+          .map { case (taskId, computations) =>
+            val duration = computations.size
+            val start = computations.map(_._2).min
+            DiagramComputingEntry(nodeId, taskId, start, duration)
           }
-          .values
       }
       .toList
 

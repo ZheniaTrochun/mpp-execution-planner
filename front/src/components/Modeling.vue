@@ -578,7 +578,7 @@
                             const start = computation.DiagramComputingEntry.start;
                             const duration = computation.DiagramComputingEntry.duration;
 
-                            const y = Number(id) * 50 + 75;
+                            const y = (Number(id) - 1) * 50 + 75;
                             const startX = start * 10 + 85;
                             const endX = (start + duration) * 10 + 85;
 
