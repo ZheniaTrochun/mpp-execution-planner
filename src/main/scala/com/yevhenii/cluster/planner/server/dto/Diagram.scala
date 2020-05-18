@@ -46,18 +46,12 @@ object Diagram {
           .filterNot(_._1.isEmpty)
           .map { case (entryOpt, tact) => (entryOpt.get, tact) }
           .filterNot { case (entry, _) => entry.target == nodeId }
-          .foldLeft(Map.empty[(String, String), DiagramTransferringEntry]) { (acc, entry) =>
-            val (transferEntry, tact) = entry
-
-            val key = (transferEntry.data.label, transferEntry.target)
-            val existingOpt = acc.get(key)
-            val updated = existingOpt match {
-              case Some(existing) => existing.copy(duration = existing.duration + 1)
-              case None => DiagramTransferringEntry(nodeId, transferEntry.data.id, transferEntry.target, tact, 1)
-            }
-            acc + (key -> updated)
+          .groupBy { case (transferEntry, _) => (transferEntry.data.id, transferEntry.data.target) }
+          .map { case ((id, target), entries) =>
+            val duration = entries.size
+            val start = entries.map(_._2).min
+            DiagramTransferringEntry(nodeId, id, target, start, duration)
           }
-          .values
       }
       .toList
 

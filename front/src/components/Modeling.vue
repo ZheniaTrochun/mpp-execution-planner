@@ -111,7 +111,7 @@
         </v-tabs>
 
         <v-tabs
-                v-model="tab"
+                v-model="tab2"
                 background-color="deep-purple accent-4"
                 class="elevation-2 full-width"
                 dark
@@ -182,7 +182,7 @@
         data () {
             return {
                 tab: null,
-                text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+                tab2: null,
                 icons: false,
                 centered: false,
                 grow: true,
@@ -543,53 +543,80 @@
             drawGhantDiagram(elements, canvasId) {
                 const canvas = document.getElementById(canvasId);
                 const ctx = canvas.getContext('2d');
-                ctx.clearRect(0,0,canvas.width,canvas.height);
-                ctx.font="20px Arial";
+                // ctx.clearRect(0,0,connectivityCanvas.width,connectivityCanvas.height);
+                ctx.font = "40px sans-serif";
 
-                canvas.height = screen.height * 0.6;// 1000;
-                // canvas.width = 1000;
-                // canvas.width = screen.width - 100;
+                canvas.height = screen.height * 0.6;
                 canvas.width = document.getElementById("immutable-task-graph-holder").offsetWidth;
 
-                // ctx.scale(1, 1);
                 const numberOfProcessors = systemGraph.nodes().size();
 
-                console.log(numberOfProcessors);
-
                 ctx.beginPath();
+                ctx.font = "14px sans-serif";
 
                 for (let i = 0; i < numberOfProcessors; i++) {
-                    ctx.fillText(`${i + 1}`, 50, i * 50 + 75);
-                    ctx.moveTo(85, i * 50 + 75);
-                    ctx.lineTo(canvas.width - 100, i * 50 + 75);
+
+                    const y = i * 70 + 95;
+
+                    ctx.fillText(`${i + 1}`, 50, y);
+                    ctx.moveTo(85, y);
+                    // canvasCtx.lineTo(canvas.width - 100, i * 50 + 75);
+                    ctx.lineTo(canvas.width - 100, y);
+
+                    for (let j = 0; j < canvas.width - 100 - 85; j += 20) {
+                        const x = 85 + j;
+                        ctx.moveTo(x, y);
+                        ctx.lineTo(x, y + 7);
+                    }
                 }
 
                 ctx.moveTo(85, 50);
-                ctx.lineTo(85, numberOfProcessors * 50 + 50);
+                ctx.lineTo(85, numberOfProcessors * 70 + 50);
 
                 elements
+                    .filter(x => x.DiagramComputingEntry)
                     .forEach(computation => {
-                        // console.log(Object.getOwnPropertyNames(computation));
-                        // console.log(computation.DiagramComputingEntry);
+                        const id = computation.DiagramComputingEntry.node;
+                        const task = computation.DiagramComputingEntry.task;
+                        const start = computation.DiagramComputingEntry.start;
+                        const duration = computation.DiagramComputingEntry.duration;
 
-                        if (computation.DiagramComputingEntry) {
-                            const id = computation.DiagramComputingEntry.node;
-                            const task = computation.DiagramComputingEntry.task;
-                            const start = computation.DiagramComputingEntry.start;
-                            const duration = computation.DiagramComputingEntry.duration;
+                        const y = (Number(id) - 1) * 70 + 95;
+                        const startX = start * 20 + 85;
+                        const endX = (start + duration) * 20 + 85;
 
-                            const y = (Number(id) - 1) * 50 + 75;
-                            const startX = start * 10 + 85;
-                            const endX = (start + duration) * 10 + 85;
+                        ctx.moveTo(startX, y - 10);
+                        ctx.lineTo(startX, y);
 
-                            ctx.moveTo(startX, y - 10);
-                            ctx.lineTo(startX, y);
+                        ctx.moveTo(endX, y - 10);
+                        ctx.lineTo(endX, y);
 
-                            ctx.moveTo(endX, y - 10);
-                            ctx.lineTo(endX, y);
+                        ctx.fillText(task, (endX - startX) / 2 - 3 + startX, y - 10);
+                    });
 
-                            ctx.fillText(task, (endX - startX) / 2 + startX, y - 10);
-                        }
+                elements
+                    .filter(x => x.DiagramTransferringEntry)
+                    .forEach(computation => {
+                        const id = computation.DiagramTransferringEntry.node;
+                        const edge = computation.DiagramTransferringEntry.edge;
+                        const target = computation.DiagramTransferringEntry.target;
+                        const start = computation.DiagramTransferringEntry.start;
+                        const duration = computation.DiagramTransferringEntry.duration;
+
+                        const y = (Number(id) - 1) * 70 + 75;
+                        const startX = start * 20 + 85;
+                        const endX = (start + duration) * 20 + 85;
+
+                        ctx.moveTo(startX, y - 10);
+                        ctx.lineTo(startX, y);
+
+                        ctx.moveTo(endX, y - 10);
+                        ctx.lineTo(endX, y);
+
+                        ctx.moveTo(startX, y);
+                        ctx.lineTo(endX, y);
+
+                        ctx.fillText(`${edge}(${target})`, startX + 3, y - 10);
                     });
 
                 ctx.stroke();
@@ -613,9 +640,6 @@
     }
 
     #ghant-diagram-connectivity {
-        /*width: 1000px;*/
-        /*width: 100%;*/
-        /*height: 1000px;*/
         background-color: white;
     }
 
