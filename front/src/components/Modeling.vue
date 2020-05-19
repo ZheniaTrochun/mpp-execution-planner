@@ -131,36 +131,21 @@
 
             <v-tab-item>
                 <v-card flat tile>
-                    <canvas id="ghant-diagram-connectivity"></canvas>
+                    <div class="ghant-diagram-connectivity-holder">
+                        <canvas id="ghant-diagram-connectivity"></canvas>
+                    </div>
+
+                    <div class="ghant-diagram-connectivity-stats">
+                        <p>
+                            Total time: {{connectivityModelingTime.time}}
+                            <br>
+                            Speedup: {{connectivityModelingTime.speedup}}
+                            <br>
+                            Efficiency: {{connectivityModelingTime.efficiency}}
+                        </p>
+                    </div>
                 </v-card>
             </v-tab-item>
-
-<!--            <v-tab v-on:click="modelQueueBasedOnCriticalPathByNodesCount()">-->
-<!--                Algorithm 5-->
-<!--            </v-tab>-->
-
-<!--            <v-tab-item>-->
-<!--                <v-card flat tile>-->
-<!--                    <v-simple-table>-->
-<!--                        <template v-slot:default>-->
-<!--                            <thead>-->
-<!--                            <tr>-->
-<!--                                <th class="text-left">Node</th>-->
-<!--                                <th class="text-left">Critical path by number of nodes</th>-->
-<!--                                <th class="text-left">Critical path length</th>-->
-<!--                            </tr>-->
-<!--                            </thead>-->
-<!--                            <tbody>-->
-<!--                            <tr v-for="item in criticalPathByNumberOfNodesQueue" :key="item.node.id">-->
-<!--                                <td>{{ item.node.id }}</td>-->
-<!--                                <td>{{ item.path }}</td>-->
-<!--                                <td>{{ item.value }}</td>-->
-<!--                            </tr>-->
-<!--                            </tbody>-->
-<!--                        </template>-->
-<!--                    </v-simple-table>-->
-<!--                </v-card>-->
-<!--            </v-tab-item>-->
 
         </v-tabs>
     </div>
@@ -199,7 +184,11 @@
                 queueByConnectivity: [],
 
                 ghantDiagram: [],
-
+                connectivityModelingTime: {
+                    time: 0,
+                    speedup: 0,
+                    efficiency: 0
+                },
                 selectedQueueCreationAlgo: ""
             }
         },
@@ -319,7 +308,6 @@
 
             this.checkGraphs();
             this.modelQueueBasedOnCriticalPath();
-            this.planningBasedOnConnectivity();
         },
         created() {
             this.$vuetify.theme.dark = true;
@@ -351,6 +339,8 @@
                             });
                         }
                     });
+
+                this.planningBasedOnConnectivity();
             },
             modelQueueBasedOnCriticalPathByNodesCount() {
 
@@ -370,6 +360,8 @@
                             });
                         }
                     });
+
+                this.planningBasedOnConnectivity();
             },
             modelQueueBasedOnConnectivity() {
 
@@ -389,6 +381,8 @@
                             });
                         }
                     });
+
+                    this.planningBasedOnConnectivity();
             },
             markCycle(res) {
                 if (res.alreadyVisited.length > 0) {
@@ -537,19 +531,55 @@
                             this.ghantDiagram = resp.data.entries;
 
                             this.drawGhantDiagram(resp.data.entries, "ghant-diagram-connectivity");
+
+                            const time = this.calculateExecutionTime(resp.data.entries);
+                            const speedup = this.calculateSpeedup(time);
+                            const efficiency = this.calculateEfficiency(speedup);
+
+                            this.connectivityModelingTime = {
+                                time: time,
+                                speedup: speedup,
+                                efficiency: efficiency
+                            }
                         }
                     });
+            },
+            calculateExecutionTime(diagram) {
+                return diagram
+                    .filter(x => x.DiagramComputingEntry)
+                    .map(x => x.DiagramComputingEntry.start + x.DiagramComputingEntry.duration)
+                    .reduce((x, y) => Math.max(x, y), 0);
+            },
+            calculateSpeedup(time) {
+                if (time === 0) {
+                    return 0;
+                } else {
+                    return taskGraph.nodes().map(x => Number(x.data().weight)).reduce((x, y) => x + y, 0) / time;
+                }
+            },
+            calculateEfficiency(speedup) {
+                const nodesCount = taskGraph.nodes().size();
+
+                if (nodesCount === 0) {
+                    return 0;
+                } else {
+                    return speedup / nodesCount;
+                }
             },
             drawGhantDiagram(elements, canvasId) {
                 const canvas = document.getElementById(canvasId);
                 const ctx = canvas.getContext('2d');
-                // ctx.clearRect(0,0,connectivityCanvas.width,connectivityCanvas.height);
+                ctx.clearRect(0,0,canvas.width,canvas.height);
                 ctx.font = "40px sans-serif";
 
-                canvas.height = screen.height * 0.6;
-                canvas.width = document.getElementById("immutable-task-graph-holder").offsetWidth;
-
+                const time = this.calculateExecutionTime(elements);
                 const numberOfProcessors = systemGraph.nodes().size();
+
+                const width = Math.max(document.getElementById("immutable-task-graph-holder").offsetWidth, time * 20 + 100 + 85);
+                const height = Math.max(screen.height * 0.6, numberOfProcessors * 70 + 95 + 100);
+
+                canvas.height = height;
+                canvas.width = width;
 
                 ctx.beginPath();
                 ctx.font = "14px sans-serif";
@@ -637,10 +667,28 @@
         width: 100%;
         background-color: white;
         height: 60vh;
+        margin-top: 20px;
     }
 
     #ghant-diagram-connectivity {
         background-color: white;
+        display: block;
+    }
+
+    .ghant-diagram-connectivity-holder {
+        width: 100%;
+        overflow-x: scroll;
+        overflow-y: scroll;
+    }
+
+    .ghant-diagram-connectivity-stats {
+        background-color: white;
+        color: black;
+        /*margin-top: -10px;*/
+        padding-left: 75px;
+        padding-bottom: 40px;
+        padding-top: 15px;
+        width: 100%;
     }
 
     .full-width {
