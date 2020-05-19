@@ -15,19 +15,19 @@ class GraphRandomizerSpec extends WordSpec with Matchers {
     def createDefaultGraphs(): Seq[OrientedGraph] =
       for (_ <- 1 to 10) yield GraphRandomizer.createRandomOrientedGraph(defaultParams)
 
-    "always create acyclic taskGraph" in {
+    "always create acyclic graph" in {
       val graphs = createDefaultGraphs()
 
       graphs.forall(GraphOps.checkGraphForCycles) shouldBe true
     }
 
-    "create taskGraph with correct number of nodes" in {
+    "create graph with correct number of nodes" in {
       val graphs = createDefaultGraphs()
 
       graphs.forall(graph => graph.nodes.size == defaultParams.numberOfNodes) shouldBe true
     }
 
-    "create taskGraph with correct node weights" in {
+    "create graph with correct node weights" in {
       val graphs = createDefaultGraphs()
 
       val min = defaultParams.minimalNodeWeight
@@ -38,7 +38,7 @@ class GraphRandomizerSpec extends WordSpec with Matchers {
         .forall(weight => weight >= min && weight <= max) shouldBe true
     }
 
-    "create taskGraph with correct edge weights" in {
+    "create graph with correct edge weights" in {
       val graphs = createDefaultGraphs()
 
       val min = defaultParams.minimalEdgeWeight
@@ -49,7 +49,7 @@ class GraphRandomizerSpec extends WordSpec with Matchers {
         .forall(weight => weight >= min && weight <= max) shouldBe true
     }
 
-    "create taskGraph with correct correlation of node and edge weights" in {
+    "create graph with correct correlation of node and edge weights" in {
       val graphs = createDefaultGraphs()
 
       graphs
@@ -57,7 +57,7 @@ class GraphRandomizerSpec extends WordSpec with Matchers {
         .forall(correlation => correlation == defaultParams.correlation) shouldBe true
     }
 
-    "create taskGraph without edges if desired correlation is 1" in {
+    "create graph without edges if desired correlation is 1" in {
       val params = defaultParams.copy(correlation = 1)
 
       val graphs = for (_ <- 1 to 10)
@@ -66,7 +66,7 @@ class GraphRandomizerSpec extends WordSpec with Matchers {
       graphs.flatMap(_.edges) shouldBe empty
     }
 
-    "create taskGraph without edges if desired correlation is 0.1" in {
+    "create graph without edges if desired correlation is 0.1" in {
       val params = defaultParams.copy(correlation = 0.1)
 
       val graphs = for (_ <- 1 to 10)
@@ -77,13 +77,13 @@ class GraphRandomizerSpec extends WordSpec with Matchers {
         .forall(correlation => correlation == params.correlation) shouldBe true
     }
 
-    "create taskGraph without edges if desired correlation is 1 and number of nodes is huge" in {
+    "create graph without edges if desired correlation is 1 and number of nodes is huge" in {
       val graphs = GraphRandomizer.createRandomOrientedGraph(defaultParams.copy(correlation = 1, numberOfNodes = 100))
 
       graphs.edges shouldBe empty
     }
 
-    "just print created taskGraph" ignore {
+    "just print created graph" ignore {
       val graphs = createDefaultGraphs()
 
       val sout = graphs.map(Show[OrientedGraph].show).mkString("\n\n")

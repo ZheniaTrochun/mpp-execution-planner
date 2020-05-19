@@ -47,19 +47,19 @@ class ExecutionPlannerSpec extends WordSpec with Matchers {
   val queueCreator: OrientedGraph => List[Node] = task => QueueCreator.createQueueBasedOnCriticalPath(task).map(_._1)
 
   "ExecutionPlanner.planExecutionByConnectivity" should {
-    "work correctly for empty taskGraph of task" in {
+    "work correctly for empty graph of task" in {
       val expected = new GhantDiagram(systemGraph)
 
       ExecutionPlanner.planExecutionByConnectivity(systemGraph, OrientedGraph(List.empty), queueCreator) shouldBe expected
     }
 
-    "work correctly for empty system taskGraph" in {
+    "work correctly for empty system graph" in {
       val expected = new GhantDiagram(NonOrientedGraph(List.empty))
 
       ExecutionPlanner.planExecutionByConnectivity(NonOrientedGraph(List.empty), taskGraph, queueCreator) shouldBe expected
     }
 
-    "work for trivial taskGraph of task" in {
+    "work for trivial graph of task" in {
       val graph = Node("1", 1) :: Nil
 
       val expectedResult = new GhantDiagram(systemGraph)
@@ -68,7 +68,7 @@ class ExecutionPlannerSpec extends WordSpec with Matchers {
       ExecutionPlanner.planExecutionByConnectivity(systemGraph, OrientedGraph(graph), queueCreator) shouldBe expectedResult
     }
 
-    "work for trivial taskGraph of system" in {
+    "work for trivial graph of system" in {
       val graph = Node("1", 1) :: Nil
       val systemGraph = NonOrientedGraph(graph)
 
