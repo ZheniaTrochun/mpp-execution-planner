@@ -28,15 +28,16 @@ object ExecutionPlanner extends LazyLogging {
 
     val (diagram, scheduled) = initComputing(queueOfNodes, queueOfTasks, taskGraph, systemGraph)
 
-    loopOfPlanning(1, List.empty, scheduled, queueOfTasks, queueOfNodes, taskGraph, diagram)
+    loopOfPlanningByConnectivity(1, List.empty, scheduled, queueOfTasks, queueOfNodes, taskGraph, diagram)
   }
 
-  @tailrec private def loopOfPlanning(
+  @tailrec private def loopOfPlanningByConnectivity(
     tact: Int,
     finishedTasks: List[Node],
     scheduledTasks: List[Node],
     taskQueue: List[Node],
     nodesQueue: List[Node],
+//    nodesQueue: Map[String, Int],
     taskGraph: OrientedGraph,
     diagram: GhantDiagram
   ): GhantDiagram = {
@@ -52,10 +53,10 @@ object ExecutionPlanner extends LazyLogging {
       val readyNodes = findTasksReadyToBeComputed(taskGraph, taskQueue, scheduledTasks, newComputed)
 
 //      logger.info(s"ready to be computed: ${readyNodes.map(_.id).mkString(", ")}")
-      val freeProcessors = diagram.freeProcessorIds(tact)
+      val freeProcessors = nodesQueue.filter(n => diagram.isFree(n.id, tact))
 
       val newScheduled = readyNodes.zip(freeProcessors)
-        .map { case (node, processorId) =>
+        .map { case (node, processor) =>
 
           val parentData = taskGraph.edges.filter(_.target == node.id)
           val whenEverythingIsTransferred = parentData
@@ -65,10 +66,10 @@ object ExecutionPlanner extends LazyLogging {
             }
             .foldLeft(tact) { (startAt, whereWasComputedPair) =>
               val (edge, whereWasComputed) = whereWasComputedPair
-              diagram.transferTo(whereWasComputed, processorId, edge, startAt)
+              diagram.transferTo(whereWasComputed, processor.id, edge, startAt)
             }
 
-          diagram.schedule(processorId, node, whenEverythingIsTransferred)
+          diagram.schedule(processor.id, node, whenEverythingIsTransferred)
           node
         }
 
@@ -77,7 +78,7 @@ object ExecutionPlanner extends LazyLogging {
 //      logger.info("")
 //      logger.info("")
 
-      loopOfPlanning(tact + 1, newComputed, newScheduled ::: scheduledTasks, taskQueue, nodesQueue, taskGraph, diagram)
+      loopOfPlanningByConnectivity(tact + 1, newComputed, newScheduled ::: scheduledTasks, taskQueue, nodesQueue, taskGraph, diagram)
     }
   }
 
