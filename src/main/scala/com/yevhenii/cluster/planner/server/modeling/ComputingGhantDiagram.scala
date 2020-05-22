@@ -48,6 +48,26 @@ class ComputingGhantDiagram(processingNodes: List[Node]) {
     }.map(_._1)
   }
 
+  def whereAndWhenWasComputed(id: String): Option[(String, Int)] = {
+    processors
+      .mapValues(_.zipWithIndex)
+      .flatMap { case (nodeId, log) =>
+        val tacts = log
+          .filter {
+            case (Some(Computing(Node(`id`, _))), _) => true
+            case _ => false
+          }
+          .map(_._2)
+
+        if (tacts.isEmpty) {
+          None
+        } else {
+          Some((nodeId, tacts.max))
+        }
+      }
+      .headOption
+  }
+
   def freeProcessorIds(start: Int): List[String] = {
     processors.keys.filter(isFree(_, start)).toList
   }

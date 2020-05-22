@@ -174,10 +174,14 @@ object GraphOps extends LazyLogging {
       }
     }
 
-    loop(from, List.empty)
-      .filterNot(_.isEmpty)
-      .sortBy(_.map(e => math.ceil(sendingAmount / e.weight).toInt).sum)(Ordering.Int)
-      .head
+    if (from == to) {
+      List()
+    } else {
+      loop(from, List.empty)
+        .filterNot(_.isEmpty)
+        .sortBy(_.map(e => math.ceil(sendingAmount / e.weight).toInt).sum)(Ordering.Int)
+        .head
+    }
   }
 
   def findShortestPathInNodes(from: String, to: String, sendingAmount: Int, nonOrientedGraph: NonOrientedGraph): List[String] = {

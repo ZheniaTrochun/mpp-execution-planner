@@ -31,13 +31,32 @@ object ExecutionPlanner extends LazyLogging {
     loopOfPlanningByConnectivity(1, List.empty, scheduled, queueOfTasks, queueOfNodes, taskGraph, diagram)
   }
 
+  def planExecutionByNeighbor(
+    systemGraph: NonOrientedGraph,
+    taskGraph: OrientedGraph,
+    queueCreator: OrientedGraph => List[Node]
+  ): GhantDiagram = {
+
+    val queueOfNodes = orderOfComputingNodes(systemGraph)
+    val queueOfTasks = queueCreator(taskGraph)
+
+//    val nodesLog = Show[List[Node]].show(queueOfNodes)
+//    val tasksLog = Show[List[Node]].show(queueOfTasks)
+
+//    logger.info(s"queue of nodes: $nodesLog")
+//    logger.info(s"queue of tasks: $tasksLog")
+
+    val (diagram, scheduled) = initComputing(queueOfNodes, queueOfTasks, taskGraph, systemGraph)
+
+    loopOfPlanningByNeighbor(1, List.empty, scheduled, queueOfTasks, queueOfNodes, taskGraph, systemGraph, diagram)
+  }
+
   @tailrec private def loopOfPlanningByConnectivity(
     tact: Int,
     finishedTasks: List[Node],
     scheduledTasks: List[Node],
     taskQueue: List[Node],
     nodesQueue: List[Node],
-//    nodesQueue: Map[String, Int],
     taskGraph: OrientedGraph,
     diagram: GhantDiagram
   ): GhantDiagram = {
@@ -79,6 +98,76 @@ object ExecutionPlanner extends LazyLogging {
 //      logger.info("")
 
       loopOfPlanningByConnectivity(tact + 1, newComputed, newScheduled ::: scheduledTasks, taskQueue, nodesQueue, taskGraph, diagram)
+    }
+  }
+
+  @tailrec private def loopOfPlanningByNeighbor(
+    tact: Int,
+    finishedTasks: List[Node],
+    scheduledTasks: List[Node],
+    taskQueue: List[Node],
+    nodesQueue: List[Node],
+    taskGraph: OrientedGraph,
+    systemGraph: NonOrientedGraph,
+    diagram: GhantDiagram
+  ): GhantDiagram = {
+
+    if (finishedTasks.size == taskQueue.size || tact == MaxIterationNumber) {
+      diagram
+    } else {
+
+      val recentlyFinished = diagram.findRecentlyFinished(tact)
+      //      logger.info(s"recently finished: ${recentlyFinished.map(_.id).mkString(", ")}")
+
+      val newComputed = recentlyFinished ::: finishedTasks
+      val readyNodes = findTasksReadyToBeComputed(taskGraph, taskQueue, scheduledTasks, newComputed)
+
+      //      logger.info(s"ready to be computed: ${readyNodes.map(_.id).mkString(", ")}")
+//      val freeProcessors = nodesQueue.filter(n => diagram.isFree(n.id, tact))
+//      val freeProcessors = diagram.freeProcessorIds(tact)
+
+      val numberOfFreeProcessors = diagram.freeProcessorIds(tact).size
+
+      val newScheduled = readyNodes.take(numberOfFreeProcessors).map { node =>
+        val parentData = taskGraph.edges.filter(_.target == node.id)
+          .flatMap(edge => diagram.whereAndWhenWasComputed(edge.source).map(x => edge -> x))
+
+        val processor = diagram.freeProcessorIds(tact)
+          .map { processor =>
+            val timeToTransfer = parentData
+              .map { case (edge, (whereComputed, _)) =>
+                (edge, systemGraph.findShortestPath(whereComputed, processor, edge.weight))
+              }
+              .map { case (edge, path) =>
+                path.foldLeft(0)((acc, currEdge) => acc + math.ceil(edge.weight / currEdge.weight).toInt)
+              }
+              .sum
+
+            (processor, timeToTransfer)
+          }
+          .minBy(_._2)
+          ._1 // todo: this selection is pretty random, need to use processors queue
+
+        val whenEverythingIsTransferred = if (parentData.isEmpty) {
+          0
+        } else {
+          parentData
+            .map { case (edge, (whereComputed, whenComputed)) =>
+              diagram.transferTo(whereComputed, processor, edge, whenComputed + 1)  // todo: maybe should be "whenComputed"
+            }
+            .max
+        }
+
+        diagram.schedule(processor, node, whenEverythingIsTransferred.max(tact))
+        node
+      }
+
+      //      val log = Show[GhantDiagram].show(diagram)
+      //      logger.info(s"\n$log")
+      //      logger.info("")
+      //      logger.info("")
+
+      loopOfPlanningByNeighbor(tact + 1, newComputed, newScheduled ::: scheduledTasks, taskQueue, nodesQueue, taskGraph, systemGraph, diagram)
     }
   }
 

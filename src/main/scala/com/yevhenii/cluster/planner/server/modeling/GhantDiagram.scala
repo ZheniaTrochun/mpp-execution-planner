@@ -16,6 +16,8 @@ class GhantDiagram(systemGraph: NonOrientedGraph) {
 
   def whereWasComputed(id: String): Option[String] = computationDiagram.whereWasComputed(id)
 
+  def whereAndWhenWasComputed(id: String): Option[(String, Int)] = computationDiagram.whereAndWhenWasComputed(id)
+
   def freeProcessorIds(start: Int): List[String] = computationDiagram.freeProcessorIds(start)
 
   def findRecentlyFinished(tact: Int): List[Node] = computationDiagram.findRecentlyFinished(tact)

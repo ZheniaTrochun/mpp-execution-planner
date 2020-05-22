@@ -105,11 +105,80 @@ class ExecutionPlannerSpec extends WordSpec with Matchers {
       expected.scheduleDirectTransfer("3", "2", taskGraph.edges(5), 16)
       expected.scheduleDirectTransfer("1", "4", taskGraph.edges(1), 21)
       expected.scheduleDirectTransfer("4", "2", taskGraph.edges(1), 23)
-      expected.scheduleDirectTransfer("4", "2", taskGraph.edges(4), 15)
+      expected.scheduleDirectTransfer("4", "2", taskGraph.edges(4), 25)
       expected.scheduleDirectTransfer("1", "4", taskGraph.edges(6), 26)
       expected.scheduleDirectTransfer("4", "2", taskGraph.edges(6), 28)
 
       val actual = ExecutionPlanner.planExecutionByConnectivity(systemGraph, taskGraph, queueCreator)
+
+      actual shouldBe expected
+    }
+  }
+
+  "ExecutionPlanner.planExecutionByNeighbor" should {
+    "work correctly for empty graph of task" in {
+      val expected = new GhantDiagram(systemGraph)
+
+      ExecutionPlanner.planExecutionByNeighbor(systemGraph, OrientedGraph(List.empty), queueCreator) shouldBe expected
+    }
+
+    "work correctly for empty system graph" in {
+      val expected = new GhantDiagram(NonOrientedGraph(List.empty))
+
+      ExecutionPlanner.planExecutionByNeighbor(NonOrientedGraph(List.empty), taskGraph, queueCreator) shouldBe expected
+    }
+
+    "work for trivial graph of task" in {
+      val graph = Node("1", 1) :: Nil
+
+      val expectedResult = new GhantDiagram(systemGraph)
+      expectedResult.schedule("2", graph.head, 0)
+
+      ExecutionPlanner.planExecutionByNeighbor(systemGraph, OrientedGraph(graph), queueCreator) shouldBe expectedResult
+    }
+
+    "work for trivial graph of system" in {
+      val graph = Node("1", 1) :: Nil
+      val systemGraph = NonOrientedGraph(graph)
+
+      // queue of tasks: 4 -> 2 -> 1 -> 6 -> 5 -> 9 -> 3 -> 7 -> 8
+      val expectedResult = new GhantDiagram(systemGraph)
+      expectedResult.schedule("1", taskGraph.nodes(3), 0)
+      expectedResult.schedule("1", taskGraph.nodes(1), 20)
+      expectedResult.schedule("1", taskGraph.nodes(0), 24)
+      expectedResult.schedule("1", taskGraph.nodes(5), 29)
+      expectedResult.schedule("1", taskGraph.nodes(4), 35)
+      expectedResult.schedule("1", taskGraph.nodes(8), 37)
+      expectedResult.schedule("1", taskGraph.nodes(2), 42)
+      expectedResult.schedule("1", taskGraph.nodes(6), 44)
+      expectedResult.schedule("1", taskGraph.nodes(7), 45)
+
+      ExecutionPlanner.planExecutionByNeighbor(systemGraph, taskGraph, queueCreator) shouldBe expectedResult
+    }
+
+    "create correct queue from example" in {
+      val expected = new GhantDiagram(systemGraph)
+      expected.schedule("1", taskGraph.nodes(0), 0)
+      expected.schedule("1", taskGraph.nodes(4), 6)
+      expected.schedule("2", taskGraph.nodes(3), 0)
+      expected.schedule("2", taskGraph.nodes(8), 13)
+      expected.schedule("2", taskGraph.nodes(6), 20)
+      expected.schedule("2", taskGraph.nodes(7), 30)
+      expected.schedule("3", taskGraph.nodes(2), 0)
+      expected.schedule("4", taskGraph.nodes(1), 0)
+      expected.schedule("4", taskGraph.nodes(5), 4)
+
+      expected.scheduleDirectTransfer("4", "1", taskGraph.edges(2), 5)
+      expected.scheduleDirectTransfer("1", "2", taskGraph.edges(7), 10)
+      expected.scheduleDirectTransfer("4", "2", taskGraph.edges(8), 12)
+      expected.scheduleDirectTransfer("3", "2", taskGraph.edges(5), 16)
+      expected.scheduleDirectTransfer("1", "4", taskGraph.edges(1), 21)
+      expected.scheduleDirectTransfer("4", "2", taskGraph.edges(1), 23)
+      expected.scheduleDirectTransfer("4", "2", taskGraph.edges(4), 25)
+      expected.scheduleDirectTransfer("1", "4", taskGraph.edges(6), 26)
+      expected.scheduleDirectTransfer("4", "2", taskGraph.edges(6), 28)
+
+      val actual = ExecutionPlanner.planExecutionByNeighbor(systemGraph, taskGraph, queueCreator)
 
       actual shouldBe expected
     }
