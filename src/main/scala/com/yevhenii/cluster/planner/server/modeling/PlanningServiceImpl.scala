@@ -23,4 +23,18 @@ class PlanningServiceImpl(taskService: TaskService) extends PlanningService with
         result
       })
   }
+
+  override def buildGhantDiagramByClosestNeighbor(id: TaskId, queueCreator: OrientedGraph => List[Node]): IO[Option[GhantDiagram]] = {
+    IO.apply(logger.info("Creating Ghant diagram based on closest neighbor"))
+      .flatMap(_ => taskService.getGraphs(id))
+      .map(_.map { graphs =>
+        val taskGraph = OrientedGraph(OrientedGraphEntry(graphs.taskGraph))
+        val systemGraph = NonOrientedGraph(NonOrientedGraphEntry(graphs.systemGraph))
+
+        val result = ExecutionPlanner.planExecutionByClosestNeighbor(systemGraph, taskGraph, queueCreator)
+
+        logger.info(Show[GhantDiagram].show(result))
+        result
+      })
+  }
 }

@@ -31,7 +31,7 @@ object ExecutionPlanner extends LazyLogging {
     loopOfPlanningByConnectivity(1, List.empty, scheduled, queueOfTasks, queueOfNodes, taskGraph, diagram)
   }
 
-  def planExecutionByNeighbor(
+  def planExecutionByClosestNeighbor(
     systemGraph: NonOrientedGraph,
     taskGraph: OrientedGraph,
     queueCreator: OrientedGraph => List[Node]
@@ -145,8 +145,10 @@ object ExecutionPlanner extends LazyLogging {
 
             (processor, timeToTransfer)
           }
-          .minBy(_._2)
-          ._1 // todo: this selection is pretty random, need to use processors queue
+//          .minBy(_._2) // todo: this selection is pretty random, need to use processors queue
+          .map { case (processor, path) => (path, processor) }
+          .min(Ordering.Tuple2(Ordering[Int], Ordering.by[String, Int](x => nodesQueue.map(_.id).indexOf(x)).reverse))
+          ._2
 
         val whenEverythingIsTransferred = if (parentData.isEmpty) {
           0

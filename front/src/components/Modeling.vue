@@ -147,6 +147,28 @@
                 </v-card>
             </v-tab-item>
 
+            <v-tab v-on:click="planningBasedOnCloseNeighbor()">
+                Planning based on the closest neighbor
+            </v-tab>
+
+            <v-tab-item>
+                <v-card flat tile>
+                    <div class="ghant-diagram-connectivity-holder">
+                        <canvas id="ghant-diagram-neighbor"></canvas>
+                    </div>
+
+                    <div class="ghant-diagram-connectivity-stats">
+                        <p>
+                            Total time: {{closestNeighborModelingTime.time}}
+                            <br>
+                            Speedup: {{closestNeighborModelingTime.speedup}}
+                            <br>
+                            Efficiency: {{closestNeighborModelingTime.efficiency}}
+                        </p>
+                    </div>
+                </v-card>
+            </v-tab-item>
+
         </v-tabs>
     </div>
 </template>
@@ -185,6 +207,11 @@
 
                 ghantDiagram: [],
                 connectivityModelingTime: {
+                    time: 0,
+                    speedup: 0,
+                    efficiency: 0
+                },
+                closestNeighborModelingTime: {
                     time: 0,
                     speedup: 0,
                     efficiency: 0
@@ -537,6 +564,28 @@
                             const efficiency = this.calculateEfficiency(speedup);
 
                             this.connectivityModelingTime = {
+                                time: time,
+                                speedup: speedup,
+                                efficiency: efficiency
+                            }
+                        }
+                    });
+            },
+            planningBasedOnCloseNeighbor() {
+                axios.get(`https://cluster-planner-server.herokuapp.com/planning/${this.selectedQueueCreationAlgo}/closest-neighbor/${this.task.id}`)
+                    .then(resp => {
+                        if (resp.status === 200) {
+                            console.log(resp.data);
+
+                            this.ghantDiagram = resp.data.entries;
+
+                            this.drawGhantDiagram(resp.data.entries, "ghant-diagram-neighbor");
+
+                            const time = this.calculateExecutionTime(resp.data.entries);
+                            const speedup = this.calculateSpeedup(time);
+                            const efficiency = this.calculateEfficiency(speedup);
+
+                            this.closestNeighborModelingTime = {
                                 time: time,
                                 speedup: speedup,
                                 efficiency: efficiency

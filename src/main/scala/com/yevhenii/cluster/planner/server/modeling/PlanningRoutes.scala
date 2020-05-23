@@ -19,8 +19,13 @@ object PlanningRoutes extends Http4sDsl[IO] with LazyLogging {
 
   def routes(planningService: PlanningService): HttpRoutes[IO] = {
 
-    def buildDiagramByConnectivityAndCreateResponse(id: String, queueCreator: OrientedGraph => List[Node]): IO[Response[IO]] = {
-      planningService.buildGhantDiagramByConnectivity(id, queueCreator)
+    def buildDiagramAndCreateResponse(
+      id: String,
+      queueCreator: OrientedGraph => List[Node])(
+      planning: (String, OrientedGraph => List[Node]) => IO[Option[GhantDiagram]]
+    ): IO[Response[IO]] = {
+
+      planning(id, queueCreator)
         .flatMap {
           case Some(res) =>
             val x = Diagram.from(res)
@@ -33,15 +38,27 @@ object PlanningRoutes extends Http4sDsl[IO] with LazyLogging {
     HttpRoutes.of[IO] {
       case _ @ GET -> Root / "planning" / "critical-path" / "connectivity" / id =>
         val queueCreator: OrientedGraph => List[Node] = graph => QueueCreator.createQueueBasedOnCriticalPath(graph).map(_._1)
-        buildDiagramByConnectivityAndCreateResponse(id, queueCreator)
+        buildDiagramAndCreateResponse(id, queueCreator)(planningService.buildGhantDiagramByConnectivity)
 
       case _ @ GET -> Root / "planning" / "node-count-on-critical-path" / "connectivity" / id =>
         val queueCreator: OrientedGraph => List[Node] = graph => QueueCreator.createQueueBasedOnNodesCountOnCriticalPath(graph).map(_._1)
-        buildDiagramByConnectivityAndCreateResponse(id, queueCreator)
+        buildDiagramAndCreateResponse(id, queueCreator)(planningService.buildGhantDiagramByConnectivity)
 
       case _ @ GET -> Root / "planning" / "node-connectivity" / "connectivity" / id =>
         val queueCreator: OrientedGraph => List[Node] = graph => QueueCreator.createQueueBasedOnNodesConnectivity(graph).map(_._1)
-        buildDiagramByConnectivityAndCreateResponse(id, queueCreator)
+        buildDiagramAndCreateResponse(id, queueCreator)(planningService.buildGhantDiagramByConnectivity)
+
+      case _ @ GET -> Root / "planning" / "critical-path" / "closest-neighbor" / id =>
+        val queueCreator: OrientedGraph => List[Node] = graph => QueueCreator.createQueueBasedOnCriticalPath(graph).map(_._1)
+        buildDiagramAndCreateResponse(id, queueCreator)(planningService.buildGhantDiagramByClosestNeighbor)
+
+      case _ @ GET -> Root / "planning" / "node-count-on-critical-path" / "closest-neighbor" / id =>
+        val queueCreator: OrientedGraph => List[Node] = graph => QueueCreator.createQueueBasedOnNodesCountOnCriticalPath(graph).map(_._1)
+        buildDiagramAndCreateResponse(id, queueCreator)(planningService.buildGhantDiagramByClosestNeighbor)
+
+      case _ @ GET -> Root / "planning" / "node-connectivity" / "closest-neighbor" / id =>
+        val queueCreator: OrientedGraph => List[Node] = graph => QueueCreator.createQueueBasedOnNodesConnectivity(graph).map(_._1)
+        buildDiagramAndCreateResponse(id, queueCreator)(planningService.buildGhantDiagramByClosestNeighbor)
     }
   }
 
