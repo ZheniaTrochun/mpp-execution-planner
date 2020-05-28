@@ -607,7 +607,7 @@
                 }
             },
             calculateEfficiency(speedup) {
-                const nodesCount = taskGraph.nodes().size();
+                const nodesCount = systemGraph.nodes().size();
 
                 if (nodesCount === 0) {
                     return 0;
