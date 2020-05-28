@@ -156,7 +156,7 @@ class ExecutionPlannerSpec extends WordSpec with Matchers {
       ExecutionPlanner.planExecutionByClosestNeighbor(systemGraph, taskGraph, queueCreator) shouldBe expectedResult
     }
 
-    "create correct queue from example" ignore { // todo: unignore
+    "create correct queue from example" in {
       val expected = new GhantDiagram(systemGraph)
       expected.schedule("1", taskGraph.nodes(0), 0)
       expected.schedule("1", taskGraph.nodes(4), 5)

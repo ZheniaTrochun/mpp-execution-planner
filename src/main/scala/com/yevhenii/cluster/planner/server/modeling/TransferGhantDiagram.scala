@@ -87,7 +87,11 @@ class TransferGhantDiagram(systemGraph: NonOrientedGraph) {
   override def equals(obj: Any): Boolean = {
     if (obj != null && obj.isInstanceOf[TransferGhantDiagram]) {
       val other = obj.asInstanceOf[TransferGhantDiagram]
-      this.processors == other.processors
+
+      val normalizedThis = this.processors.mapValues(_.zipWithIndex.map(x => x._1.map(_ -> x._2)).filter(_.isDefined))
+      val normalizedThat = other.processors.mapValues(_.zipWithIndex.map(x => x._1.map(_ -> x._2)).filter(_.isDefined))
+
+      normalizedThis == normalizedThat
     } else {
       false
     }
