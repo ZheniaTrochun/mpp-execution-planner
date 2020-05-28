@@ -724,6 +724,11 @@
         display: block;
     }
 
+    #ghant-diagram-neighbor {
+        background-color: white;
+        display: block;
+    }
+
     .ghant-diagram-connectivity-holder {
         width: 100%;
         overflow-x: scroll;

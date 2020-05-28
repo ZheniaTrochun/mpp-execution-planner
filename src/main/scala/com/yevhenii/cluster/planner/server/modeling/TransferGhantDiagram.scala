@@ -36,14 +36,7 @@ class TransferGhantDiagram(systemGraph: NonOrientedGraph) {
       val transferDuration = math.ceil(data.weight.toDouble / edge.weight).toInt
       val transfer = TransferringData(data, from, to)
 
-      val slidingIteratorOfFirst = processors(from).zipWithIndex.drop(atLeastStartingFrom).sliding(transferDuration)
-      val slidingIteratorOfSecond = processors(to).zipWithIndex.drop(atLeastStartingFrom).sliding(transferDuration)
-
-      val indexOfStartOpt =
-        (slidingIteratorOfFirst zip slidingIteratorOfSecond)
-          .find { case (first, second) => first.forall(_._1.isEmpty) && second.forall(_._1.isEmpty) }
-          .filter { case (first, second) => first.length == transferDuration && second.length == transferDuration }
-          .map { case (first, _) => first.head._2 }
+      val indexOfStartOpt: Option[Int] = findTheEarliestScheduleTime(from, to, atLeastStartingFrom, transferDuration)
 
       indexOfStartOpt match {
         case Some(startingPoint) =>
@@ -57,13 +50,8 @@ class TransferGhantDiagram(systemGraph: NonOrientedGraph) {
         case None =>
           val minStartTime = math.max(math.max(processors(from).size, processors(to).size), atLeastStartingFrom)
 
-          for (_ <- processors(from).size until minStartTime) {
-            processors(from).append(None)
-          }
-
-          for (_ <- processors(to).size until minStartTime) {
-            processors(to).append(None)
-          }
+          increaseSizeTo(from, minStartTime)
+          increaseSizeTo(to, minStartTime)
 
           for (_ <- 1 to transferDuration) {
             processors(from).append(Some(transfer))
@@ -73,6 +61,27 @@ class TransferGhantDiagram(systemGraph: NonOrientedGraph) {
           minStartTime + transferDuration
       }
     }
+  }
+
+  private def increaseSizeTo(key: String, desiredSize: Int): Unit = {
+    for (_ <- processors(key).size until desiredSize) {
+      processors(key).append(None)
+    }
+  }
+
+  private def findTheEarliestScheduleTime(from: String, to: String, atLeastStartingFrom: Int, transferDuration: Int): Option[Int] = {
+    val unifiedSize = processors(from).size.max(processors(to).size)
+
+    increaseSizeTo(from, unifiedSize)
+    increaseSizeTo(to, unifiedSize)
+
+    val slidingIteratorOfFirst = processors(from).zipWithIndex.drop(atLeastStartingFrom).sliding(transferDuration)
+    val slidingIteratorOfSecond = processors(to).zipWithIndex.drop(atLeastStartingFrom).sliding(transferDuration)
+
+    (slidingIteratorOfFirst zip slidingIteratorOfSecond)
+      .find { case (first, second) => first.forall(_._1.isEmpty) && second.forall(_._1.isEmpty) }
+      .filter { case (first, second) => first.length == transferDuration && second.length == transferDuration }
+      .map { case (first, _) => first.head._2 }
   }
 
   override def equals(obj: Any): Boolean = {
