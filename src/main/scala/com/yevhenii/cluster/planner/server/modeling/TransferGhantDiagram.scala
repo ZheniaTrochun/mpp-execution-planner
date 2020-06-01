@@ -31,8 +31,6 @@ class TransferGhantDiagram(systemGraph: NonOrientedGraph) {
 
     edgeOpt.map { edge =>
 
-      // todo: test fails because one of transfers scheduled earlier then expected
-
       val transferDuration = math.ceil(data.weight.toDouble / edge.weight).toInt
       val transfer = TransferringData(data, from, to)
 
@@ -59,6 +57,23 @@ class TransferGhantDiagram(systemGraph: NonOrientedGraph) {
           }
 
           minStartTime + transferDuration
+      }
+    }
+  }
+
+  def approximateStartTime(from: String, to: String, data: OrientedEdge, atLeastStartingFrom: Int): Int = {
+    if (from == to) {
+      atLeastStartingFrom
+    } else {
+      val shortestPath = systemGraph.findShortestPathInNodes(from, to, data.weight)
+
+      shortestPath.init.zip(shortestPath.tail).foldLeft(atLeastStartingFrom) { (startFrom, pairOfNodes) =>
+        val (from, to) = pairOfNodes
+
+        val edge = systemGraph.edges.find(edge => (edge.source == from && edge.target == to) || (edge.source == to && edge.target == from)).get
+        val transferDuration = math.ceil(data.weight.toDouble / edge.weight).toInt
+
+        startFrom + transferDuration
       }
     }
   }

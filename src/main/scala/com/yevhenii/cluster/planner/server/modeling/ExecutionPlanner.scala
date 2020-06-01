@@ -115,6 +115,7 @@ object ExecutionPlanner extends LazyLogging {
       }
     }
 
+    // todo: I'm not really sure if it works correctly
     private def chooseBestProcessor(tact: Int, taskContext: TaskContext, diagram: GhantDiagram, parentData: List[(OrientedEdge, (String, Int))]): String = {
       diagram.freeProcessorIds(tact)
         .map { processor =>
@@ -123,16 +124,45 @@ object ExecutionPlanner extends LazyLogging {
               (edge, taskContext.systemGraph.findShortestPath(whereComputed, processor, edge.weight))
             }
             .map { case (edge, path) =>
-              path.foldLeft(0)((acc, currEdge) => acc + math.ceil(edge.weight / currEdge.weight).toInt)
+              path.foldLeft(0)((acc, currEdge) => acc + math.ceil(edge.weight.toDouble / currEdge.weight).toInt)
             }
             .sum
 
-          (processor, timeToTransfer)
+          val approximateStartTime =
+            if (parentData.nonEmpty) {
+              parentData
+                .map { case (edge, (whereComputed, whenComputed)) =>
+                  diagram.approximateStartTime(whereComputed, processor, edge, whenComputed)
+                }
+                .max
+            } else {
+              tact
+            }
+
+          (timeToTransfer, approximateStartTime, processor)
         }
-        .map(_.swap) //{ case (processor, path) => (path, processor) }
-        .min(Ordering.Tuple2(Ordering[Int], Ordering.by[String, Int](x => taskContext.nodesQueue.map(_.id).indexOf(x)).reverse))
-        ._2
+        .min(Ordering.Tuple3(Ordering[Int], Ordering[Int], Ordering.by[String, Int](x => taskContext.nodesQueue.map(_.id).indexOf(x)).reverse))
+        ._3
     }
+
+//    private def chooseBestProcessor(tact: Int, taskContext: TaskContext, diagram: GhantDiagram, parentData: List[(OrientedEdge, (String, Int))]): String = {
+//      diagram.freeProcessorIds(tact)
+//        .map { processor =>
+//          val timeToTransfer = parentData
+//            .map { case (edge, (whereComputed, _)) =>
+//              (edge, taskContext.systemGraph.findShortestPath(whereComputed, processor, edge.weight))
+//            }
+//            .map { case (edge, path) =>
+//              path.foldLeft(0)((acc, currEdge) => acc + math.ceil(edge.weight.toDouble / currEdge.weight).toInt)
+//            }
+//            .sum
+//
+//          (processor, timeToTransfer)
+//        }
+//        .map(_.swap) //{ case (processor, path) => (path, processor) }
+//        .min(Ordering.Tuple2(Ordering[Int], Ordering.by[String, Int](x => taskContext.nodesQueue.map(_.id).indexOf(x)).reverse))
+//        ._2
+//    }
   }
 
   private def orderOfComputingNodes(nonOrientedGraph: NonOrientedGraph): List[Node] =

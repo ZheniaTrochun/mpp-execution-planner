@@ -28,6 +28,9 @@ class GhantDiagram(systemGraph: NonOrientedGraph) {
   def scheduleDirectTransfer(from: String, to: String, data: OrientedEdge, atLeastStartingFrom: Int): Option[Int] =
     transferDiagram.scheduleDirectTransfer(from, to, data, atLeastStartingFrom)
 
+  def approximateStartTime(from: String, to: String, data: OrientedEdge, atLeastStartingFrom: Int): Int =
+    transferDiagram.approximateStartTime(from, to, data, atLeastStartingFrom)
+
   override def equals(obj: Any): Boolean = {
     if (obj == null || !obj.isInstanceOf[GhantDiagram]) {
       false
