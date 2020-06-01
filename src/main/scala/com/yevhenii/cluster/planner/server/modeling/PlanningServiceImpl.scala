@@ -17,7 +17,7 @@ class PlanningServiceImpl(taskService: TaskService) extends PlanningService with
   override def buildGhantDiagramByConnectivity(id: TaskId, queueCreator: OrientedGraph => List[Node]): IO[Option[GhantDiagram]] = {
     IO.apply(logger.info("Creating Ghant diagram based on nodes connectivity"))
       .flatMap(_ => taskService.getGraphs(id))
-      .map(_.map(graphs => planning(graphs, queueCreator, ExecutionPlanner.planExecutionByConnectivity)))
+      .map(_.map(graphs => planning(graphs, queueCreator, ExecutionPlanner.ConnectivityPlanner)))
       .map(_.map { result =>
         logger.info(Show[GhantDiagram].show(result))
         result
@@ -27,7 +27,7 @@ class PlanningServiceImpl(taskService: TaskService) extends PlanningService with
   override def buildGhantDiagramByClosestNeighbor(id: TaskId, queueCreator: OrientedGraph => List[Node]): IO[Option[GhantDiagram]] = {
     IO.apply(logger.info("Creating Ghant diagram based on closest neighbor"))
       .flatMap(_ => taskService.getGraphs(id))
-      .map(_.map(graphs => planning(graphs, queueCreator, ExecutionPlanner.planExecutionByClosestNeighbor)))
+      .map(_.map(graphs => planning(graphs, queueCreator, ExecutionPlanner.CloseNeighborPlanner)))
       .map(_.map { result =>
         logger.info(Show[GhantDiagram].show(result))
         result

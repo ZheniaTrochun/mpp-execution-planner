@@ -50,13 +50,13 @@ class ExecutionPlannerSpec extends WordSpec with Matchers {
     "work correctly for empty graph of task" in {
       val expected = new GhantDiagram(systemGraph)
 
-      ExecutionPlanner.planExecutionByConnectivity(systemGraph, OrientedGraph(List.empty), queueCreator) shouldBe expected
+      ExecutionPlanner.ConnectivityPlanner.apply(systemGraph, OrientedGraph(List.empty), queueCreator) shouldBe expected
     }
 
     "work correctly for empty system graph" in {
       val expected = new GhantDiagram(NonOrientedGraph(List.empty))
 
-      ExecutionPlanner.planExecutionByConnectivity(NonOrientedGraph(List.empty), taskGraph, queueCreator) shouldBe expected
+      ExecutionPlanner.ConnectivityPlanner.apply(NonOrientedGraph(List.empty), taskGraph, queueCreator) shouldBe expected
     }
 
     "work for trivial graph of task" in {
@@ -65,7 +65,7 @@ class ExecutionPlannerSpec extends WordSpec with Matchers {
       val expectedResult = new GhantDiagram(systemGraph)
       expectedResult.schedule("2", graph.head, 0)
 
-      ExecutionPlanner.planExecutionByConnectivity(systemGraph, OrientedGraph(graph), queueCreator) shouldBe expectedResult
+      ExecutionPlanner.ConnectivityPlanner.apply(systemGraph, OrientedGraph(graph), queueCreator) shouldBe expectedResult
     }
 
     "work for trivial graph of system" in {
@@ -84,7 +84,7 @@ class ExecutionPlannerSpec extends WordSpec with Matchers {
       expectedResult.schedule("1", taskGraph.nodes(6), 44)
       expectedResult.schedule("1", taskGraph.nodes(7), 45)
 
-      ExecutionPlanner.planExecutionByConnectivity(systemGraph, taskGraph, queueCreator) shouldBe expectedResult
+      ExecutionPlanner.ConnectivityPlanner.apply(systemGraph, taskGraph, queueCreator) shouldBe expectedResult
     }
 
     "create correct queue from example" in {
@@ -109,7 +109,7 @@ class ExecutionPlannerSpec extends WordSpec with Matchers {
       expected.scheduleDirectTransfer("1", "4", taskGraph.edges(6), 26)
       expected.scheduleDirectTransfer("4", "2", taskGraph.edges(6), 28)
 
-      val actual = ExecutionPlanner.planExecutionByConnectivity(systemGraph, taskGraph, queueCreator)
+      val actual = ExecutionPlanner.ConnectivityPlanner.apply(systemGraph, taskGraph, queueCreator)
 
       actual shouldBe expected
     }
@@ -119,13 +119,13 @@ class ExecutionPlannerSpec extends WordSpec with Matchers {
     "work correctly for empty graph of task" in {
       val expected = new GhantDiagram(systemGraph)
 
-      ExecutionPlanner.planExecutionByClosestNeighbor(systemGraph, OrientedGraph(List.empty), queueCreator) shouldBe expected
+      ExecutionPlanner.CloseNeighborPlanner.apply(systemGraph, OrientedGraph(List.empty), queueCreator) shouldBe expected
     }
 
     "work correctly for empty system graph" in {
       val expected = new GhantDiagram(NonOrientedGraph(List.empty))
 
-      ExecutionPlanner.planExecutionByClosestNeighbor(NonOrientedGraph(List.empty), taskGraph, queueCreator) shouldBe expected
+      ExecutionPlanner.CloseNeighborPlanner.apply(NonOrientedGraph(List.empty), taskGraph, queueCreator) shouldBe expected
     }
 
     "work for trivial graph of task" in {
@@ -134,7 +134,7 @@ class ExecutionPlannerSpec extends WordSpec with Matchers {
       val expectedResult = new GhantDiagram(systemGraph)
       expectedResult.schedule("2", graph.head, 0)
 
-      ExecutionPlanner.planExecutionByClosestNeighbor(systemGraph, OrientedGraph(graph), queueCreator) shouldBe expectedResult
+      ExecutionPlanner.CloseNeighborPlanner.apply(systemGraph, OrientedGraph(graph), queueCreator) shouldBe expectedResult
     }
 
     "work for trivial graph of system" in {
@@ -153,7 +153,7 @@ class ExecutionPlannerSpec extends WordSpec with Matchers {
       expectedResult.schedule("1", taskGraph.nodes(6), 44)
       expectedResult.schedule("1", taskGraph.nodes(7), 45)
 
-      ExecutionPlanner.planExecutionByClosestNeighbor(systemGraph, taskGraph, queueCreator) shouldBe expectedResult
+      ExecutionPlanner.CloseNeighborPlanner.apply(systemGraph, taskGraph, queueCreator) shouldBe expectedResult
     }
 
     "create correct queue from example" in {
@@ -178,9 +178,53 @@ class ExecutionPlannerSpec extends WordSpec with Matchers {
       expected.scheduleDirectTransfer("1", "4", taskGraph.edges(10), 16)
       expected.scheduleDirectTransfer("4", "3", taskGraph.edges(10), 17)
 
-      val actual = ExecutionPlanner.planExecutionByClosestNeighbor(systemGraph, taskGraph, queueCreator)
+      val actual = ExecutionPlanner.CloseNeighborPlanner.apply(systemGraph, taskGraph, queueCreator)
 
       actual shouldBe expected
     }
+  }
+
+  "create correct queue from example 2" in {
+    val system = NonOrientedGraph(
+      Node("1", 1) ::
+        Node("2", 1) ::
+        Node("3", 1) ::
+        Node("4", 1) ::
+        Node("5", 1) ::
+        Nil
+    )
+
+    val task = OrientedGraph(
+      Node("1", 3) ::
+        Node("2", 7) ::
+        Node("3", 5) ::
+        Node("4", 3) ::
+        Node("5", 4) ::
+        Node("6", 4) ::
+        Node("7", 5) ::
+        Node("8", 3) ::
+        Node("9", 4) ::
+        Node("10", 1) ::
+        OrientedEdge("1-3", 1, "1", "3") ::
+        OrientedEdge("1-7", 3, "1", "7") ::
+        OrientedEdge("2-3", 1, "2", "3") ::
+        OrientedEdge("2-9", 2, "2", "9") ::
+        OrientedEdge("2-10", 2, "2", "10") ::
+        OrientedEdge("3-4", 3, "3", "4") ::
+        OrientedEdge("3-5", 1, "3", "5") ::
+        OrientedEdge("3-9", 3, "3", "9") ::
+        OrientedEdge("4-6", 3, "4", "6") ::
+        OrientedEdge("5-6", 1, "5", "6") ::
+        OrientedEdge("5-8", 1, "5", "8") ::
+        OrientedEdge("5-7", 1, "5", "7") ::
+        OrientedEdge("7-10", 1, "7", "10") ::
+        Nil
+    )
+
+    val expected = new GhantDiagram(systemGraph)
+
+    val actual = ExecutionPlanner.CloseNeighborPlanner.apply(system, task, queueCreator)
+
+    actual shouldBe expected
   }
 }
