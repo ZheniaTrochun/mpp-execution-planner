@@ -239,7 +239,7 @@ object GraphOps extends LazyLogging {
 
     implicit class NonOrientedGraphOpsImplicits(nonOrientedGraph: NonOrientedGraph) {
       def connectivityOfNode(node: Node): Int = GraphOps.determineNodeConnectivity(nonOrientedGraph, node)
-      def connectivityOfNode(nodeId: String): Int = GraphOps.determineNodeConnectivity(nonOrientedGraph, node)
+      def connectivityOfNode(nodeId: String): Int = GraphOps.determineNodeConnectivity(nonOrientedGraph, nodeId)
       def findShortestPath(from: String, to: String, sendingAmount: Int): List[NonOrientedEdge] =
         GraphOps.findShortestPath(from, to, sendingAmount, nonOrientedGraph)
       def findShortestPathInNodes(from: String, to: String, sendingAmount: Int): List[String] =
