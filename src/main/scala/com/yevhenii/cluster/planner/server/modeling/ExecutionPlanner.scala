@@ -170,10 +170,11 @@ object ExecutionPlanner extends LazyLogging {
               tact
             }
 
-          (timeToTransfer, approximateStartTime, processor)
+          (timeToTransfer, processor, approximateStartTime)
         }
-        .min(Ordering.Tuple3(Ordering[Int], Ordering[Int], Ordering.by[String, Int](x => taskContext.nodesQueue.map(_.id).indexOf(x)).reverse))
-        ._3
+//        .min(Ordering.Tuple3(Ordering[Int], Ordering[Int], Ordering.by[String, Int](x => taskContext.nodesQueue.map(_.id).indexOf(x)).reverse))
+        .min(Ordering.Tuple3(Ordering[Int], Ordering.by[String, Int](taskContext.systemGraph.connectivityOfNode).reverse, Ordering[Int]))
+        ._2
     }
 
 //    private def chooseBestProcessor(tact: Int, taskContext: TaskContext, diagram: GhantDiagram, parentData: List[(OrientedEdge, (String, Int))]): String = {

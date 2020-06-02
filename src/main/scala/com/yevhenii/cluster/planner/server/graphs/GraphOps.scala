@@ -136,7 +136,11 @@ object GraphOps extends LazyLogging {
   }
 
   def determineNodeConnectivity[E <: GraphEntry](taskGraph: Graph[E], node: Node): Int = {
-    taskGraph.edges.count(edge => edge.target == node.id || edge.source == node.id)
+    determineNodeConnectivity(taskGraph, node.id)
+  }
+
+  def determineNodeConnectivity[E <: GraphEntry](taskGraph: Graph[E], nodeId: String): Int = {
+    taskGraph.edges.count(edge => edge.target == nodeId || edge.source == nodeId)
   }
 
   def correlationOfConnections(taskGraph: OrientedGraph): Double = {
@@ -235,6 +239,7 @@ object GraphOps extends LazyLogging {
 
     implicit class NonOrientedGraphOpsImplicits(nonOrientedGraph: NonOrientedGraph) {
       def connectivityOfNode(node: Node): Int = GraphOps.determineNodeConnectivity(nonOrientedGraph, node)
+      def connectivityOfNode(nodeId: String): Int = GraphOps.determineNodeConnectivity(nonOrientedGraph, node)
       def findShortestPath(from: String, to: String, sendingAmount: Int): List[NonOrientedEdge] =
         GraphOps.findShortestPath(from, to, sendingAmount, nonOrientedGraph)
       def findShortestPathInNodes(from: String, to: String, sendingAmount: Int): List[String] =
