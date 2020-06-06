@@ -16,5 +16,5 @@ object GraphParameters {
   val DefaultMaxNodeWeight = 10
 
   val DefaultMinEdgeWeight = 1
-  val DefaultMaxEdgeWeight = 10
+  val DefaultMaxEdgeWeight = 5
 }

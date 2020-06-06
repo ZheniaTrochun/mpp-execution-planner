@@ -121,17 +121,15 @@
             axios.post(
                 `https://cluster-planner-server.herokuapp.com/stats/${this.task.id}`,
                 {
-
+                    maxSizeMultiplier: 4,
+                    connectivityStart: 0,
+                    connectivityLimit: 1,
+                    connectivityStep: 0.1
                 }
             )
                 .then(resp => {
                     if (resp.status === 200) {
-
-                        resp.data.systemGraph.forEach(x => {
-                            systemGraph.add(x);
-                        });
-
-                        systemGraph.autolock(true);
+                        this.stats = resp.data
                     }
                 });
         },
