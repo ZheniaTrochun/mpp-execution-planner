@@ -4,6 +4,7 @@ import SystemGraph from "../components/SystemGraph.vue";
 import TaskGraph from "../components/TaskGraph.vue";
 import ChooseTask from "../components/ChooseTask.vue";
 import Modeling from "../components/Modeling.vue";
+import Stats from "../components/Stats.vue";
 
 Vue.use(VueRouter);
 
@@ -22,6 +23,11 @@ const routes = [
     path: "/modeling",
     name: "Modeling",
     component: Modeling
+  },
+  {
+    path: "/stats",
+    name: "Stats",
+    component: Stats
   },
   {
     path: "/",

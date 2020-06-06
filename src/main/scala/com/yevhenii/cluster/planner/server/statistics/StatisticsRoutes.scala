@@ -21,7 +21,7 @@ object StatisticsRoutes extends Http4sDsl[IO] {
   def routes(statisticsService: StatisticsService)(implicit cs: ContextShift[IO], ec: ExecutionContext @@ Tags.Stats): HttpRoutes[IO] = {
 
     HttpRoutes.of[IO] {
-      case req @ GET -> Root / "stats" / id =>
+      case req @ POST -> Root / "stats" / id =>
         req.decode[StatisticsParams] { params =>
           statisticsService.collectStatistics(id, params)
             .flatMap {

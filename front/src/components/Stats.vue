@@ -18,7 +18,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="item in stats">
+                    <tr v-for="(item, index) in stats" v-bind:key="index">
                         <td>{{ item.size }}</td>
                         <td>{{ item.queue }}</td>
                         <td>{{ item.planning }}</td>
@@ -41,7 +41,7 @@
     let systemGraph;
 
     export default {
-        name: "Modeling",
+        name: "Stats",
         data () {
             return {
                 tab: null,
@@ -144,11 +144,6 @@
 </script>
 
 <style scoped>
-
-    .full-width {
-        width: 100%;
-    }
-
     .main-wrapper {
         width: 100%;
     }
