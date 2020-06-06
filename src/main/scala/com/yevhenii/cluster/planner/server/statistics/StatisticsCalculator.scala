@@ -14,7 +14,7 @@ object StatisticsCalculator {
   val NumberOfSameGraphs = 5
 
   def calculateStatistics(systemGraph: NonOrientedGraph, params: StatisticsParams)(implicit ec: ExecutionContext): Future[List[Stats]] = {
-    val graphsFuture = generateGraphs(params)
+    val graphsFuture = generateGraphs(params, systemGraph.nodes.size)
 
     graphsFuture.flatMap { graphs =>
       Future.traverse(graphs) { graph =>
@@ -25,11 +25,11 @@ object StatisticsCalculator {
     }
   }
 
-  private def generateGraphs(params: StatisticsParams)(implicit ec: ExecutionContext): Future[List[List[OrientedGraph]]] = {
-    val StatisticsParams(startingSize, sizeLimit, connectivityStart, connectivityLimit, connectivityStep) = params
+  private def generateGraphs(params: StatisticsParams, taskGraphSize: Int)(implicit ec: ExecutionContext): Future[List[List[OrientedGraph]]] = {
+    val StatisticsParams(maxSizeMultiplier, connectivityStart, connectivityLimit, connectivityStep) = params
 
     val generationParams = for {
-      size <- startingSize to sizeLimit by startingSize
+      size <- taskGraphSize to (taskGraphSize * maxSizeMultiplier) by taskGraphSize
       connectivity <- connectivityStart to connectivityLimit by connectivityStep
     } yield GraphParameters(numberOfNodes = size, correlation = connectivity)
 
