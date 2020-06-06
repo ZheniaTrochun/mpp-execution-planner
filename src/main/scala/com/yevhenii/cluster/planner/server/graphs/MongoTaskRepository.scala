@@ -2,10 +2,12 @@ package com.yevhenii.cluster.planner.server.graphs
 
 import cats.effect.{ContextShift, IO}
 import com.mongodb.ConnectionString
+import com.softwaremill.tagging.@@
 import com.typesafe.config.Config
 import com.yevhenii.cluster.planner.server.dto.Task.TaskId
 import com.yevhenii.cluster.planner.server.dto.TaskInit
 import com.yevhenii.cluster.planner.server.entity.{DataEntity, GraphEntryEntity, GraphsEntity, PositionEntity, TaskEntity}
+import com.yevhenii.cluster.planner.server.utils.Tags
 import org.mongodb.scala._
 import org.mongodb.scala.bson.ObjectId
 import org.mongodb.scala.model.Filters._
@@ -15,7 +17,7 @@ import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistr
 
 import scala.concurrent.ExecutionContext
 
-class MongoTaskRepository(config: Config)(implicit ec: ExecutionContext, cs: ContextShift[IO]) extends TaskRepository {
+class MongoTaskRepository(config: Config)(implicit ec: ExecutionContext @@ Tags.Mongo, cs: ContextShift[IO]) extends TaskRepository {
 
   val codecRegistry = fromRegistries(
     fromProviders(classOf[TaskEntity]),

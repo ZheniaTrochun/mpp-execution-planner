@@ -1,9 +1,9 @@
 package com.yevhenii.cluster.planner.server.modeling
 
 import cats.Show
-import com.yevhenii.cluster.planner.server.model.{Node, NonOrientedGraph, OrientedEdge}
+import com.yevhenii.cluster.planner.server.model.{Node, NonOrientedGraph, OrientedEdge, OrientedGraph}
 
-class GhantDiagram(systemGraph: NonOrientedGraph) {
+class GhantDiagram(systemGraph: NonOrientedGraph, taskGraph: OrientedGraph) {
 
   val computationDiagram: ComputingGhantDiagram = new ComputingGhantDiagram(systemGraph.nodes)
   val transferDiagram: TransferGhantDiagram = new TransferGhantDiagram(systemGraph)
@@ -30,6 +30,22 @@ class GhantDiagram(systemGraph: NonOrientedGraph) {
 
   def approximateStartTime(from: String, to: String, data: OrientedEdge, atLeastStartingFrom: Int): Int =
     transferDiagram.approximateStartTime(from, to, data, atLeastStartingFrom)
+
+  def finishedIn(): Int = {
+    computationDiagram.processors.mapValues(_.size).max._2
+  }
+
+  def speedup(): Double = {
+    val time = finishedIn()
+
+    if (time == 0) 0
+    else taskGraph.sumOfWeights / time
+  }
+
+  def efficiency(): Double = {
+    if (taskGraph.nodes.isEmpty) 0
+    else speedup() / taskGraph.nodes.size
+  }
 
   override def equals(obj: Any): Boolean = {
     if (obj == null || !obj.isInstanceOf[GhantDiagram]) {

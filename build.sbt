@@ -16,6 +16,7 @@ lazy val root = (project in file("."))
       mongo,
       typesafeConfig,
       logging,
+      tagging,
       scalaTest % Test
     ),
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)

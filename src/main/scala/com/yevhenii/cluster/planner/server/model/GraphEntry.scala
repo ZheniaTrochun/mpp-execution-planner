@@ -74,6 +74,8 @@ case class OrientedGraph(entries: List[OrientedGraphEntry]) extends Graph[Orient
   val nodes: List[Node] = entries.collect { case n: Node => n }
   val nodesMap: Map[String, Node] = nodes.view.map(n => (n.id, n)).toMap
 
+  val sumOfWeights = nodes.map(_.weight).sum
+
   val isCorrect: Boolean = GraphOps.checkGraphForCycles(this)
 
   lazy val initialVertices = GraphOps.findInitialVertices(this)

@@ -10,6 +10,7 @@ object Dependencies {
     val Scalatest = "3.0.8"
     val Config = "1.4.0"
     val Logging = "3.9.2"
+    val Tagging = "2.2.1"
   }
   
   lazy val scalaTest = "org.scalatest" %% "scalatest" % Versions.Scalatest
@@ -17,6 +18,7 @@ object Dependencies {
   lazy val mongo = "org.mongodb.scala" %% "mongo-scala-driver" % Versions.MongoDriver
   lazy val typesafeConfig = "com.typesafe" % "config" % Versions.Config
   lazy val logging = "com.typesafe.scala-logging" %% "scala-logging" % Versions.Logging
+  lazy val tagging = "com.softwaremill.common" % "tagging_2.11" % Versions.Tagging
 
   lazy val allHttp4s = Seq(
     "org.http4s"      %% "http4s-blaze-server" % Versions.Http4s,

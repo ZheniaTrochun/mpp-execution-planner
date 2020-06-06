@@ -7,14 +7,16 @@ import com.yevhenii.cluster.planner.server.graphs.GraphOps.Implicits._
 
 import scala.annotation.tailrec
 
-object ExecutionPlanner extends LazyLogging {
+object Planners extends LazyLogging {
 
-  val MaxIterationNumber = 1000
+  val MaxIterationNumber = 200
+
+  val Algorithms: List[ExecutionPlanner] = List(ConnectivityPlanner, CloseNeighborPlanner)
 
   case class TaskContext(taskQueue: List[Node], nodesQueue: List[Node], taskGraph: OrientedGraph, systemGraph: NonOrientedGraph)
   case class TactContext(tact: Int, finishedTasks: List[Node], scheduledTasks: List[Node])
 
-  trait Planner extends ((NonOrientedGraph, OrientedGraph, OrientedGraph => List[Node]) => GhantDiagram) {
+  sealed trait ExecutionPlanner extends ((NonOrientedGraph, OrientedGraph, OrientedGraph => List[Node]) => GhantDiagram) {
 
     override def apply(
       systemGraph: NonOrientedGraph,
@@ -62,7 +64,7 @@ object ExecutionPlanner extends LazyLogging {
     protected def schedule(tact: Int, readyNodes: List[Node], taskContext: TaskContext, diagram: GhantDiagram): List[Node]
   }
 
-  object ConnectivityPlanner extends Planner {
+  object ConnectivityPlanner extends ExecutionPlanner {
 
     override protected def schedule(tact: Int, readyNodes: List[Node], taskContext: TaskContext, diagram: GhantDiagram): List[Node] = {
       val freeProcessors = taskContext.nodesQueue.filter(n => diagram.isFree(n.id, tact))
@@ -88,7 +90,7 @@ object ExecutionPlanner extends LazyLogging {
     }
   }
 
-  object CloseNeighborPlanner extends Planner {
+  object CloseNeighborPlanner extends ExecutionPlanner {
 
     override protected def schedule(tact: Int, readyNodes: List[Node], taskContext: TaskContext, diagram: GhantDiagram): List[Node] = {
 
@@ -105,7 +107,7 @@ object ExecutionPlanner extends LazyLogging {
         } else {
           parentData
             .map { case (edge, (whereComputed, whenComputed)) =>
-              diagram.transferTo(whereComputed, processor, edge, whenComputed + 1) // todo: maybe should be "whenComputed"
+              diagram.transferTo(whereComputed, processor, edge, whenComputed + 1)
             }
             .max
         }
@@ -115,37 +117,6 @@ object ExecutionPlanner extends LazyLogging {
       }
     }
 
-//    // todo: I'm not really sure if it works correctly
-//    private def chooseBestProcessor(tact: Int, taskContext: TaskContext, diagram: GhantDiagram, parentData: List[(OrientedEdge, (String, Int))]): String = {
-//      diagram.freeProcessorIds(tact)
-//        .map { processor =>
-//          val timeToTransfer = parentData
-//            .map { case (edge, (whereComputed, _)) =>
-//              (edge, taskContext.systemGraph.findShortestPath(whereComputed, processor, edge.weight))
-//            }
-//            .map { case (edge, path) =>
-//              path.foldLeft(0)((acc, currEdge) => acc + math.ceil(edge.weight.toDouble / currEdge.weight).toInt)
-//            }
-//            .sum
-//
-//          val approximateStartTime =
-//            if (parentData.nonEmpty) {
-//              parentData
-//                .map { case (edge, (whereComputed, whenComputed)) =>
-//                  diagram.approximateStartTime(whereComputed, processor, edge, whenComputed)
-//                }
-//                .max
-//            } else {
-//              tact
-//            }
-//
-//          (timeToTransfer, processor, approximateStartTime)
-//        }
-//        .min(Ordering.Tuple3(Ordering[Int], Ordering.by[String, Int](x => taskContext.nodesQueue.map(_.id).indexOf(x)).reverse, Ordering[Int]))
-//        ._2
-//    }
-
-    // todo: I'm not really sure if it works correctly
     private def chooseBestProcessor(tact: Int, taskContext: TaskContext, diagram: GhantDiagram, parentData: List[(OrientedEdge, (String, Int))]): String = {
       diagram.freeProcessorIds(tact)
         .map { processor =>
@@ -172,29 +143,9 @@ object ExecutionPlanner extends LazyLogging {
 
           (timeToTransfer, processor, approximateStartTime)
         }
-//        .min(Ordering.Tuple3(Ordering[Int], Ordering[Int], Ordering.by[String, Int](x => taskContext.nodesQueue.map(_.id).indexOf(x)).reverse))
         .min(Ordering.Tuple3(Ordering[Int], Ordering.by[String, Int](taskContext.systemGraph.connectivityOfNode).reverse, Ordering[Int]))
         ._2
     }
-
-//    private def chooseBestProcessor(tact: Int, taskContext: TaskContext, diagram: GhantDiagram, parentData: List[(OrientedEdge, (String, Int))]): String = {
-//      diagram.freeProcessorIds(tact)
-//        .map { processor =>
-//          val timeToTransfer = parentData
-//            .map { case (edge, (whereComputed, _)) =>
-//              (edge, taskContext.systemGraph.findShortestPath(whereComputed, processor, edge.weight))
-//            }
-//            .map { case (edge, path) =>
-//              path.foldLeft(0)((acc, currEdge) => acc + math.ceil(edge.weight.toDouble / currEdge.weight).toInt)
-//            }
-//            .sum
-//
-//          (processor, timeToTransfer)
-//        }
-//        .map(_.swap) //{ case (processor, path) => (path, processor) }
-//        .min(Ordering.Tuple2(Ordering[Int], Ordering.by[String, Int](x => taskContext.nodesQueue.map(_.id).indexOf(x)).reverse))
-//        ._2
-//    }
   }
 
   private def orderOfComputingNodes(nonOrientedGraph: NonOrientedGraph): List[Node] =
@@ -223,7 +174,7 @@ object ExecutionPlanner extends LazyLogging {
     systemGraph: NonOrientedGraph
   ): (GhantDiagram, List[Node]) = {
 
-    val diagram = new GhantDiagram(systemGraph)
+    val diagram = new GhantDiagram(systemGraph, taskGraph)
 
     val scheduled = queueOfTasks
       .filter(isTaskReadyToBeComputed(_, taskGraph, List.empty))
@@ -240,4 +191,9 @@ object ExecutionPlanner extends LazyLogging {
   }
 
   implicit val nodeQueueShow: Show[List[Node]] = queue => queue.map(_.id).mkString(" -> ")
+
+  implicit val plannerAlgoShow: Show[ExecutionPlanner] = {
+    case ConnectivityPlanner => "Algorithm 3"
+    case CloseNeighborPlanner => "Algorithm 5"
+  }
 }

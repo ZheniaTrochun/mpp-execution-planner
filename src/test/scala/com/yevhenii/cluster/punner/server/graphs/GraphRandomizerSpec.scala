@@ -8,12 +8,12 @@ import org.scalatest.{Matchers, WordSpec}
 
 class GraphRandomizerSpec extends WordSpec with Matchers {
 
-  "GraphRandomizer.createRandomOrientedGraph" should {
+  "GraphRandomizer.randomOrientedGraph" should {
 
     val defaultParams = GraphParameters(numberOfNodes = 10, correlation = 0.5)
 
     def createDefaultGraphs(): Seq[OrientedGraph] =
-      for (_ <- 1 to 10) yield GraphRandomizer.createRandomOrientedGraph(defaultParams)
+      for (_ <- 1 to 10) yield GraphRandomizer.randomOrientedGraph(defaultParams)
 
     "always create acyclic graph" in {
       val graphs = createDefaultGraphs()
@@ -61,7 +61,7 @@ class GraphRandomizerSpec extends WordSpec with Matchers {
       val params = defaultParams.copy(correlation = 1)
 
       val graphs = for (_ <- 1 to 10)
-        yield GraphRandomizer.createRandomOrientedGraph(params)
+        yield GraphRandomizer.randomOrientedGraph(params)
 
       graphs.flatMap(_.edges) shouldBe empty
     }
@@ -70,7 +70,7 @@ class GraphRandomizerSpec extends WordSpec with Matchers {
       val params = defaultParams.copy(correlation = 0.1)
 
       val graphs = for (_ <- 1 to 10)
-        yield GraphRandomizer.createRandomOrientedGraph(params)
+        yield GraphRandomizer.randomOrientedGraph(params)
 
       graphs
         .map(GraphOps.correlationOfConnections)
@@ -78,7 +78,7 @@ class GraphRandomizerSpec extends WordSpec with Matchers {
     }
 
     "create graph without edges if desired correlation is 1 and number of nodes is huge" in {
-      val graphs = GraphRandomizer.createRandomOrientedGraph(defaultParams.copy(correlation = 1, numberOfNodes = 100))
+      val graphs = GraphRandomizer.randomOrientedGraph(defaultParams.copy(correlation = 1, numberOfNodes = 100))
 
       graphs.edges shouldBe empty
     }

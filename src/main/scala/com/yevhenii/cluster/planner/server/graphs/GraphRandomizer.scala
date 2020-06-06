@@ -15,7 +15,7 @@ object GraphRandomizer extends LazyLogging {
   val MaxNumberOfRetriesOfFittingEdges = 1000
   val Epsilon = 0.0001
 
-  def createRandomOrientedGraph(parameters: GraphParameters): OrientedGraph = {
+  def randomOrientedGraph(parameters: GraphParameters): OrientedGraph = {
     val nodes = createRandomNodes(parameters)
     val edges = createRandomEdges(nodes, parameters)
 

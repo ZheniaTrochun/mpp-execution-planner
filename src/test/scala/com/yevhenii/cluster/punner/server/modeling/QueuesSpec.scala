@@ -1,10 +1,10 @@
 package com.yevhenii.cluster.punner.server.modeling
 
 import com.yevhenii.cluster.planner.server.model._
-import com.yevhenii.cluster.planner.server.modeling.QueueCreator
+import com.yevhenii.cluster.planner.server.modeling.Queues
 import org.scalatest.{Matchers, WordSpec}
 
-class QueueCreatorSpec extends WordSpec with Matchers {
+class QueuesSpec extends WordSpec with Matchers {
 
   val graph = OrientedGraph(
     Node("1", 5) ::
@@ -30,14 +30,14 @@ class QueueCreatorSpec extends WordSpec with Matchers {
       Nil
   )
 
-  "QueueCreator.createQueueBasedOnCriticalPath" should {
+  "QueueCreator.CriticalPathBased" should {
     "work correctly for empty graph" in {
-      QueueCreator.createQueueBasedOnCriticalPath(OrientedGraph(Nil)) shouldBe empty
+      Queues.CriticalPathBased.applyExtended(OrientedGraph(Nil)) shouldBe empty
     }
 
     "work for trivial graph" in {
       val graph = Node("1", 1) :: Nil
-      QueueCreator.createQueueBasedOnCriticalPath(OrientedGraph(graph)) shouldBe List((graph.head, graph))
+      Queues.CriticalPathBased.applyExtended(OrientedGraph(graph)) shouldBe List((graph.head, graph))
     }
 
     "create correct queue from example" in {
@@ -53,20 +53,20 @@ class QueueCreatorSpec extends WordSpec with Matchers {
           Node("8", 3) -> 3  ::
           Nil
 
-      val actual = QueueCreator.createQueueBasedOnCriticalPath(graph).map { case (node, path) => node -> path.map(_.weight).sum }
+      val actual = Queues.CriticalPathBased.applyExtended(graph).map { case (node, path) => node -> path.map(_.weight).sum }
 
       actual should contain theSameElementsInOrderAs expected
     }
   }
 
-  "QueueCreator.createQueueBasedOnNodesCountOnCriticalPath" should {
+  "QueueCreator.NodesOnCriticalPathBased.applyExtended" should {
     "work correctly for empty graph" in {
-      QueueCreator.createQueueBasedOnNodesCountOnCriticalPath(OrientedGraph(Nil)) shouldBe empty
+      Queues.NodesOnCriticalPathBased.applyExtended(OrientedGraph(Nil)) shouldBe empty
     }
 
     "work for trivial graph" in {
       val graph = Node("1", 1) :: Nil
-      QueueCreator.createQueueBasedOnNodesCountOnCriticalPath(OrientedGraph(graph)) shouldBe List((graph.head, graph))
+      Queues.NodesOnCriticalPathBased.applyExtended(OrientedGraph(graph)) shouldBe List((graph.head, graph))
     }
 
     "create correct queue from example" in {
@@ -82,20 +82,20 @@ class QueueCreatorSpec extends WordSpec with Matchers {
           Node("9", 5)   -> 1 ::
           Nil
 
-      val actual = QueueCreator.createQueueBasedOnNodesCountOnCriticalPath(graph).map { case (node, path) => node -> path.length }
+      val actual = Queues.NodesOnCriticalPathBased.applyExtended(graph).map { case (node, path) => node -> path.length }
 
       actual should contain theSameElementsInOrderAs expected
     }
   }
 
-  "QueueCreator.createQueueBasedOnNodesConnectivity" should {
+  "QueueCreator.ConnectivityBased.applyExtended" should {
     "work correctly for empty graph" in {
-      QueueCreator.createQueueBasedOnNodesConnectivity(OrientedGraph(Nil)) shouldBe empty
+      Queues.ConnectivityBased.applyExtended(OrientedGraph(Nil)) shouldBe empty
     }
 
     "work for trivial graph" in {
       val graph = Node("1", 1) :: Nil
-      QueueCreator.createQueueBasedOnNodesConnectivity(OrientedGraph(graph)) shouldBe List((graph.head, (0, 1)))
+      Queues.ConnectivityBased.applyExtended(OrientedGraph(graph)) shouldBe List((graph.head, (0, 1)))
     }
 
     "create correct queue from example" in {
@@ -111,7 +111,7 @@ class QueueCreatorSpec extends WordSpec with Matchers {
           Node("4", 20)  -> (0, 1) ::
           Nil
 
-      val actual = QueueCreator.createQueueBasedOnNodesConnectivity(graph)
+      val actual = Queues.ConnectivityBased.applyExtended(graph)
 
       actual should contain theSameElementsInOrderAs expected
     }
