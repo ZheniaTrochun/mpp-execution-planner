@@ -15,6 +15,7 @@ import com.yevhenii.cluster.planner.server.statistics.{StatisticsRoutes, Statist
 import com.yevhenii.cluster.planner.server.utils.Tags
 import org.http4s.server.middleware.{CORS, GZip, Logger}
 
+import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 
 object Server extends IOApp {
@@ -43,6 +44,7 @@ object Server extends IOApp {
     BlazeServerBuilder[IO]
       .bindHttp(applicationConfig.getInt("server.port"), "0.0.0.0")
       .withHttpApp(GZip(CORS(routesWithLog)))
+      .withIdleTimeout(5.minutes)
       .serve
       .compile
       .drain

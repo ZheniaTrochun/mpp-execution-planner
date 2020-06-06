@@ -122,8 +122,8 @@
                 {
                     maxSizeMultiplier: 4,
                     connectivityStart: 0,
-                    connectivityLimit: 1,
-                    connectivityStep: 0.1
+                    connectivityLimit: 0.9,
+                    connectivityStep: 0.3
                 }
             )
                 .then(resp => {
