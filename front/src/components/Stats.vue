@@ -8,7 +8,9 @@
                 <template v-slot:default>
                     <thead>
                     <tr>
+                        <th class="text-left">id</th>
                         <th class="text-left">Task size</th>
+                        <th class="text-left">Task correlation</th>
                         <th class="text-left">Queue algorithm</th>
                         <th class="text-left">Planning algorithm</th>
                         <th class="text-left">Time</th>
@@ -18,7 +20,9 @@
                     </thead>
                     <tbody>
                     <tr v-for="(item, index) in stats" v-bind:key="index">
+                        <td>{{ index + 1 }}</td>
                         <td>{{ item.size }}</td>
+                        <td>{{ item.correlation }}</td>
                         <td>{{ item.queue }}</td>
                         <td>{{ item.planning }}</td>
                         <td>{{ item.time }}</td>
@@ -121,11 +125,9 @@
                 `https://cluster-planner-server.herokuapp.com/stats/${this.task.id}`,
                 {
                     maxSizeMultiplier: 4,
-                    connectivityStart: 0.1,
-                    // connectivityStart: 0,
-                    connectivityLimit: 1,
-                    connectivityStep: 0.1
-                    // connectivityStep: 5
+                    correlationStart: 0.2,
+                    correlationLimit: 1,
+                    correlationStep: 0.1
                 }, {
                     timeout: 1000 * 60 * 5
                 }

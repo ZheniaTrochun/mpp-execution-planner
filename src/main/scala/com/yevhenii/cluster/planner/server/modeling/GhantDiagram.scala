@@ -39,7 +39,7 @@ class GhantDiagram(systemGraph: NonOrientedGraph, taskGraph: OrientedGraph) {
     val time = finishedIn()
 
     if (time == 0) 0
-    else taskGraph.sumOfWeights / time
+    else taskGraph.sumOfWeights.toDouble / time
   }
 
   def efficiency(): Double = {
