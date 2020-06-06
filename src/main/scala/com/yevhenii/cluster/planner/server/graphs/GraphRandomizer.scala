@@ -16,10 +16,14 @@ object GraphRandomizer extends LazyLogging {
   val Epsilon = 0.0001
 
   def randomOrientedGraph(parameters: GraphParameters): OrientedGraph = {
+    val start = System.currentTimeMillis()
+
     val nodes = createRandomNodes(parameters)
     val edges = createRandomEdges(nodes, parameters)
 
-    fitEdges(nodes, edges, parameters)
+    val res = fitEdges(nodes, edges, parameters)
+    logger.info(s"Generated graph in ${System.currentTimeMillis() - start}")
+    res
   }
 
   private def createRandomNodes(parameters: GraphParameters): List[Node] = {
