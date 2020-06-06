@@ -121,9 +121,11 @@
                 `https://cluster-planner-server.herokuapp.com/stats/${this.task.id}`,
                 {
                     maxSizeMultiplier: 4,
-                    connectivityStart: 0,
+                    connectivityStart: 0.1,
+                    // connectivityStart: 0,
                     connectivityLimit: 1,
-                    connectivityStep: 0.5
+                    connectivityStep: 0.1
+                    // connectivityStep: 5
                 }, {
                     timeout: 1000 * 60 * 5
                 }

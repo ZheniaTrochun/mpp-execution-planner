@@ -26,28 +26,28 @@ object StatisticsCalculator extends LazyLogging {
 
       Future.traverse(graphs) { graph =>
         Future {
-          planAllExecutions(systemGraph, graph)
+          planAllExecutions(systemGraph, graph._2, graph._1)
         }
       }.map(_.flatten)
     }
   }
 
-  private def generateGraphs(params: StatisticsParams, taskGraphSize: Int)(implicit ec: ExecutionContext): Future[List[List[OrientedGraph]]] = {
+  private def generateGraphs(params: StatisticsParams, taskGraphSize: Int)(implicit ec: ExecutionContext): Future[List[(Double, List[OrientedGraph])]] = {
     val StatisticsParams(maxSizeMultiplier, connectivityStart, connectivityLimit, connectivityStep) = params
 
     val generationParams = for {
       size <- taskGraphSize to (taskGraphSize * maxSizeMultiplier) by taskGraphSize
-      connectivity <- connectivityStart to connectivityLimit by connectivityStep
-    } yield GraphParameters(numberOfNodes = size, correlation = connectivity)
+      correlation <- connectivityStart to connectivityLimit by connectivityStep
+    } yield GraphParameters(numberOfNodes = size, correlation = correlation)
 
     Future.traverse(generationParams.toList) { graphParams =>
       Future {
         for (_ <- 1 to NumberOfSameGraphs) yield GraphRandomizer.randomOrientedGraph(graphParams)
-      }.map(_.toList)
+      }.map(x => (graphParams.correlation, x.toList))
     }
   }
 
-  private def planAllExecutions(systemGraph: NonOrientedGraph, taskGraphs: List[OrientedGraph]): List[Stats] = {
+  private def planAllExecutions(systemGraph: NonOrientedGraph, taskGraphs: List[OrientedGraph], correlation: Double): List[Stats] = {
 //    val executions = for {
 //      queue <- Queues.Algorithms
 //      planner <- Planners.Algorithms
@@ -68,11 +68,11 @@ object StatisticsCalculator extends LazyLogging {
       for {
         queue <- Queues.Algorithms
         planner <- Planners.Algorithms
-      } yield averageStats(systemGraph, taskGraphs, queue, planner)
+      } yield averageStats(systemGraph, taskGraphs, correlation, queue, planner)
     }
   }
 
-  private def averageStats(systemGraph: NonOrientedGraph, taskGraphs: List[OrientedGraph], queue: QueueCreator, planner: ExecutionPlanner): Stats = {
+  private def averageStats(systemGraph: NonOrientedGraph, taskGraphs: List[OrientedGraph], correlation: Double, queue: QueueCreator, planner: ExecutionPlanner): Stats = {
     val diagrams = taskGraphs.map(task => planner.apply(systemGraph, task, queue))
 
     val time = diagrams.map(_.finishedIn()).sum / diagrams.size
@@ -83,6 +83,7 @@ object StatisticsCalculator extends LazyLogging {
       Show[QueueCreator].show(queue),
       Show[ExecutionPlanner].show(planner),
       taskGraphs.head.nodes.size,
+      correlation,
       time,
       speedup,
       efficiency

@@ -32,7 +32,7 @@ class GhantDiagram(systemGraph: NonOrientedGraph, taskGraph: OrientedGraph) {
     transferDiagram.approximateStartTime(from, to, data, atLeastStartingFrom)
 
   def finishedIn(): Int = {
-    computationDiagram.processors.mapValues(_.size).max._2
+    computationDiagram.processors.values.map(_.size).max
   }
 
   def speedup(): Double = {

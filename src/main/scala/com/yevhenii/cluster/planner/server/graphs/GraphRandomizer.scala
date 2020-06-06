@@ -12,7 +12,7 @@ object GraphRandomizer extends LazyLogging {
 
   val rand = new Random()
   val MaxNumberOfTries = 20
-  val MaxNumberOfRetriesOfFittingEdges = 1000
+  val MaxNumberOfRetriesOfFittingEdges = 200
   val Epsilon = 0.0001
 
   def randomOrientedGraph(parameters: GraphParameters): OrientedGraph = {

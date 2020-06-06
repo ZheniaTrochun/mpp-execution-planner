@@ -1,13 +1,12 @@
 package com.yevhenii.cluster.planner.server.modeling
 
 import cats.Show
-import com.typesafe.scalalogging.LazyLogging
 import com.yevhenii.cluster.planner.server.model.{Node, NonOrientedGraph, OrientedEdge, OrientedGraph}
 import com.yevhenii.cluster.planner.server.graphs.GraphOps.Implicits._
 
 import scala.annotation.tailrec
 
-object Planners extends LazyLogging {
+object Planners {
 
   val MaxIterationNumber = 200
 
@@ -184,8 +183,6 @@ object Planners extends LazyLogging {
         diagram.schedule(node.id, work, 0)
         work
       }
-
-    logger.info(s"initially scheduled: ${scheduled.map(_.id).mkString(", ")}")
 
     (diagram, scheduled)
   }

@@ -85,7 +85,10 @@ class PlannerSpec extends WordSpec with Matchers {
       expectedResult.schedule("1", taskGraph.nodes(6), 44)
       expectedResult.schedule("1", taskGraph.nodes(7), 45)
 
-      Planners.ConnectivityPlanner.apply(systemGraph, taskGraph, queueCreator) shouldBe expectedResult
+      val res = Planners.ConnectivityPlanner.apply(systemGraph, taskGraph, queueCreator)
+
+      res shouldBe expectedResult
+      res.finishedIn() shouldBe 48
     }
 
     "create correct queue from example" in {
