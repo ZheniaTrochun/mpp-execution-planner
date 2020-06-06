@@ -11,7 +11,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object StatisticsCalculator {
 
-  val NumberOfSameGraphs = 5
+//  val NumberOfSameGraphs = 5
+  val NumberOfSameGraphs = 1
 
   def calculateStatistics(systemGraph: NonOrientedGraph, params: StatisticsParams)(implicit ec: ExecutionContext): Future[List[Stats]] = {
     val graphsFuture = generateGraphs(params, systemGraph.nodes.size)

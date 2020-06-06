@@ -3,7 +3,6 @@
 
         <div id="immutable-system-graph-holder"></div>
 
-
         <v-card flat tile>
             <v-simple-table>
                 <template v-slot:default>
@@ -144,6 +143,13 @@
 </script>
 
 <style scoped>
+    #immutable-system-graph-holder {
+        width: 100%;
+        background-color: white;
+        height: 60vh;
+        margin-top: -215px;
+    }
+
     .main-wrapper {
         width: 100%;
     }
