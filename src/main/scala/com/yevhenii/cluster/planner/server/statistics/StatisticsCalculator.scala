@@ -1,6 +1,7 @@
 package com.yevhenii.cluster.planner.server.statistics
 
 import cats.Show
+import com.typesafe.scalalogging.LazyLogging
 import com.yevhenii.cluster.planner.server.graphs.GraphRandomizer
 import com.yevhenii.cluster.planner.server.model._
 import com.yevhenii.cluster.planner.server.modeling.Planners.ExecutionPlanner
@@ -9,15 +10,20 @@ import com.yevhenii.cluster.planner.server.modeling.{Planners, Queues}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object StatisticsCalculator {
+object StatisticsCalculator extends LazyLogging {
 
 //  val NumberOfSameGraphs = 5
   val NumberOfSameGraphs = 1
 
   def calculateStatistics(systemGraph: NonOrientedGraph, params: StatisticsParams)(implicit ec: ExecutionContext): Future[List[Stats]] = {
+    val start = System.currentTimeMillis()
+
     val graphsFuture = generateGraphs(params, systemGraph.nodes.size)
 
     graphsFuture.flatMap { graphs =>
+      val endOfGeneration = System.currentTimeMillis()
+      logger.info(s"Finished generation of ${graphs.size} graphs in ${endOfGeneration - start}")
+
       Future.traverse(graphs) { graph =>
         Future {
           planAllExecutions(systemGraph, graph)

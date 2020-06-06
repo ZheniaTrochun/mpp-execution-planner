@@ -122,8 +122,10 @@
                 {
                     maxSizeMultiplier: 4,
                     connectivityStart: 0,
-                    connectivityLimit: 0.9,
-                    connectivityStep: 0.3
+                    connectivityLimit: 1,
+                    connectivityStep: 0.5
+                }, {
+                    timeout: 1000 * 60 * 5
                 }
             )
                 .then(resp => {
