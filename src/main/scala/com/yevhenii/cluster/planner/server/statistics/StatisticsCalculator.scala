@@ -78,6 +78,7 @@ object StatisticsCalculator extends LazyLogging {
     val time = diagrams.map(_.finishedIn()).sum / diagrams.size
     val speedup = diagrams.map(_.speedup()).sum / diagrams.size
     val efficiency = diagrams.map(_.efficiency()).sum / diagrams.size
+    val algorithmEfficiency = diagrams.map(_.algorithmEfficiency()).sum / diagrams.size
 
     Stats(
       Show[QueueCreator].show(queue),
@@ -86,7 +87,8 @@ object StatisticsCalculator extends LazyLogging {
       correlation,
       time,
       speedup,
-      efficiency
+      efficiency,
+      algorithmEfficiency
     )
   }
 }
