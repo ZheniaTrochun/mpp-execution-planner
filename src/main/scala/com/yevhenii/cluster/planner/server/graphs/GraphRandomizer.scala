@@ -13,7 +13,7 @@ object GraphRandomizer extends LazyLogging {
   val rand = new Random()
   val MaxNumberOfTries = 20
   val MaxNumberOfRetriesOfFittingEdges = 500
-  val Epsilon = 0.0001
+  val Epsilon = 0.01
 
   def randomOrientedGraph(parameters: GraphParameters): OrientedGraph = {
     val start = System.currentTimeMillis()
@@ -173,6 +173,11 @@ object GraphRandomizer extends LazyLogging {
       case head :: tail =>
         val updatedEdges = head.copy(weight = head.weight + 5) :: tail
         Continuation(() => fitEdgesSafe(nodes, updatedEdges, parameters, retry + 1))
+      case Nil =>
+        tryToCreateEdge(nodes, Nil, randomIntBetweenInclusive(parameters.minimalEdgeWeight, parameters.maximumEdgeWeight)) match {
+          case Some(edge) => Continuation(() => fitEdgesSafe(nodes, edge :: Nil, parameters, retry + 1))
+          case None => Continuation(() => fitEdgesSafe(nodes, Nil, parameters, retry + 1))
+        }
     }
   }
 

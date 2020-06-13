@@ -14,12 +14,18 @@ class StatisticsCalculatorSpec extends AsyncWordSpec with Matchers {
       Node("3", 2) ::
       Node("4", 1) ::
       Node("5", 1) ::
+      Node("6", 1) ::
+      Node("7", 1) ::
+      Node("8", 1) ::
       NonOrientedEdge("1-2", 1, "1", "2") :: // 1 -- 2
       NonOrientedEdge("2-3", 1, "2", "3") :: // 2 -- 3
       NonOrientedEdge("4-1", 2, "4", "1") :: // 4 -- 1
       NonOrientedEdge("4-2", 2, "4", "2") :: // 4 -- 2
       NonOrientedEdge("4-3", 2, "4", "3") :: // 4 -- 3
       NonOrientedEdge("4-5", 2, "4", "5") :: // 4 -- 5
+      NonOrientedEdge("4-5", 2, "4", "6") :: // 4 -- 6
+      NonOrientedEdge("4-5", 2, "4", "7") :: // 4 -- 7
+      NonOrientedEdge("4-5", 2, "4", "8") :: // 4 -- 8
       Nil
   )
 
@@ -28,7 +34,7 @@ class StatisticsCalculatorSpec extends AsyncWordSpec with Matchers {
   "StatisticsCalculator.calculateStatistics" should {
     "never return time 0" in {
 
-      val params = StatisticsParams(4, 0.3, 1.0, 0.1)
+      val params = StatisticsParams(4, 0.2, 1.0, 0.1)
       StatisticsCalculator.calculateStatistics(systemGraph, params).map(_.exists(_.time == 0) shouldBe false)
     }
   }
