@@ -54,7 +54,7 @@ class GraphRandomizerSpec extends WordSpec with Matchers {
 
       graphs
         .map(GraphOps.correlationOfConnections)
-        .forall(correlation => correlation == defaultParams.correlation) shouldBe true
+        .forall(correlation => math.abs(correlation - defaultParams.correlation) <= GraphRandomizer.Epsilon) shouldBe true
     }
 
     "create graph without edges if desired correlation is 1" in {
@@ -66,7 +66,7 @@ class GraphRandomizerSpec extends WordSpec with Matchers {
       graphs.flatMap(_.edges) shouldBe empty
     }
 
-    "create graph without edges if desired correlation is 0.1" in {
+    "create graph if desired correlation is 0.1" in {
       val params = defaultParams.copy(correlation = 0.1)
 
       val graphs = for (_ <- 1 to 10)
@@ -74,13 +74,13 @@ class GraphRandomizerSpec extends WordSpec with Matchers {
 
       graphs
         .map(GraphOps.correlationOfConnections)
-        .forall(correlation => correlation == params.correlation) shouldBe true
+        .forall(correlation => math.abs(correlation - params.correlation) <= GraphRandomizer.Epsilon) shouldBe true
     }
 
     "create graph without edges if desired correlation is 1 and number of nodes is relatively big" in {
-      val graphs = GraphRandomizer.randomOrientedGraph(defaultParams.copy(correlation = 1, numberOfNodes = 32))
+      val graph = GraphRandomizer.randomOrientedGraph(defaultParams.copy(correlation = 1, numberOfNodes = 32))
 
-      graphs.edges shouldBe empty
+      math.abs(GraphOps.correlationOfConnections(graph) - 1) should be <= GraphRandomizer.Epsilon
     }
 
     "create pretty big graph with correlation 0.1" in {
