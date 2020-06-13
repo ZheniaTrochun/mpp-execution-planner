@@ -12,8 +12,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object StatisticsCalculator extends LazyLogging {
 
-//  val NumberOfSameGraphs = 5
-  val NumberOfSameGraphs = 1
+  val NumberOfSameGraphs = 5
+//  val NumberOfSameGraphs = 1
 
   def calculateStatistics(systemGraph: NonOrientedGraph, params: StatisticsParams)(implicit ec: ExecutionContext): Future[List[Stats]] = {
     val start = System.currentTimeMillis()
