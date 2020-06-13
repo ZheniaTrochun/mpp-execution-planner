@@ -1,7 +1,8 @@
 package com.yevhenii.cluster.planner.server.modeling
 
 import cats.Show
-import com.yevhenii.cluster.planner.server.model.{Node, NonOrientedGraph, OrientedEdge, OrientedGraph}
+import com.yevhenii.cluster.planner.server.model._
+import com.yevhenii.cluster.planner.server.graphs.GraphOps.Implicits._
 
 class GhantDiagram(systemGraph: NonOrientedGraph, taskGraph: OrientedGraph) {
 
@@ -44,7 +45,14 @@ class GhantDiagram(systemGraph: NonOrientedGraph, taskGraph: OrientedGraph) {
 
   def efficiency(): Double = {
     if (taskGraph.nodes.isEmpty) 0
-    else speedup() / taskGraph.nodes.size
+    else speedup() / systemGraph.nodes.size
+  }
+
+  def algorithmEfficiency(): Double = {
+    val time = finishedIn()
+
+    if (time == 0) 0
+    else taskGraph.criticalPath.size.toDouble / time
   }
 
   override def equals(obj: Any): Boolean = {

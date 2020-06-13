@@ -3,10 +3,7 @@
 
         <div id="immutable-system-graph-holder"></div>
 
-        <div class="holder">
-            <div id="chart1-holder-1235"></div>
-        </div>
-
+        <canvas class="chart-holder" id="chart1"></canvas>
         <canvas class="chart-holder" id="chart2"></canvas>
         <canvas class="chart-holder" id="chart3"></canvas>
 
@@ -48,9 +45,7 @@
     import cytoscape from "cytoscape";
     import store from "../store";
     import axios from 'axios';
-    // import Chart from 'chart.js';
-    // import vis from 'vis'
-    import {DataSet, Graph2d} from 'vis';
+    import Chart from 'chart.js';
 
     let systemGraph;
 
@@ -147,60 +142,9 @@
                     if (resp.status === 200) {
                         this.stats = resp.data;
 
-                        var names = ["Algo3-Algo3", "Algo5-Algo3", "Algo10-Algo3", "Algo3-Algo5", "Algo5-Algo5", "Algo10-Algo5"];
-                        var groups = new DataSet();
-                        names.forEach((name, i) => {
-                            groups.add({
-                                id: i,
-                                content: name,
-                                options: {
-                                    drawPoints: {
-                                        style: "square", // square, circle
-                                    },
-                                    shaded: {
-                                        orientation: "bottom", // top, bottom
-                                    },
-                                },
-                            });
-                        });
-
-                        var container = document.getElementById("chart1-holder-1235");
-
-                        // const firstChartCtx = document.getElementById("chart1").getContext('2d');
-                        const listOfPlanningAlgorithms = ['Algorithm 3', 'Algorithm 5'];
-                        const listOfQueueAlgorithms = ['Algorithm 3', 'Algorithm 5', 'Algorithm 10'];
-                        // const listOfSizes = [5, 10, 15, 20];
-
-                        let items = [];
-                        // const data = listOfSizes.map(size => {
-                            listOfQueueAlgorithms.forEach((queue, i) => {
-                                listOfPlanningAlgorithms.forEach((planning, j) => {
-                                    const data = this.calulateCorrelationDataset(resp.data, queue, planning, 15);
-                                    data.forEach(item => {
-                                        items.push({
-                                            x: item.x,
-                                            y: item.y,
-                                            group: (j * listOfPlanningAlgorithms.length) + i
-                                        })
-                                    });
-                                });
-                            });
-
-                        console.log(items);
-                        // var dataset = new vis.DataSet(items);
-                        var dataset = new DataSet(items);
-                        var options = {
-                            defaultGroup: "ungrouped",
-                            legend: true,
-                            start: 0,
-                            end: 1,
-                        };
-                        // new vis.Graph2d(container, dataset, groups, options);
-                        new Graph2d(container, dataset, groups, options);
-
-                        // });
-
-
+                        this.drawChartBy(resp.data, 'chart1', 'Time', 15, this.calculateTimeCorrelationDataset);
+                        this.drawChartBy(resp.data, 'chart2', 'Speedup', 15, this.calculateSpeedupCorrelationDataset);
+                        this.drawChartBy(resp.data, 'chart3', 'Efficiency', 15, this.calculateEfficiencyCorrelationDataset);
                     }
                 });
         },
@@ -210,7 +154,7 @@
         computed: {
         },
         methods: {
-            calulateCorrelationDataset(data, queue, planning, size) {
+            calculateTimeCorrelationDataset(data, queue, planning, size) {
                 return data
                     .filter(x => x.queue === queue && x.planning === planning && x.size === size)
                     .map(x => {
@@ -219,6 +163,95 @@
                             y: x.time
                         };
                     });
+            },
+            calculateSpeedupCorrelationDataset(data, queue, planning, size) {
+                return data
+                    .filter(x => x.queue === queue && x.planning === planning && x.size === size)
+                    .map(x => {
+                        return {
+                            x: x.correlation,
+                            y: x.speedup
+                        };
+                    });
+            },
+            calculateEfficiencyCorrelationDataset(data, queue, planning, size) {
+                return data
+                    .filter(x => x.queue === queue && x.planning === planning && x.size === size)
+                    .map(x => {
+                        return {
+                            x: x.correlation,
+                            y: x.efficiency
+                        };
+                    });
+            },
+            drawChartBy(data, canvasId, yLabel, size, extractionFunc) {
+
+                var names = ["Algo3-Algo3", "Algo3-Algo5", "Algo5-Algo3", "Algo5-Algo5", "Algo10-Algo3", "Algo10-Algo5"];
+
+                const firstChartCtx = document.getElementById(canvasId).getContext('2d');
+                const listOfPlanningAlgorithms = ['Algorithm 3', 'Algorithm 5'];
+                const listOfQueueAlgorithms = ['Algorithm 3', 'Algorithm 5', 'Algorithm 10'];
+                // const listOfSizes = [5, 10, 15, 20];
+
+                let items = [];
+                listOfQueueAlgorithms.forEach(queue => {
+                    listOfPlanningAlgorithms.forEach(planning => {
+                        items.push(extractionFunc(data, queue, planning, size).map(item => item.y));
+                    });
+                });
+
+                const colors = ['red', 'blue', 'green', 'pink', 'black', 'brown'];
+
+                const datasets = items.map((item, i) => {
+                    return {
+                        label: names[i],
+                        backgroundColor: colors[i],
+                        borderColor: colors[i],
+                        data: item,
+                        fill: false
+                    }
+                });
+
+                const config = {
+                    type: 'line',
+                    data: {
+                        labels: ['0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1.0'],
+                        datasets: datasets
+                    },
+                    options: {
+                        responsive: true,
+                        title: {
+                            display: true,
+                            text: `${yLabel} by algorithm ${size}`
+                        },
+                        tooltips: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        hover: {
+                            mode: 'nearest',
+                            intersect: true
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'correlation'
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: yLabel
+                                }
+                            }]
+                        }
+                    }
+                };
+
+                return new Chart(firstChartCtx, config);
             }
         }
     };
@@ -241,5 +274,9 @@
 
     .main-wrapper {
         width: 100%;
+    }
+
+    .chart-holder {
+        background-color: white;
     }
 </style>
