@@ -12,7 +12,7 @@ object GraphRandomizer extends LazyLogging {
 
   val rand = new Random()
   val MaxNumberOfTries = 20
-  val MaxNumberOfRetriesOfFittingEdges = 200
+  val MaxNumberOfRetriesOfFittingEdges = 500
   val Epsilon = 0.0001
 
   def randomOrientedGraph(parameters: GraphParameters): OrientedGraph = {
@@ -56,9 +56,12 @@ object GraphRandomizer extends LazyLogging {
       .find(isEdgeSuits(nodes, edges)(_))
   }
 
+  private def maxNumberOfEdges(numberOfNodes: Int): Int = {
+    (1 until numberOfNodes).sum
+  }
+
   private def isEdgeSuits(nodes: List[Node], edges: List[OrientedEdge])(edge: OrientedEdge): Boolean = {
-    !edges.exists(oldEdge => (edge.target == oldEdge.target) && (edge.source == oldEdge.source)) &&
-      GraphOps.checkGraphForCycles(OrientedGraph(edge :: edges ::: nodes))
+    !edges.exists(oldEdge => (edge.target == oldEdge.target) && (edge.source == oldEdge.source))
   }
 
   private def createOrientedEdge(source: Int, target: Int, weight: Int): OrientedEdge = {
@@ -92,8 +95,7 @@ object GraphRandomizer extends LazyLogging {
           retry == (MaxNumberOfRetriesOfFittingEdges * 0.9).toInt
       ) {
 
-        val graph = OrientedGraph(nodes ::: edges)
-        decreaseNodeWeight(nodes, edges, parameters, graph, retry)
+        decreaseNodeWeight(nodes, edges, parameters, retry)
       } else {
 
         if (retry > MaxNumberOfRetriesOfFittingEdges) {
@@ -103,10 +105,6 @@ object GraphRandomizer extends LazyLogging {
           Finish(graph)
 
         } else {
-
-//          if (math.abs(targetCorrelation - correlation) <= Epsilon) {
-//            Finish(OrientedGraph(nodes ::: edges))
-//          } else {
 
           val shuffledEdges = Random.shuffle(edges)
 
@@ -120,6 +118,7 @@ object GraphRandomizer extends LazyLogging {
     }
   }
 
+  // todo: error here
   private def increaseEdgeWeights(
     nodes: List[Node],
     shuffledEdges: List[OrientedEdge],
@@ -130,13 +129,14 @@ object GraphRandomizer extends LazyLogging {
     correlation: Double
   ): Trampoline[OrientedGraph] = {
 
-    val targetCorrelation = parameters.correlation
+//    val targetCorrelation = parameters.correlation
+//
+//    val correlationWithNewEdge = GraphOps.correlationOfConnections(nodeWeights, edgeWeights + parameters.minimalEdgeWeight)
+//
+//    if (math.abs(targetCorrelation - correlationWithNewEdge) < math.abs(targetCorrelation - correlation)) {
+    if (rand.nextBoolean()) {
 
-    val correlationWithNewEdge = GraphOps.correlationOfConnections(nodeWeights, edgeWeights + parameters.minimalEdgeWeight)
-
-    if (math.abs(targetCorrelation - correlationWithNewEdge) < math.abs(targetCorrelation - correlation)) {
-
-      val maxNumberOfEdges = (0 until parameters.numberOfNodes).sum
+      val maxNumberOfEdges = (1 until parameters.numberOfNodes).sum
 
       val newEdgeOpt = if (shuffledEdges.size < maxNumberOfEdges) {
         tryToCreateEdge(nodes, shuffledEdges, randomIntBetweenInclusive(parameters.minimalEdgeWeight, parameters.maximumEdgeWeight))
@@ -157,15 +157,21 @@ object GraphRandomizer extends LazyLogging {
   }
 
   private def incrementOneEdge(nodes: List[Node], shuffledEdges: List[OrientedEdge], parameters: GraphParameters, retry: Int): Trampoline[OrientedGraph] = {
-    val shouldBeIncremented = shuffledEdges.find(edge => edge.weight < parameters.maximumEdgeWeight)
-    shouldBeIncremented match {
-      case None =>
-        val graph = OrientedGraph(nodes ::: shuffledEdges)
-        logger.warn(s"Cannot increment edge for taskGraph:\n${Show[OrientedGraph].show(graph)}\n")
-        Finish(graph)
+//    val shouldBeIncremented = shuffledEdges.find(edge => edge.weight < parameters.maximumEdgeWeight)
+//    shouldBeIncremented match {
+//      case None =>
+//        val graph = OrientedGraph(nodes ::: shuffledEdges)
+//        logger.warn(s"Cannot increment edge for taskGraph:\n${Show[OrientedGraph].show(graph)}\n")
+//        Finish(graph)
+//
+//      case Some(edge) =>
+//        val updatedEdges = edge.copy(weight = edge.weight + 1) :: shuffledEdges.filterNot(_ == edge)
+//        Continuation(() => fitEdgesSafe(nodes, updatedEdges, parameters, retry + 1))
+//    }
 
-      case Some(edge) =>
-        val updatedEdges = edge.copy(weight = edge.weight + 1) :: shuffledEdges.filterNot(_ == edge)
+    shuffledEdges match {
+      case head :: tail =>
+        val updatedEdges = head.copy(weight = head.weight + 5) :: tail
         Continuation(() => fitEdgesSafe(nodes, updatedEdges, parameters, retry + 1))
     }
   }
@@ -177,14 +183,13 @@ object GraphRandomizer extends LazyLogging {
     retry: Int
   ): Trampoline[OrientedGraph] = {
 
-    val graph = OrientedGraph(nodes ::: shuffledEdges)
-
     shuffledEdges.find(_.weight < parameters.maximumEdgeWeight) match {
       case Some(_) =>
-        val updatedEdges = shuffledEdges.map(edge => edge.copy(weight = math.min(edge.weight + 1, parameters.maximumEdgeWeight)))
+//        val updatedEdges = shuffledEdges.map(edge => edge.copy(weight = math.min(edge.weight + 1, parameters.maximumEdgeWeight)))
+        val updatedEdges = shuffledEdges.map(edge => edge.copy(weight = edge.weight + 8))
         Continuation(() => fitEdgesSafe(nodes, updatedEdges, parameters, retry + 1))
       case None =>
-        decreaseNodeWeight(nodes, shuffledEdges, parameters, graph, retry)
+        decreaseNodeWeight(nodes, shuffledEdges, parameters, retry)
     }
   }
 
@@ -192,9 +197,9 @@ object GraphRandomizer extends LazyLogging {
     nodes: List[Node],
     shuffledEdges: List[OrientedEdge],
     parameters: GraphParameters,
-    graph: OrientedGraph,
     retry: Int
   ): Trampoline[OrientedGraph] = {
+
     val shuffledNodes = rand.shuffle(nodes)
     val firstSuitableNode = shuffledNodes.find(_.weight > parameters.minimalNodeWeight)
 
@@ -203,7 +208,7 @@ object GraphRandomizer extends LazyLogging {
         val restOfNodes = nodes.filterNot(_.id == node.id)
         Continuation(() => fitEdgesSafe(node.copy(weight = node.weight - 1) :: restOfNodes, shuffledEdges, parameters, retry + 1))
       case None =>
-        Finish(graph)
+        Finish(OrientedGraph(nodes ::: shuffledEdges))
     }
   }
 

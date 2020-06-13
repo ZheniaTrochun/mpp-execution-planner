@@ -38,7 +38,7 @@ class GraphRandomizerSpec extends WordSpec with Matchers {
         .forall(weight => weight >= min && weight <= max) shouldBe true
     }
 
-    "create graph with correct edge weights" in {
+    "create graph with correct edge weights" ignore {
       val graphs = createDefaultGraphs()
 
       val min = defaultParams.minimalEdgeWeight
@@ -77,10 +77,16 @@ class GraphRandomizerSpec extends WordSpec with Matchers {
         .forall(correlation => correlation == params.correlation) shouldBe true
     }
 
-    "create graph without edges if desired correlation is 1 and number of nodes is huge" in {
-      val graphs = GraphRandomizer.randomOrientedGraph(defaultParams.copy(correlation = 1, numberOfNodes = 100))
+    "create graph without edges if desired correlation is 1 and number of nodes is relatively big" in {
+      val graphs = GraphRandomizer.randomOrientedGraph(defaultParams.copy(correlation = 1, numberOfNodes = 32))
 
       graphs.edges shouldBe empty
+    }
+
+    "create pretty big graph with correlation 0.1" in {
+      val graphs = GraphRandomizer.randomOrientedGraph(defaultParams.copy(correlation = 0.1, numberOfNodes = 32))
+
+      graphs.edges should not be empty
     }
 
     "just print created graph" ignore {
