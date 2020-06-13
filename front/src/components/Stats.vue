@@ -3,6 +3,14 @@
 
         <div id="immutable-system-graph-holder"></div>
 
+        <div class="holder">
+            <div id="chart1-holder-1235"></div>
+        </div>
+
+        <canvas class="chart-holder" id="chart2"></canvas>
+        <canvas class="chart-holder" id="chart3"></canvas>
+
+
         <v-card flat tile>
             <v-simple-table>
                 <template v-slot:default>
@@ -40,6 +48,9 @@
     import cytoscape from "cytoscape";
     import store from "../store";
     import axios from 'axios';
+    // import Chart from 'chart.js';
+    // import vis from 'vis'
+    import {DataSet, Graph2d} from 'vis';
 
     let systemGraph;
 
@@ -125,7 +136,7 @@
                 `https://cluster-planner-server.herokuapp.com/stats/${this.task.id}`,
                 {
                     maxSizeMultiplier: 4,
-                    correlationStart: 0.2,
+                    correlationStart: 0.3,
                     correlationLimit: 1,
                     correlationStep: 0.1
                 }, {
@@ -134,7 +145,62 @@
             )
                 .then(resp => {
                     if (resp.status === 200) {
-                        this.stats = resp.data
+                        this.stats = resp.data;
+
+                        var names = ["Algo3-Algo3", "Algo5-Algo3", "Algo10-Algo3", "Algo3-Algo5", "Algo5-Algo5", "Algo10-Algo5"];
+                        var groups = new DataSet();
+                        names.forEach((name, i) => {
+                            groups.add({
+                                id: i,
+                                content: name,
+                                options: {
+                                    drawPoints: {
+                                        style: "square", // square, circle
+                                    },
+                                    shaded: {
+                                        orientation: "bottom", // top, bottom
+                                    },
+                                },
+                            });
+                        });
+
+                        var container = document.getElementById("chart1-holder-1235");
+
+                        // const firstChartCtx = document.getElementById("chart1").getContext('2d');
+                        const listOfPlanningAlgorithms = ['Algorithm 3', 'Algorithm 5'];
+                        const listOfQueueAlgorithms = ['Algorithm 3', 'Algorithm 5', 'Algorithm 10'];
+                        // const listOfSizes = [5, 10, 15, 20];
+
+                        let items = [];
+                        // const data = listOfSizes.map(size => {
+                            listOfQueueAlgorithms.forEach((queue, i) => {
+                                listOfPlanningAlgorithms.forEach((planning, j) => {
+                                    const data = this.calulateCorrelationDataset(resp.data, queue, planning, 15);
+                                    data.forEach(item => {
+                                        items.push({
+                                            x: item.x,
+                                            y: item.y,
+                                            group: (j * listOfPlanningAlgorithms.length) + i
+                                        })
+                                    });
+                                });
+                            });
+
+                        console.log(items);
+                        // var dataset = new vis.DataSet(items);
+                        var dataset = new DataSet(items);
+                        var options = {
+                            defaultGroup: "ungrouped",
+                            legend: true,
+                            start: 0,
+                            end: 1,
+                        };
+                        // new vis.Graph2d(container, dataset, groups, options);
+                        new Graph2d(container, dataset, groups, options);
+
+                        // });
+
+
                     }
                 });
         },
@@ -144,6 +210,16 @@
         computed: {
         },
         methods: {
+            calulateCorrelationDataset(data, queue, planning, size) {
+                return data
+                    .filter(x => x.queue === queue && x.planning === planning && x.size === size)
+                    .map(x => {
+                        return {
+                            x: x.correlation,
+                            y: x.time
+                        };
+                    });
+            }
         }
     };
 </script>
@@ -153,7 +229,14 @@
         width: 100%;
         background-color: white;
         height: 60vh;
-        margin-top: -215px;
+    }
+
+    .holder {
+        width: 100%;
+        /*background-color: white;*/
+        height: 60vh;
+        margin-top: 25px;
+        position: relative;
     }
 
     .main-wrapper {

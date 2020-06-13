@@ -9,10 +9,14 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
+    "chart.js": "^2.9.3",
     "core-js": "^3.6.4",
     "register-service-worker": "^1.6.2",
+    "vis": "^4.21.0-EOL",
     "vue": "^2.6.11",
+    "vue-chartjs": "^3.5.0",
     "vue-cytoscape": "^1.0.8",
+    "vue-google-charts": "^0.3.2",
     "vue-router": "^3.1.5",
     "vuetify": "^2.2.11",
     "vuex": "^3.1.2"
@@ -55,6 +59,8 @@
     "> 1%",
     "last 2 versions"
   ],
-  "engines" : { "node" : ">=14.3.0" },
-  "engineStrict" : true
+  "engines": {
+    "node": ">=14.3.0"
+  },
+  "engineStrict": true
 }
