@@ -16,7 +16,7 @@ object Data {
   def from(node: Node): Data = Data(node.id, node.label, node.weight.toString, None, None)
 }
 
-case class Position(x: Int, y: Int)
+case class Position(x: Double, y: Double)
 
 case class GraphEntry(
   data: Data,

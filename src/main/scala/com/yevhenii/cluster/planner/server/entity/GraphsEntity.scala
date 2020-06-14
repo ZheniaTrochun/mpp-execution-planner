@@ -20,7 +20,7 @@ case class DataEntity(
   def toData: Data = Data(id, label, weight, source, target)
 }
 
-case class PositionEntity(x: Int, y: Int) {
+case class PositionEntity(x: Double, y: Double) {
   def toPosition: Position = Position(x, y)
 }
 
