@@ -9,6 +9,23 @@
         <canvas class="chart-holder" id="chart4"></canvas>
 
 
+        <canvas class="chart-holder" id="chart5"></canvas>
+        <canvas class="chart-holder" id="chart6"></canvas>
+        <canvas class="chart-holder" id="chart7"></canvas>
+        <canvas class="chart-holder" id="chart8"></canvas>
+
+
+        <canvas class="chart-holder" id="chart9"></canvas>
+        <canvas class="chart-holder" id="chart10"></canvas>
+        <canvas class="chart-holder" id="chart11"></canvas>
+        <canvas class="chart-holder" id="chart12"></canvas>
+
+
+        <canvas class="chart-holder" id="chart13"></canvas>
+        <canvas class="chart-holder" id="chart14"></canvas>
+        <canvas class="chart-holder" id="chart15"></canvas>
+        <canvas class="chart-holder" id="chart16"></canvas>
+
         <v-card flat tile>
             <v-simple-table>
                 <template v-slot:default>
@@ -22,18 +39,20 @@
                         <th class="text-left">Time</th>
                         <th class="text-left">Speedup</th>
                         <th class="text-left">Efficiency</th>
+                        <th class="text-left">Algorithm Efficiency</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr v-for="(item, index) in stats" v-bind:key="index">
                         <td>{{ index + 1 }}</td>
                         <td>{{ item.size }}</td>
-                        <td>{{ item.correlation }}</td>
+                        <td>{{ Math.round((item.correlation + Number.EPSILON) * 10) / 10 }}</td>
                         <td>{{ item.queue }}</td>
                         <td>{{ item.planning }}</td>
                         <td>{{ item.time }}</td>
-                        <td>{{ item.speedup }}</td>
-                        <td>{{ item.efficiency }}</td>
+                        <td>{{ Math.round((item.speedup + Number.EPSILON) * 1000) / 1000 }}</td>
+                        <td>{{ Math.round((item.efficiency + Number.EPSILON) * 1000) / 1000 }}</td>
+                        <td>{{ Math.round((item.algorithmEfficiency + Number.EPSILON) * 1000) / 1000 }}</td>
                     </tr>
                     </tbody>
                 </template>
@@ -116,7 +135,8 @@
                 this.$router.push('/');
             }
 
-            axios.get(`https://cluster-planner-server.herokuapp.com/graphs/${this.task.id}`)
+            // axios.get(`https://cluster-planner-server.herokuapp.com/graphs/${this.task.id}`)
+            axios.get(`http://localhost:9000/graphs/${this.task.id}`)
                 .then(resp => {
                     if (resp.status === 200) {
 
@@ -129,24 +149,45 @@
                 });
 
             axios.post(
-                `https://cluster-planner-server.herokuapp.com/stats/${this.task.id}`,
+                `http://localhost:9000/stats/${this.task.id}`,
                 {
                     maxSizeMultiplier: 4,
-                    correlationStart: 0.2,
+                    correlationStart: 0.1,
                     correlationLimit: 1,
                     correlationStep: 0.1
                 }, {
-                    timeout: 1000 * 60 * 5
+                    timeout: 1000 * 60 * 15
                 }
             )
                 .then(resp => {
                     if (resp.status === 200) {
                         this.stats = resp.data;
 
-                        this.drawChartBy(resp.data, 'chart1', 'Time', 20, this.calculateTimeCorrelationDataset);
-                        this.drawChartBy(resp.data, 'chart2', 'Speedup', 20, this.calculateSpeedupCorrelationDataset);
-                        this.drawChartBy(resp.data, 'chart3', 'Efficiency', 20, this.calculateEfficiencyCorrelationDataset);
-                        this.drawChartBy(resp.data, 'chart4', 'Algorithm Efficiency', 20, this.calculateAlgorithmEfficiencyCorrelationDataset);
+                        console.log('drawing charts...');
+                        console.log(resp.data);
+
+                        this.drawChartBy(resp.data, 'chart1', 'Time', 8, this.calculateTimeCorrelationDataset);
+                        this.drawChartBy(resp.data, 'chart2', 'Speedup', 8, this.calculateSpeedupCorrelationDataset);
+                        this.drawChartBy(resp.data, 'chart3', 'Efficiency', 8, this.calculateEfficiencyCorrelationDataset);
+                        this.drawChartBy(resp.data, 'chart4', 'Algorithm Efficiency', 8, this.calculateAlgorithmEfficiencyCorrelationDataset);
+
+
+                        this.drawChartBy(resp.data, 'chart5', 'Time', 16, this.calculateTimeCorrelationDataset);
+                        this.drawChartBy(resp.data, 'chart6', 'Speedup', 16, this.calculateSpeedupCorrelationDataset);
+                        this.drawChartBy(resp.data, 'chart7', 'Efficiency', 16, this.calculateEfficiencyCorrelationDataset);
+                        this.drawChartBy(resp.data, 'chart8', 'Algorithm Efficiency', 16, this.calculateAlgorithmEfficiencyCorrelationDataset);
+
+
+                        this.drawChartBy(resp.data, 'chart9', 'Time', 24, this.calculateTimeCorrelationDataset);
+                        this.drawChartBy(resp.data, 'chart10', 'Speedup', 24, this.calculateSpeedupCorrelationDataset);
+                        this.drawChartBy(resp.data, 'chart11', 'Efficiency', 24, this.calculateEfficiencyCorrelationDataset);
+                        this.drawChartBy(resp.data, 'chart12', 'Algorithm Efficiency', 24, this.calculateAlgorithmEfficiencyCorrelationDataset);
+
+
+                        this.drawChartBy(resp.data, 'chart13', 'Time', 32, this.calculateTimeCorrelationDataset);
+                        this.drawChartBy(resp.data, 'chart14', 'Speedup', 32, this.calculateSpeedupCorrelationDataset);
+                        this.drawChartBy(resp.data, 'chart15', 'Efficiency', 32, this.calculateEfficiencyCorrelationDataset);
+                        this.drawChartBy(resp.data, 'chart16', 'Algorithm Efficiency', 32, this.calculateAlgorithmEfficiencyCorrelationDataset);
                     }
                 });
         },
@@ -198,12 +239,11 @@
             },
             drawChartBy(data, canvasId, yLabel, size, extractionFunc) {
 
-                var names = ["queue 3 - planning 3", "queue 3 - planning 5", "queue 5 - planning 3", "queue 5 - planning 5", "queue 10 - planning 3", "queue 10 - planning 5"];
+                const names = ["queue 3 - planning 3", "queue 3 - planning 5", "queue 5 - planning 3", "queue 5 - planning 5", "queue 10 - planning 3", "queue 10 - planning 5"];
 
                 const firstChartCtx = document.getElementById(canvasId).getContext('2d');
                 const listOfPlanningAlgorithms = ['Algorithm 3', 'Algorithm 5'];
                 const listOfQueueAlgorithms = ['Algorithm 3', 'Algorithm 5', 'Algorithm 10'];
-                // const listOfSizes = [5, 10, 15, 20];
 
                 let items = [];
                 listOfQueueAlgorithms.forEach(queue => {
@@ -224,10 +264,13 @@
                     }
                 });
 
+                console.log('drawing charts...');
+                console.log(datasets);
+
                 const config = {
                     type: 'line',
                     data: {
-                        labels: ['0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1.0'],
+                        labels: ['0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1.0'],
                         datasets: datasets
                     },
                     options: {

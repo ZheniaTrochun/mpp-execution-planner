@@ -44,7 +44,8 @@ object Server extends IOApp {
     BlazeServerBuilder[IO]
       .bindHttp(applicationConfig.getInt("server.port"), "0.0.0.0")
       .withHttpApp(GZip(CORS(routesWithLog)))
-      .withIdleTimeout(5.minutes)
+      .withIdleTimeout(15.minutes)
+      .withResponseHeaderTimeout(15.minutes)
       .serve
       .compile
       .drain
