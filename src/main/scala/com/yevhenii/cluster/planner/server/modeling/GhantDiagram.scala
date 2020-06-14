@@ -52,7 +52,7 @@ class GhantDiagram(systemGraph: NonOrientedGraph, taskGraph: OrientedGraph) {
     val time = finishedIn()
 
     if (time == 0) 0
-    else taskGraph.criticalPath.size.toDouble / time
+    else taskGraph.criticalPath.map(_.weight).sum.toDouble / time
   }
 
   override def equals(obj: Any): Boolean = {

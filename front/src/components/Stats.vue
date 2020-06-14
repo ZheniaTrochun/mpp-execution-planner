@@ -6,6 +6,7 @@
         <canvas class="chart-holder" id="chart1"></canvas>
         <canvas class="chart-holder" id="chart2"></canvas>
         <canvas class="chart-holder" id="chart3"></canvas>
+        <canvas class="chart-holder" id="chart4"></canvas>
 
 
         <v-card flat tile>
@@ -131,7 +132,7 @@
                 `https://cluster-planner-server.herokuapp.com/stats/${this.task.id}`,
                 {
                     maxSizeMultiplier: 4,
-                    correlationStart: 0.3,
+                    correlationStart: 0.2,
                     correlationLimit: 1,
                     correlationStep: 0.1
                 }, {
@@ -142,9 +143,10 @@
                     if (resp.status === 200) {
                         this.stats = resp.data;
 
-                        this.drawChartBy(resp.data, 'chart1', 'Time', 15, this.calculateTimeCorrelationDataset);
-                        this.drawChartBy(resp.data, 'chart2', 'Speedup', 15, this.calculateSpeedupCorrelationDataset);
-                        this.drawChartBy(resp.data, 'chart3', 'Efficiency', 15, this.calculateEfficiencyCorrelationDataset);
+                        this.drawChartBy(resp.data, 'chart1', 'Time', 20, this.calculateTimeCorrelationDataset);
+                        this.drawChartBy(resp.data, 'chart2', 'Speedup', 20, this.calculateSpeedupCorrelationDataset);
+                        this.drawChartBy(resp.data, 'chart3', 'Efficiency', 20, this.calculateEfficiencyCorrelationDataset);
+                        this.drawChartBy(resp.data, 'chart4', 'Algorithm Efficiency', 20, this.calculateAlgorithmEfficiencyCorrelationDataset);
                     }
                 });
         },
@@ -184,9 +186,19 @@
                         };
                     });
             },
+            calculateAlgorithmEfficiencyCorrelationDataset(data, queue, planning, size) {
+                return data
+                    .filter(x => x.queue === queue && x.planning === planning && x.size === size)
+                    .map(x => {
+                        return {
+                            x: x.correlation,
+                            y: x.algorithmEfficiency
+                        };
+                    });
+            },
             drawChartBy(data, canvasId, yLabel, size, extractionFunc) {
 
-                var names = ["Algo3-Algo3", "Algo3-Algo5", "Algo5-Algo3", "Algo5-Algo5", "Algo10-Algo3", "Algo10-Algo5"];
+                var names = ["queue 3 - planning 3", "queue 3 - planning 5", "queue 5 - planning 3", "queue 5 - planning 5", "queue 10 - planning 3", "queue 10 - planning 5"];
 
                 const firstChartCtx = document.getElementById(canvasId).getContext('2d');
                 const listOfPlanningAlgorithms = ['Algorithm 3', 'Algorithm 5'];
@@ -215,14 +227,14 @@
                 const config = {
                     type: 'line',
                     data: {
-                        labels: ['0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1.0'],
+                        labels: ['0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1.0'],
                         datasets: datasets
                     },
                     options: {
                         responsive: true,
                         title: {
                             display: true,
-                            text: `${yLabel} by algorithm ${size}`
+                            text: `${yLabel} by algorithm, size: ${size}`
                         },
                         tooltips: {
                             mode: 'index',
