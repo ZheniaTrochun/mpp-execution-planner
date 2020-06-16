@@ -26,6 +26,10 @@
         <canvas class="chart-holder" id="chart15"></canvas>
         <canvas class="chart-holder" id="chart16"></canvas>
 
+        <v-btn class="v-btn--outlined deep-purple" v-on:click="downloadAsCsv">
+            Load as CSV
+        </v-btn>
+
         <v-card flat tile>
             <v-simple-table>
                 <template v-slot:default>
@@ -236,6 +240,24 @@
                             y: x.algorithmEfficiency
                         };
                     });
+            },
+            downloadAsCsv() {
+                let csvContent = "data:text/csv;charset=utf-8," +
+                    "id,Task size,Task correlation,Queue algorithm,Planning algorithm,Time,Speedup,Efficiency,Algorithm Efficiency\n" +
+                    this.stats
+                        // .map(e => e.join(","))
+                        .map((item, index) => {
+                            return `${index + 1},${item.size},${Math.round((item.correlation + Number.EPSILON) * 10) / 10},${item.queue},${item.planning},${item.time},${Math.round((item.speedup + Number.EPSILON) * 1000) / 1000},${Math.round((item.efficiency + Number.EPSILON) * 1000) / 1000},${Math.round((item.algorithmEfficiency + Number.EPSILON) * 1000) / 1000}`;
+                        })
+                        .join("\n");
+
+                var encodedUri = encodeURI(csvContent);
+                var link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "my_data.csv");
+                document.body.appendChild(link); // Required for FF
+
+                link.click(); // This will download the data file named "my_data.csv".
             },
             drawChartBy(data, canvasId, yLabel, size, extractionFunc) {
 
